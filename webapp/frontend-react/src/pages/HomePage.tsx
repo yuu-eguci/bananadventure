@@ -6,15 +6,16 @@ import {
   Grid,
   Paper,
   Typography,
+  Backdrop,
 } from "@mui/material";
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 
 // ダミー
 const currentSceneViewModel = {
   scene: {
     id: 1,
     triggerItems: [],
-    image: "/main-image/banana-00183.webp",
+    image: "/main-image/banana-00183a.webp",
     text: "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillu",
     sceneChoices: [
       {
@@ -89,10 +90,16 @@ const currentSceneViewModel = {
 };
 
 function HomePage() {
+  const [isJingleOpen, setJingleOpen] = useState(false);
+
   useEffect(() => {}, []);
 
   const onPressSceneChoice = (choice: object) => {
     console.log(choice);
+    setJingleOpen(true);
+    setTimeout(() => {
+      setJingleOpen(false);
+    }, 2000);
   };
 
   const onPressItem = (item: object) => {
@@ -106,6 +113,10 @@ function HomePage() {
           <img
             src={currentSceneViewModel.scene.image}
             alt="Scene"
+            onError={(e) => {
+              e.currentTarget.onerror = null;
+              e.currentTarget.src = "/sample-image/sample.png";
+            }}
             style={{
               width: "100%",
               display: "block",
@@ -155,6 +166,10 @@ function HomePage() {
           >
             <img
               src="/icon-image/banana.webp"
+              onError={(e) => {
+                e.currentTarget.onerror = null;
+                e.currentTarget.src = "/sample-image/sample.png";
+              }}
               style={{ width: 64, height: 64, marginBottom: 8 }}
             />
             <Typography variant="body2" align="center">
@@ -206,6 +221,10 @@ function HomePage() {
                 <img
                   src={item.image}
                   alt={item.text}
+                  onError={(e) => {
+                    e.currentTarget.onerror = null;
+                    e.currentTarget.src = "/sample-image/sample.png";
+                  }}
                   style={{ width: 64, height: 64, marginBottom: 8 }}
                 />
                 <Typography variant="body2" align="center">
@@ -216,6 +235,19 @@ function HomePage() {
           </Card>
         ))}
       </Grid>
+
+      <Backdrop
+        open={isJingleOpen}
+        sx={{ zIndex: (theme) => theme.zIndex.modal + 1 }}
+      >
+        <Box>
+          <img
+            src="/jingle-gif/loading-00001.gif"
+            alt="jingle"
+            style={{ width: 200 }}
+          />
+        </Box>
+      </Backdrop>
     </Grid>
   );
 }
