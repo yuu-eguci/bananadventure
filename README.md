@@ -1,46 +1,13 @@
-django-react-gemini ♊
+bananadventure
 ===
 
 🐍 ⚛️ 🐳 🇳 Python 3.13 + Django v4 + Yarn + React + Nginx + Docker + GitHub Actions + Ruff + CI/CD | React も使いてーし、 Django も使いてーけど、サーバはふたつも使いたくねーから、 Nginx を使って Django と React を同ドメインで配信しよーぜ。あと Docker は当然使うぜ。
 
-## コイツのいいところ
+![](./docs/(2025-04-06)bananadventure.webp)
 
-- Docker 環境 + Django + React (frontend) + MySQL + Nginx がひとつのリポジトリに詰まっててシンプルだよ。
-    - まあいいことばかりじゃないけど。
-- up で3つ一気に立ち上がるよ。
-- 開発環境:
-    - Django runserver (8000) -> docker-compose portforward (8001) -> localhost:8001
-    - React yarn dev (5173) -> docker-compose portforward (5001) -> localhost:5001
-- Ubuntu 環境:
-    - Django Dockerfile gunicorn (8000) -> docker-compose portforward (8001) -> nginx (80) -> domain:80
-    - 
+## Generated from django-react-gemini
 
-Django エリアのいいところ
-
-- 開発環境用、本番環境用の settings が分かれてるよ。
-- 当然 Pipenv で管理できてるよ。
-- コンソールと、 ./logs/ へのロギングができてるよ。ロギングの日時は UTC と JST を選べる。
-- ユニットテストの基礎もちゃんとあるよ。
-- ひさしぶりに来て、 "view どんなふうに書くんだっけ?" ってなったときのため views に view のベースを書いてるよ。
-    - 最近、 async の view も足しといたよ。ただ動かすにはこれ↓が必要かも
-    - uvicorn (asgi サーバ) を pip install
-    - gunicorn が内蔵の wsgi サーバのみならず uvicorn を動かせるように設定する
-    - そうすると gunicorn が uvicorn を worker として動かして、
-    - uvicorn は asgi サーバとして django を配信してくれる!
-- GitHub Actions で ruff, test がちゃんと走るよ。
-- プロジェクト内部のモジュールをインポートするときは、つねに相対インポートを使ってる (3rd party との区別のため) よ。
-
-React エリアのいいところ
-
-- `vite-tsconfig-paths` とか `react-router-dom` とか `react-i18next` とか導入済み。
-- "さあオリジナリティ出していくぜ、" のひとつ前の段階まで揃えてある。
-    - これ以上をやると、オリジナリティを出していくときの邪魔になる。
-
-Nginx エリアのいいところ
-
-いいことばかりじゃないところ
-
-- 1アプリケーションにつき1 docker container を使うと、 VSCode 開発のときに devcontainer をキレイに使えたりして利点がある。ひとつの container に複数アプリケーションが入っていると、その利点を利用することが不可。
+- [https://github.com/yuu-eguci/django-react-gemini](https://github.com/yuu-eguci/django-react-gemini)
 
 ## runserver と yarn dev で起動するところまで
 
