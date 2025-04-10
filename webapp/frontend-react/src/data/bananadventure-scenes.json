@@ -1,0 +1,569 @@
+[
+  {
+    "id": 0,
+    "triggerItems": [],
+    "image": "",
+    "text": "はじめる？",
+    "sceneChoices": [
+      {
+        "id": 0,
+        "order": 0,
+        "image": "",
+        "text": "はじめる！",
+        "responseText": "",
+        "bananaMeterDelta": 100,
+        "nextSceneId": 1,
+        "itemsOnSelect": []
+      },
+      {
+        "id": 1,
+        "order": 1,
+        "image": "",
+        "text": "おわる！",
+        "responseText": "",
+        "bananaMeterDelta": 0,
+        "nextSceneId": 0,
+        "itemsOnSelect": []
+      }
+    ]
+  },
+  {
+    "id": 1,
+    "triggerItems": [],
+    "image": "",
+    "text": "ふああぁ、良く寝たのだ。\nさて、朝ご飯はどうしよう？",
+    "sceneChoices": [
+      {
+        "id": 0,
+        "order": 0,
+        "image": "",
+        "text": "ブラックコーヒーとトースト",
+        "responseText": "やった！でもおなかいっぱいでもう今日は動けないのだ",
+        "bananaMeterDelta": -20,
+        "nextSceneId": 2,
+        "itemsOnSelect": []
+      },
+      {
+        "id": 1,
+        "order": 1,
+        "image": "",
+        "text": "菓子パン",
+        "responseText": "もう今日はやる気でないのだ",
+        "bananaMeterDelta": -100,
+        "nextSceneId": 2,
+        "itemsOnSelect": []
+      },
+      {
+        "id": 2,
+        "order": 2,
+        "image": "",
+        "text": "コンビニに駆け込む",
+        "responseText": "豆乳バナナを買えた！いつも売り切れなんだよねぇ",
+        "bananaMeterDelta": 0,
+        "nextSceneId": 2,
+        "itemsOnSelect": [
+          {
+            "id": 0,
+            "text": "豆乳バナナ",
+            "description": "",
+            "responseText": "",
+            "bananaMeterDelta": 20,
+            "bananaMeterDeltaPercent": 0,
+            "image": "",
+            "used": false
+          }
+        ]
+      },
+      {
+        "id": 3,
+        "order": 3,
+        "image": "",
+        "text": "朝ご飯は食べない",
+        "responseText": "今日も気分爽快！出かけよう！",
+        "bananaMeterDelta": 20,
+        "nextSceneId": 2,
+        "itemsOnSelect": []
+      }
+    ]
+  },
+  {
+    "id": 2,
+    "triggerItems": [],
+    "image": "",
+    "text": "さてさて、今日のニュースをBBCでチェックするのだ\nその前に・・・",
+    "sceneChoices": [
+      {
+        "id": 0,
+        "order": 0,
+        "image": "",
+        "text": "郵便物がないかチェックする",
+        "responseText": "玄関まで行くのだ",
+        "bananaMeterDelta": 0,
+        "nextSceneId": 0,
+        "itemsOnSelect": []
+      },
+      {
+        "id": 1,
+        "order": 1,
+        "image": "",
+        "text": "Xをチェックする",
+        "responseText": "無限に気になるポストが出てくるのだ、やめられないのだ",
+        "bananaMeterDelta": -50,
+        "nextSceneId": 0,
+        "itemsOnSelect": []
+      },
+      {
+        "id": 2,
+        "order": 2,
+        "image": "",
+        "text": "朝の健康サーモンランなのだ",
+        "responseText": "竹・リール・和傘・パブロ、なんだこの構成・・・",
+        "bananaMeterDelta": -30,
+        "nextSceneId": 0,
+        "itemsOnSelect": []
+      }
+    ]
+  },
+  {
+    "id": 3,
+    "triggerItems": [],
+    "image": "",
+    "text": "「ピンポーン！郵便でーす」\nおや？ナイスタイミングで手紙が届いたのだ\nビリビリ・・・ふむふむ\n安藤さんからパーティーの誘いなのだ",
+    "sceneChoices": [
+      {
+        "id": 0,
+        "order": 0,
+        "image": "",
+        "text": "行く！絶対行くのだ！",
+        "responseText": "わくわくが止まらないのだ",
+        "bananaMeterDelta": 10,
+        "nextSceneId": 0,
+        "itemsOnSelect": []
+      },
+      {
+        "id": 1,
+        "order": 1,
+        "image": "",
+        "text": "本物なのかな？くんくん、匂いをかぐのだ",
+        "responseText": "プリンの匂い、安藤さんで間違いないのだ！よし準備するのだ",
+        "bananaMeterDelta": 0,
+        "nextSceneId": 0,
+        "itemsOnSelect": []
+      },
+      {
+        "id": 2,
+        "order": 2,
+        "image": "",
+        "text": "ヤギに食べさせてみよう",
+        "responseText": "ヤギに指をかじられたのだ",
+        "bananaMeterDelta": -100,
+        "nextSceneId": 0,
+        "itemsOnSelect": []
+      }
+    ]
+  },
+  {
+    "id": 4,
+    "triggerItems": [],
+    "image": "",
+    "text": "ガスの元栓も閉めた、準備はOK\nよし、出かけるのだ・・・\nあれ？結構遠くの場所だな・・・どうしよう？",
+    "sceneChoices": [
+      {
+        "id": 0,
+        "order": 0,
+        "image": "",
+        "text": "ナビでしっかり経路を調べる",
+        "responseText": "携帯のバッテリーが・・・やばいのだ、やばいのだ",
+        "bananaMeterDelta": -40,
+        "nextSceneId": 0,
+        "itemsOnSelect": []
+      },
+      {
+        "id": 1,
+        "order": 1,
+        "image": "",
+        "text": "適当に進めばいつかは着くのだ",
+        "responseText": "とりあえずうーちゃん家にいってみるのだ",
+        "bananaMeterDelta": 0,
+        "nextSceneId": 0,
+        "itemsOnSelect": []
+      },
+      {
+        "id": 2,
+        "order": 2,
+        "image": "",
+        "text": "スタバにいって考えよう",
+        "responseText": "どんな時でも冷静さを忘れてはいけないのだ",
+        "bananaMeterDelta": 0,
+        "nextSceneId": 0,
+        "itemsOnSelect": []
+      }
+    ]
+  },
+  {
+    "id": 5,
+    "triggerItems": [],
+    "image": "",
+    "text": "「おや？ばななちゃん、バッタリですね」\n道中でうーちゃんと出会った\nどうやらうみにょも安藤さんに招待されているらしい",
+    "sceneChoices": [
+      {
+        "id": 0,
+        "order": 0,
+        "image": "",
+        "text": "うーちゃんと一緒に行くのだ",
+        "responseText": "「パパと一緒に行くのでばななちゃんは一人で頑張ってください」",
+        "bananaMeterDelta": -10,
+        "nextSceneId": 0,
+        "itemsOnSelect": []
+      },
+      {
+        "id": 1,
+        "order": 1,
+        "image": "",
+        "text": "一緒にスタバに行くのだ",
+        "responseText": "「もう出かけないと間に合いませんよ？ほら、早くバスに乗って\n私はパパと一緒に行くので頑張ってくださいね」",
+        "bananaMeterDelta": -50,
+        "nextSceneId": 0,
+        "itemsOnSelect": []
+      },
+      {
+        "id": 2,
+        "order": 2,
+        "image": "",
+        "text": "経路を尋ねる",
+        "responseText": "「まずはバスに乗って、その後に船に乗るんです。\n私はパパと一緒に行くので頑張ってください」",
+        "bananaMeterDelta": 0,
+        "nextSceneId": 0,
+        "itemsOnSelect": []
+      }
+    ]
+  },
+  {
+    "id": 6,
+    "triggerItems": [],
+    "image": "",
+    "text": "なんとかバスに間に合ったのだ\nでも・・・結構揺れる\n乗り物酔いが心配なのだ\nどうしよう？",
+    "sceneChoices": [
+      {
+        "id": 0,
+        "order": 0,
+        "image": "",
+        "text": "窓を開けて新鮮な空気を吸うのだ",
+        "responseText": "あ～気持ちのいい空気なのだ\n少しマシになったのだ",
+        "bananaMeterDelta": -10,
+        "nextSceneId": 0,
+        "itemsOnSelect": []
+      },
+      {
+        "id": 1,
+        "order": 1,
+        "image": "",
+        "text": "素数を数えてひたすら我慢するのだ",
+        "responseText": "2・3・5・7…我慢、我慢なのだ",
+        "bananaMeterDelta": 0,
+        "nextSceneId": 0,
+        "itemsOnSelect": []
+      },
+      {
+        "id": 2,
+        "order": 2,
+        "image": "",
+        "text": "隣の人に助けを求める",
+        "responseText": "「耐えられそうもなかったらこれを飲みな」\n酔い止めの薬をくれた",
+        "bananaMeterDelta": 0,
+        "nextSceneId": 0,
+        "itemsOnSelect": [
+          {
+            "id": 1,
+            "text": "ストロングゼロ",
+            "description": "",
+            "responseText": "",
+            "bananaMeterDelta": 0,
+            "bananaMeterDeltaPercent": -9,
+            "image": "",
+            "used": false
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "id": 7,
+    "triggerItems": [],
+    "image": "",
+    "text": "ふぅ、ようやくバスから降りられる\n次は船に乗り換えなのだ\nどの船に乗ろう？目的地は一緒みたいだけど・・・",
+    "sceneChoices": [
+      {
+        "id": 0,
+        "order": 0,
+        "image": "",
+        "text": "一般客船「トンブラコ」",
+        "responseText": "一般客船なのになかなかの広さなのだ\n救命ボートの数を減らしてこの広さを実現してるんだな",
+        "bananaMeterDelta": -10,
+        "nextSceneId": 0,
+        "itemsOnSelect": []
+      },
+      {
+        "id": 1,
+        "order": 1,
+        "image": "",
+        "text": "豪華客船「タイタンキック」",
+        "responseText": "「ピンポンパンポーン♪\nこの度は氷山直行船タイタンキックにご乗船ありがとうございます」\nまてコラ！氷山って言ったか？",
+        "bananaMeterDelta": -10,
+        "nextSceneId": 0,
+        "itemsOnSelect": []
+      },
+      {
+        "id": 2,
+        "order": 2,
+        "image": "",
+        "text": "激安客船「カチカチマウンテン」",
+        "responseText": "船の一部が段ボールで出来てるのだ\nでも安さには代えられないのだ",
+        "bananaMeterDelta": -10,
+        "nextSceneId": 0,
+        "itemsOnSelect": []
+      }
+    ]
+  },
+  {
+    "id": 8,
+    "triggerItems": [],
+    "image": "",
+    "text": "案の定、沈没したのだ！\nさて、逃げるにあたり何を持っていく？",
+    "sceneChoices": [
+      {
+        "id": 0,
+        "order": 0,
+        "image": "",
+        "text": "携帯電話",
+        "responseText": "これさえあれば何とかなるのだ！\nたぶん防水だし大丈夫！\nバッテリーは残り・・・え？１％？",
+        "bananaMeterDelta": -30,
+        "nextSceneId": 0,
+        "itemsOnSelect": []
+      },
+      {
+        "id": 1,
+        "order": 1,
+        "image": "",
+        "text": "備え付けの救護リュック",
+        "responseText": "中身を調べる暇はない！\nすぐに逃げるのだ",
+        "bananaMeterDelta": 0,
+        "nextSceneId": 0,
+        "itemsOnSelect": [
+          {
+            "id": 2,
+            "text": "六角レンチ・エンブレム・ハーブ",
+            "description": "",
+            "responseText": "",
+            "bananaMeterDelta": 10,
+            "bananaMeterDeltaPercent": 0,
+            "image": "",
+            "used": false
+          }
+        ]
+      },
+      {
+        "id": 2,
+        "order": 2,
+        "image": "",
+        "text": "switchとプロコン",
+        "responseText": "専用ドックを忘れたのだ\nあぁ、水がすぐそこに！あわわわわわわわ！",
+        "bananaMeterDelta": -20,
+        "nextSceneId": 0,
+        "itemsOnSelect": []
+      }
+    ]
+  },
+  {
+    "id": 9,
+    "triggerItems": [],
+    "image": "",
+    "text": "水に揺られること数分、謎の島にたどり着いた\nここはどこなのだ？\nあたりを見渡した・・・さてどうしよう？",
+    "sceneChoices": [
+      {
+        "id": 0,
+        "order": 0,
+        "image": "",
+        "text": "ビーチを散策",
+        "responseText": "何もない・・・おなかが空いてきたのだ\n島の奥はジャングルみたいになっているのだ\nそっちにいってみよう",
+        "bananaMeterDelta": -10,
+        "nextSceneId": 10,
+        "itemsOnSelect": []
+      },
+      {
+        "id": 1,
+        "order": 1,
+        "image": "",
+        "text": "島の奥の方へ進む",
+        "responseText": "島の奥はジャングルのようになっていた\nおなかがすいてきたし何か食べるものがあったらいいんだけど",
+        "bananaMeterDelta": 0,
+        "nextSceneId": 10,
+        "itemsOnSelect": []
+      },
+      {
+        "id": 2,
+        "order": 2,
+        "image": "",
+        "text": "ひたすら救助を待つ",
+        "responseText": "誰も来ないのだ・・・\nおなかがすいて何も考えられない\n場所を変えるのだ、何かあるかもしれない",
+        "bananaMeterDelta": -20,
+        "nextSceneId": 10,
+        "itemsOnSelect": []
+      }
+    ]
+  },
+  {
+    "id": 10,
+    "triggerItems": [
+      {
+        "item": {
+          "id": 0,
+          "text": "豆乳バナナ",
+          "description": "",
+          "responseText": "",
+          "bananaMeterDelta": 20,
+          "bananaMeterDeltaPercent": 0,
+          "image": "",
+          "used": false
+        },
+        "nextSceneId": 11
+      }
+    ],
+    "image": "",
+    "text": "バナナの木がある！\nでも崖の上にあって、もし落ちたら下まで転げ落ちるのだ\nどうしよう？",
+    "sceneChoices": [
+      {
+        "id": 0,
+        "order": 0,
+        "image": "",
+        "text": "関係ないのだ、落ちなければいいのだ\nバナナを採るのだ",
+        "responseText": "うわ！滑るのだ！めっちゃ滑るのだ！\nお、落ちるのだあああああ・・・",
+        "bananaMeterDelta": -50,
+        "nextSceneId": 12,
+        "itemsOnSelect": []
+      },
+      {
+        "id": 1,
+        "order": 1,
+        "image": "",
+        "text": "慎重に・・・安全を確保しながらバナナを採るのだ",
+        "responseText": "もぎ！とりあえず一口食べるのだ\nむむ！結構おいしいのだ！\n止まらないのだ！もう一つ・・・あ！？",
+        "bananaMeterDelta": 0,
+        "nextSceneId": 12,
+        "itemsOnSelect": []
+      },
+      {
+        "id": 2,
+        "order": 2,
+        "image": "",
+        "text": "安全第一！諦めて先に進むのだ",
+        "responseText": "崖の下の方までいってみよう・・・あ！足場が！？",
+        "bananaMeterDelta": -10,
+        "nextSceneId": 12,
+        "itemsOnSelect": []
+      }
+    ]
+  },
+  {
+    "id": 11,
+    "triggerItems": [],
+    "image": "",
+    "text": "豆乳バナナが腐って豆乳ヨーグルトに！",
+    "sceneChoices": [
+      {
+        "id": 0,
+        "order": 0,
+        "image": "",
+        "text": "食べるのだ！",
+        "responseText": "いたたたたたた！おなかが痛いのだ！",
+        "bananaMeterDelta": -50,
+        "nextSceneId": 10,
+        "itemsOnSelect": []
+      }
+    ]
+  },
+  {
+    "id": 12,
+    "triggerItems": [
+      {
+        "item": {
+          "id": 2,
+          "text": "六角レンチ・エンブレム・ハーブ",
+          "description": "",
+          "responseText": "",
+          "bananaMeterDelta": 10,
+          "bananaMeterDeltaPercent": 0,
+          "image": "",
+          "used": false
+        },
+        "nextSceneId": 13
+      }
+    ],
+    "image": "",
+    "text": "いてててて・・・やっぱり落ちたのだ\nあれ？こんなジャングルの中に洋館が\nどうしよう？",
+    "sceneChoices": [
+      {
+        "id": 0,
+        "order": 0,
+        "image": "",
+        "text": "怪しいのだ・・・",
+        "responseText": "建物を避けてさらに奥に進むのだ",
+        "bananaMeterDelta": 0,
+        "nextSceneId": 14,
+        "itemsOnSelect": []
+      },
+      {
+        "id": 1,
+        "order": 1,
+        "image": "",
+        "text": "お邪魔するのだ！",
+        "responseText": "誰もいない？うわ！窓から犬が！\nこの洋館、どうなってるのだ！逃げるのだ！",
+        "bananaMeterDelta": -20,
+        "nextSceneId": 14,
+        "itemsOnSelect": []
+      },
+      {
+        "id": 2,
+        "order": 2,
+        "image": "",
+        "text": "よく観察する",
+        "responseText": "絶対怪しいのだ、ボクの第七感がそう言ってるのだ\n入らない方がいいのだ",
+        "bananaMeterDelta": 0,
+        "nextSceneId": 14,
+        "itemsOnSelect": []
+      }
+    ]
+  },
+  {
+    "id": 13,
+    "triggerItems": [],
+    "image": "",
+    "text": "やっぱり落ちちゃったのだ\nなんか洋館があるけど、これがあれば・・・",
+    "sceneChoices": [
+      {
+        "id": 0,
+        "order": 0,
+        "image": "",
+        "text": "救護リュックを取り出す",
+        "responseText": "エンブレムを嵌めて、六角レンチでキコキコして、よし！\n洋館攻略なのだ、先へ進むぞ",
+        "bananaMeterDelta": 0,
+        "nextSceneId": 14,
+        "itemsOnSelect": []
+      }
+    ]
+  },
+  {
+    "id": 14,
+    "triggerItems": [],
+    "image": "",
+    "text": "ジャングルを抜けた！あの建物は！？\n安藤さん家なのだ！\nやった！着いたのだ！",
+    "sceneChoices": []
+  },
+  {
+    "id": 15,
+    "triggerItems": [],
+    "image": "",
+    "text": "もう疲れたのだ・・・\n居酒屋TaTeTeに行って一杯やるのだ",
+    "sceneChoices": []
+  }
+]
