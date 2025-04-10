@@ -1,4 +1,5 @@
 import {
+  Backdrop,
   Box,
   Card,
   CardActionArea,
@@ -6,100 +7,83 @@ import {
   Grid,
   Paper,
   Typography,
-  Backdrop,
+  Button,
+  Dialog,
+  DialogActions,
+  DialogContent,
+  DialogContentText,
 } from "@mui/material";
-import { useEffect, useState } from "react";
+import { useEffect, useState, useRef } from "react";
 
-// ダミー
-const currentSceneViewModel = {
-  scene: {
-    id: 1,
-    triggerItems: [],
-    image: "/main-image/banana-00183a.webp",
-    text: "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillu",
-    sceneChoices: [
-      {
-        id: 1,
-        order: 0,
-        text: "Duis 1 aute irure dolor in reprehenderit in voluptate velit esse cillu",
-        responseText:
-          "Duis 1 aute irure dolor in reprehenderit in voluptate velit esse cillu",
-        bananaMeterDelta: 1,
-        nextScene: 2,
-        itemsOnSelect: null,
-      },
-      {
-        id: 2,
-        order: 1,
-        text: "Duis 2 aute irure dolor in reprehenderit in voluptate velit esse cillu",
-        responseText:
-          "Duis 2 aute irure dolor in reprehenderit in voluptate velit esse cillu",
-        bananaMeterDelta: 2,
-        nextScene: 2,
-        itemsOnSelect: null,
-      },
-      {
-        id: 3,
-        order: 2,
-        text: "Duis 3 aute irure dolor in reprehenderit in voluptate velit esse cillu",
-        responseText:
-          "Duis 3 aute irure dolor in reprehenderit in voluptate velit esse cillu",
-        bananaMeterDelta: 3,
-        nextScene: 2,
-        itemsOnSelect: null,
-      },
-      {
-        id: 4,
-        order: 3,
-        text: "Duis 4 aute irure dolor in reprehenderit in voluptate velit esse cillu",
-        responseText:
-          "Duis 4 aute irure dolor in reprehenderit in voluptate velit esse cillu",
-        bananaMeterDelta: 4,
-        nextScene: 2,
-        itemsOnSelect: null,
-      },
-    ],
-  },
-  player: {
-    bananaMeter: 100,
-    items: [
-      {
-        id: 1,
-        text: "豆乳バナナ",
-        description:
-          "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt",
-        responseText:
-          "ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris",
-        bananaMeterDelta: 10,
-        image: "/icon-image/drink.webp",
-        used: false,
-      },
-      {
-        id: 2,
-        text: "釘バット",
-        description:
-          "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt",
-        responseText:
-          "ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris",
-        bananaMeterDelta: -10,
-        image: "/icon-image/spiked-bat.webp",
-        used: true,
-      },
-    ],
-  },
-};
+import { SceneService } from "@/services/SceneService";
+import { SceneViewModel } from "@/viewModels";
+import dummyImage from "/sample-image/sample.png";
+import { SceneChoice } from "@/models";
+import ResetButton from "@/components/ResetButton";
+// import bananaIcon from "/icon-image/banana.webp";
+
+const service = new SceneService();
+
+const dummyText =
+  "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillu";
 
 function HomePage() {
-  const [isJingleOpen, setJingleOpen] = useState(false);
+  const [isJingleOpen, setJingleOpen] = useState(true);
+  const [viewModel, setViewModel] = useState<SceneViewModel | null>(null);
+  const [openDialog, setOpenDialog] = useState(false);
+  const [dialogMessage, setDialogMessage] = useState("");
+  const selectedSceneChoice = useRef<SceneChoice | null>(null);
 
-  useEffect(() => {}, []);
+  useEffect(() => {
+    setTimeout(() => {
+      initializeScene();
+      setTimeout(() => {
+        setJingleOpen(false);
+      }, 1000);
+    }, 1000);
+  }, []);
 
-  const onPressSceneChoice = (choice: object) => {
-    console.log(choice);
+  const initializeScene = async () => {
+    // 初期値の SceneViewModel を取得します。
+    const _ = await service.fetchInitialViewModel();
+    setViewModel(_);
+  };
+
+  const onPressSceneChoice = async (choice: SceneChoice) => {
+    if (!viewModel) {
+      console.error("viewModel is null");
+      return;
+    }
+    selectedSceneChoice.current = choice;
+
+    const {responseText, bananaMeterDelta, nextSceneId} = choice;
+    setDialogMessage(
+      // FIXME: 改行が効かない
+      responseText + "\n" + `<TEST> delta: ${bananaMeterDelta}; next: ${nextSceneId}`
+    );
+    setOpenDialog(true);
+  };
+
+  const onCloseDialog = async () => {
+    if (!viewModel || !selectedSceneChoice.current) {
+      console.error("viewModel is null");
+      setOpenDialog(false);
+      return;
+    }
+
     setJingleOpen(true);
+
+    const _ = await service.selectSceneChoice({
+      viewModel,
+      selectedSceneChoiceId: selectedSceneChoice.current.id,
+    });
+    setViewModel(_);
+
     setTimeout(() => {
       setJingleOpen(false);
-    }, 2000);
+      selectedSceneChoice.current = null;
+      setOpenDialog(false);
+    }, 1000);
   };
 
   const onPressItem = (item: object) => {
@@ -111,12 +95,8 @@ function HomePage() {
       <Grid size={{ xs: 12, md: 7 }}>
         <Paper sx={{ p: 0, position: "relative", overflow: "hidden", mb: 2 }}>
           <img
-            src={currentSceneViewModel.scene.image}
+            src={viewModel?.scene.image || dummyImage}
             alt="Scene"
-            onError={(e) => {
-              e.currentTarget.onerror = null;
-              e.currentTarget.src = "/sample-image/sample.png";
-            }}
             style={{
               width: "100%",
               display: "block",
@@ -148,7 +128,7 @@ function HomePage() {
             }}
           >
             <Typography variant="h6">
-              {currentSceneViewModel.scene.text}
+              {viewModel?.scene.text || dummyText}
             </Typography>
           </Box>
         </Paper>
@@ -165,15 +145,11 @@ function HomePage() {
             }}
           >
             <img
-              src="/icon-image/banana.webp"
-              onError={(e) => {
-                e.currentTarget.onerror = null;
-                e.currentTarget.src = "/sample-image/sample.png";
-              }}
+              src={dummyImage}
               style={{ width: 64, height: 64, marginBottom: 8 }}
             />
             <Typography variant="body2" align="center">
-              バナナメーター: {currentSceneViewModel.player.bananaMeter}
+              バナナメーター: {viewModel?.player.bananaMeter || 0}
             </Typography>
           </CardContent>
         </Card>
@@ -182,58 +158,62 @@ function HomePage() {
           選択肢 - ストーリーが進みます
         </Typography>
 
-        {currentSceneViewModel.scene.sceneChoices.map((choice) => (
-          <Card key={choice.id} sx={{ mb: 2, bgcolor: "primary.main" }}>
-            <CardActionArea onClick={() => onPressSceneChoice(choice)}>
-              <CardContent>
-                <Typography variant="body2">{choice.text}</Typography>
-              </CardContent>
-            </CardActionArea>
-          </Card>
-        ))}
+        {viewModel == null
+          ? null
+          : viewModel.scene.sceneChoices.map((choice) => (
+              <Card key={choice.id} sx={{ mb: 2, bgcolor: "primary.main" }}>
+                <CardActionArea onClick={() => onPressSceneChoice(choice)}>
+                  <CardContent>
+                    <Typography variant="body2">{choice.text}</Typography>
+                  </CardContent>
+                </CardActionArea>
+              </Card>
+            ))}
 
         <Typography variant="subtitle1" align="center" sx={{ my: 2 }}>
           インベントリ - アイテムを使用できます
         </Typography>
 
-        {currentSceneViewModel.player.items.map((item) => (
-          <Card
-            key={item.id}
-            sx={{
-              mb: 2,
-              opacity: item.used ? 0.5 : 1,
-              pointerEvents: item.used ? "none" : "auto",
-              bgcolor: "primary.main",
-            }}
-          >
-            <CardActionArea
-              onClick={() => onPressItem(item)}
-              disabled={item.used}
-            >
-              <CardContent
+        {viewModel == null
+          ? null
+          : viewModel.player.items.map((item) => (
+              <Card
+                key={item.id}
                 sx={{
-                  display: "flex",
-                  flexDirection: "column",
-                  alignItems: "center",
-                  justifyContent: "center",
+                  mb: 2,
+                  opacity: item.used ? 0.5 : 1,
+                  pointerEvents: item.used ? "none" : "auto",
+                  bgcolor: "primary.main",
                 }}
               >
-                <img
-                  src={item.image}
-                  alt={item.text}
-                  onError={(e) => {
-                    e.currentTarget.onerror = null;
-                    e.currentTarget.src = "/sample-image/sample.png";
-                  }}
-                  style={{ width: 64, height: 64, marginBottom: 8 }}
-                />
-                <Typography variant="body2" align="center">
-                  {item.text}（{item.used ? "使用済み" : "未使用"}）
-                </Typography>
-              </CardContent>
-            </CardActionArea>
-          </Card>
-        ))}
+                <CardActionArea
+                  onClick={() => onPressItem(item)}
+                  disabled={item.used}
+                >
+                  <CardContent
+                    sx={{
+                      display: "flex",
+                      flexDirection: "column",
+                      alignItems: "center",
+                      justifyContent: "center",
+                    }}
+                  >
+                    <img
+                      src={item.image}
+                      alt={item.text}
+                      onError={(e) => {
+                        e.currentTarget.onerror = null;
+                        e.currentTarget.src = "/sample-image/sample.png";
+                      }}
+                      style={{ width: 64, height: 64, marginBottom: 8 }}
+                    />
+                    <Typography variant="body2" align="center">
+                      {item.text}（{item.used ? "使用済み" : "未使用"}）
+                    </Typography>
+                  </CardContent>
+                </CardActionArea>
+              </Card>
+            ))}
       </Grid>
 
       <Backdrop
@@ -248,6 +228,27 @@ function HomePage() {
           />
         </Box>
       </Backdrop>
+
+      <ResetButton
+        onClick={() => {
+          setJingleOpen(true);
+          initializeScene();
+          setTimeout(() => {
+            setJingleOpen(false);
+          }, 1000);
+        }}
+      />
+
+      <Dialog open={openDialog} onClose={onCloseDialog}>
+        <DialogContent>
+          <DialogContentText>{dialogMessage}</DialogContentText>
+        </DialogContent>
+        <DialogActions>
+          <Button onClick={onCloseDialog} color="primary">
+            OK
+          </Button>
+        </DialogActions>
+      </Dialog>
     </Grid>
   );
 }
