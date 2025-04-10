@@ -60,8 +60,8 @@
 ## View で ViewModel を受け取ったときやること
 
 - ジングルみたいなアニメーションを表示する
-- currentSceneViewModel.player.bananaMeter と SceneViewModel.player.bananaMeter が違うなら、アニメーションつきで更新
-- currentSceneViewModel.player.items と SceneViewModel.player.items が違うなら、アニメーションつきで更新
+- SceneViewModel.player.bananaMeterChanged true なら、アニメーションつきで更新
+- SceneViewModel.player.itemsChanged なら、アニメーションつきで更新
 - SceneViewModel.scene.image, .text, .sceneChoices を表示する
 - SceneViewModel.player.items, .bananaMeter を表示する
 
