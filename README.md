@@ -18,7 +18,7 @@ bananadventure
 
 # Create containers
 cp ./local.env ./.env; cp ./webapp-container/Dockerfile.local ./webapp-container/Dockerfile;
-docker compose up -d; docker compose exec webapp-service bash
+docker compose up -d && docker compose exec webapp-service bash
 
 # Get into webapp-service
 # NOTE: It's a good practice to have separate terminals for Django and React for easier debugging and log tracking.
