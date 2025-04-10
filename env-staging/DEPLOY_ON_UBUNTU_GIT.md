@@ -190,7 +190,7 @@ ssh -i ~/.ssh/id_rsa USERNAME@IP_ADDRESS
 # ローカルリポジトリを最新化
 REPO_NAME=django-react-gemini
 (cd /var/www/${REPO_NAME}; sudo git fetch origin)
-(cd /var/www/${REPO_NAME}; sudo git pull)
+(cd /var/www/${REPO_NAME}; sudo git reset --hard origin)
 # NOTE: mrrhp ではこういうことやってるよね。
 # (cd /var/www/${REPO_NAME}; sudo git reset --hard origin/release)
 
