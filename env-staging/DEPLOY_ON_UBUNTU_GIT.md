@@ -59,7 +59,7 @@ sudo systemctl status nginx
 # http://banana.hitoren.net
 
 # ローカルリポジトリを用意
-REPO_NAME=django-react-gemini
+REPO_NAME=bananadventure
 sudo mkdir -p /var/www
 (cd /var/www; sudo git clone https://github.com/yuu-eguci/${REPO_NAME}.git)
 sudo chown -R $(whoami):$(whoami) /var/www/${REPO_NAME}
@@ -161,7 +161,7 @@ sudo systemctl restart nginx
 ## MySQL リセットノート
 
 ```bash
-REPO_NAME=django-react-gemini
+REPO_NAME=bananadventure
 
 # コンテナを削除
 (cd /var/www/${REPO_NAME}$; sudo docker compose down)
@@ -188,7 +188,7 @@ sudo rm -rf /var/www/${REPO_NAME}$/data
 ssh -i ~/.ssh/id_rsa USERNAME@IP_ADDRESS
 
 # ローカルリポジトリを最新化
-REPO_NAME=django-react-gemini
+REPO_NAME=bananadventure
 (cd /var/www/${REPO_NAME}; sudo git fetch origin)
 (cd /var/www/${REPO_NAME}; sudo git reset --hard origin)
 # NOTE: mrrhp ではこういうことやってるよね。
@@ -228,7 +228,7 @@ sudo systemctl restart nginx
 ## ログ
 
 ```bash
-REPO_NAME=django-react-gemini
+REPO_NAME=bananadventure
 (cd /var/www/${REPO_NAME}; sudo docker compose logs -f --tail=20 webapp-service)
 sudo tail -f /var/log/nginx/access.log
 sudo tail -f /var/log/nginx/error.log

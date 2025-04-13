@@ -56,6 +56,11 @@ time pipenv run python manage.py test --failfast --parallel --settings=config.se
 # run 有り: いつもの
 (cd ./frontend-react; time yarn test run)
 (cd ./frontend-react; time yarn lint)
+
+# React のほう、 dist を作る -> preview で配信テスト。
+(cd ./frontend-react; yarn build)
+(cd ./frontend-react; yarn preview --host)
+# --> http://localhost:4001/ でアクセス。
 ```
 
 ```bash
