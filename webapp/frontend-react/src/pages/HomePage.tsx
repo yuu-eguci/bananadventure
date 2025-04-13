@@ -31,7 +31,7 @@ function HomePage() {
   const [isJingleOpen, setJingleOpen] = useState(true);
   const [viewModel, setViewModel] = useState<SceneViewModel | null>(null);
   const [openDialog, setOpenDialog] = useState(false);
-  const [dialogMessage, setDialogMessage] = useState("");
+  const [dialogMessage, setDialogMessage] = useState<React.ReactNode>(<></>);
   const selectedSceneChoice = useRef<SceneChoice | null>(null);
 
   useEffect(() => {
@@ -56,10 +56,12 @@ function HomePage() {
     }
     selectedSceneChoice.current = choice;
 
-    const {responseText, bananaMeterDelta, nextSceneId} = choice;
+    const { responseText, bananaMeterDelta, nextSceneId } = choice;
     setDialogMessage(
-      // FIXME: 改行が効かない
-      responseText + "\n" + `<TEST> delta: ${bananaMeterDelta}; next: ${nextSceneId}`
+      <>
+        {responseText} <br />{" "}
+        {`<TEST> delta: ${bananaMeterDelta}; next: ${nextSceneId}`}
+      </>
     );
     setOpenDialog(true);
   };
