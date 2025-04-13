@@ -1,7 +1,7 @@
 DEPLOY_ON_UBUNTU (React 時代)
 ===
 
-## 初期デプロイ
+## UBUNTU セッティング
 
 ```bash
 # Ubuntu 22 は素の状態であるとする。
@@ -56,7 +56,8 @@ sudo systemctl enable nginx
 sudo systemctl status nginx
 # 動作確認
 # http://130.33.7.118
-# http://banana.hitoren.net
+# 切っておく
+# sudo systemctl stop nginx
 
 # ローカルリポジトリを用意
 REPO_NAME=bananadventure
@@ -105,31 +106,19 @@ sudo nginx -t
 # リロード。
 sudo systemctl reload nginx
 # --> curl http://localhost
-# 切っておく
-sudo systemctl stop nginx
 
-# Django をサービスへ登録する
-# NOTE: cat とか EOF を使うのは、改行と変数展開に対応するためっぽい。
-sudo bash -c "cat > /etc/systemd/system/webapp-service.service <<EOF
-[Unit]
-Description=Start webapp-service via Docker Compose
-Requires=docker.service
-After=docker.service
+# Django をサービスへ登録するのは準備中。
 
-[Service]
-WorkingDirectory=/var/www/${REPO_NAME}
-ExecStart=/usr/bin/docker compose up -d
-ExecStop=/usr/bin/docker compose stop
-Restart=always
-TimeoutStartSec=0
+# React をビルドする。
+(cd /var/www/${REPO_NAME}; sudo docker compose exec webapp-service sh -c "cd ./frontend-react && yarn install")
+(cd /var/www/${REPO_NAME}; sudo docker compose exec webapp-service sh -c "cd ./frontend-react && yarn build")
 
-[Install]
-WantedBy=multi-user.target
-EOF"
-sudo systemctl daemon-reload
-sudo systemctl enable webapp-service
-sudo systemctl start webapp-service
-sudo systemctl stop webapp-service
+# http://api.banana.mrrhp.com
+# http://www.banana.mrrhp.com
+
+# ログを確認
+(cd /var/www/${REPO_NAME}; sudo docker compose logs -f --tail=20 webapp-service)
+(cd /var/www/${REPO_NAME}; sudo docker compose logs -f --tail=20 mysql-service)
 ```
 
 ## HTTPS 化
@@ -164,20 +153,20 @@ sudo systemctl restart nginx
 REPO_NAME=bananadventure
 
 # コンテナを削除
-(cd /var/www/${REPO_NAME}$; sudo docker compose down)
+(cd /var/www/${REPO_NAME}; sudo docker compose down)
 
 # MySQL データ削除
-sudo rm -rf /var/www/${REPO_NAME}$/data
+sudo rm -rf /var/www/${REPO_NAME}/db
 
 # コンテナ再構築
-(cd /var/www/${REPO_NAME}$; sudo docker compose up -d)
+(cd /var/www/${REPO_NAME}; sudo docker compose up -d)
 
 # ログを確認
-(cd /var/www/${REPO_NAME}$; sudo docker compose logs -f --tail=20 webapp-service)
-(cd /var/www/${REPO_NAME}$; sudo docker compose logs -f --tail=20 mysql-service)
+(cd /var/www/${REPO_NAME}; sudo docker compose logs -f --tail=20 webapp-service)
+(cd /var/www/${REPO_NAME}; sudo docker compose logs -f --tail=20 mysql-service)
 
 # 中に入って確認
-(cd /var/www/${REPO_NAME}$; docker compose exec webapp-service sh)
+(cd /var/www/${REPO_NAME}; docker compose exec webapp-service sh)
 ```
 
 ## ソースコードを修正したときのデプロイ
@@ -216,8 +205,8 @@ cp /var/www/${REPO_NAME}/webapp-container/Dockerfile.staging /var/www/${REPO_NAM
 (cd /var/www/${REPO_NAME}; sudo docker compose logs -f --tail=20 webapp-service)
 
 # webapp-service で React をビルドする (dist を更新!)
-(cd /var/www/${REPO_NAME}; sudo docker compose exec webapp-service sh -c "yarn install")
-(cd /var/www/${REPO_NAME}; sudo docker compose exec webapp-service sh -c "yarn build")
+(cd /var/www/${REPO_NAME}; sudo docker compose exec webapp-service sh -c "cd ./frontend-react && yarn install")
+(cd /var/www/${REPO_NAME}; sudo docker compose exec webapp-service sh -c "cd ./frontend-react && yarn build")
 
 # (nginx.conf.production を変更した場合) Nginx 再起動
 # 設定ファイルのテスト
