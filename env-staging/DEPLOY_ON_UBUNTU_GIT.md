@@ -222,3 +222,13 @@ REPO_NAME=bananadventure
 sudo tail -f /var/log/nginx/access.log
 sudo tail -f /var/log/nginx/error.log
 ```
+
+## ソースコードを修正したときのデプロイ - bananadventure edition
+
+```bash
+REPO_NAME=bananadventure
+(cd /var/www/${REPO_NAME}; sudo git fetch origin)
+(cd /var/www/${REPO_NAME}; sudo git reset --hard origin)
+(cd /var/www/${REPO_NAME}; sudo docker compose exec webapp-service sh -c "cd ./frontend-react && yarn install")
+(cd /var/www/${REPO_NAME}; sudo docker compose exec webapp-service sh -c "cd ./frontend-react && yarn build")
+```
