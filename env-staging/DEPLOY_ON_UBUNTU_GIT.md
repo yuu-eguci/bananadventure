@@ -229,6 +229,11 @@ sudo tail -f /var/log/nginx/error.log
 REPO_NAME=bananadventure
 (cd /var/www/${REPO_NAME}; sudo git fetch origin)
 (cd /var/www/${REPO_NAME}; sudo git reset --hard origin)
+(cd /var/www/${REPO_NAME}; sudo docker compose up -d)
 (cd /var/www/${REPO_NAME}; sudo docker compose exec webapp-service sh -c "cd ./frontend-react && yarn install")
 (cd /var/www/${REPO_NAME}; sudo docker compose exec webapp-service sh -c "cd ./frontend-react && yarn build")
+(cd /var/www/${REPO_NAME}; sudo docker compose down)
+
+# オマケ docker のリソース使用状況を見る
+docker stats
 ```
