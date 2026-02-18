@@ -144,7 +144,7 @@ function HomePage() {
                 zIndex: 2,
               }}
             >
-              <Typography variant="h6" sx={{ mb: 1.5 }}>
+              <Typography variant="subtitle1" sx={{ mb: 1.5 }}>
                 {viewModel?.scene.text || dummyText}
               </Typography>
 
