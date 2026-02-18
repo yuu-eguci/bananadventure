@@ -40,24 +40,28 @@ Compose 定義ファイルを `compose.yaml` ベースに移行して、日常�
 ### 3. ドキュメント更新方針
 - `README.md` のファイル名言及を `compose.yaml` に揃える。
 - `docs/codex/002-compose で Django と React を一括起動.md` に残っている `docker-compose.yml` 表記を `compose.yaml` に揃える。
-- コマンド例は原則据え置き。必要があれば「デフォルト参照は `compose.yaml`」の一文だけ足す。
+- README に「Compose ファイル名移行メモ」を追加し、旧指定からの置換例を入れる。
+- 置換例は最低 1 つ載せる ( 例: `docker compose -f docker-compose.yml up -d` → `docker compose up -d` ) 。
 
 ### 4. 確認観点
 - `docker compose config` がエラーなく通る。
 - `docker compose ps` / `docker compose up -d` が従来どおり動く。
 - ルート直下に `docker-compose.yml` が残っていない。
 - README と `docs/codex/002...` のファイル名表記が `compose.yaml` に統一されている。
+- `.github/workflows/` / `scripts/` / `Makefile*` を含むリポジトリ全体で、旧ファイル名の明示指定が残っていない。
 
 ### 5. 実装タスク ( 予定 )
 1. `docker-compose.yml` を `compose.yaml` へリネームする。  
 2. リポジトリ内の `docker-compose.yml` / `docker-compose.yaml` 参照を検索して更新する。  
-3. `docker compose config` と `docker compose ps` で基本動作を確認する。  
-4. 変更点を README と設計ノートへ反映する。  
+3. `.github/workflows/` / `scripts/` / `Makefile*` の旧ファイル名明示指定を確認し、必要なら更新する。  
+4. `docker compose config` と `docker compose ps` で基本動作を確認する。  
+5. README に移行メモ ( 旧→新コマンド例 ) を追記し、設計ノートへ反映する。  
 
 ### 6. 受け入れ条件
-- Compose 定義ファイル名が `compose.yaml` に統一されている。  
+- `compose.yaml` が存在し、 `docker-compose.yml` が存在しない ( `test -f compose.yaml && test ! -f docker-compose.yml` ) 。  
+- `docker compose config` が成功する。  
 - 日常運用コマンド ( `docker compose up -d` / `docker compose down` / `docker compose logs` ) が変更不要で動く。  
-- リポジトリ内に旧ファイル名を前提とした手順が残っていない。  
+- リポジトリ内に旧ファイル名を前提とした手順が残っていない ( `rg -n \"docker-compose\\.ya?ml\" .` で意図した記録以外が 0 件 ) 。  
 
 ## レビュー
 ### 指摘 1 ( 重要 ): 自動化ジョブへの影響確認が設計に不足
@@ -69,7 +73,8 @@ Compose 定義ファイルを `compose.yaml` ベースに移行して、日常�
 - `.github/workflows/` やスクリプト類を確認対象に含めること。
 
 対応内容 ( プランナー記入 ) :
-- 未対応
+- 妥当な指摘。詳細設計の「確認観点」と「実装タスク」に、 `.github/workflows/` / `scripts/` / `Makefile*` を含む全体確認を追加した。  
+- 実装時は `rg -n \"docker-compose\\.ya?ml\"` を使って網羅確認する前提にした。  
 
 ### 指摘 2 ( 中 ): 旧ファイル名利用者への移行ガイドが不足
 チーム内で慣習的に `docker compose -f docker-compose.yml ...` を叩いているメンバーがいると、今回の変更は手元で即失敗する。  
@@ -80,7 +85,8 @@ README 更新だけだと気づきにくい。
 - 旧コマンドから新コマンドへの置換例を 1 つ以上書くこと。
 
 対応内容 ( プランナー記入 ) :
-- 未対応
+- 妥当な指摘。詳細設計の「ドキュメント更新方針」に README の移行メモ追加を明記した。  
+- 置換例 ( `docker compose -f docker-compose.yml up -d` → `docker compose up -d` ) を最低 1 つ載せる要件を追記した。  
 
 ### 指摘 3 ( 中 ): 受け入れ条件に「旧ファイル不在チェック」の客観性が足りない
 「残っていない」は意図としては正しいけど、実行手順として観測可能な形になっていない。  
@@ -91,4 +97,19 @@ README 更新だけだと気づきにくい。
 - ついでに `docker compose config` の成功を必須判定として明記すること。
 
 対応内容 ( プランナー記入 ) :
-- 未対応
+- 妥当な指摘。受け入れ条件を実行可能なコマンドベースへ更新した。  
+- `test -f compose.yaml && test ! -f docker-compose.yml` と `docker compose config` 成功を必須判定に追加した。  
+
+### 再レビュー結果
+3 件の指摘が設計本文へ反映され、確認コマンドまで具体化されたことを確認した。  
+この粒度なら実装フェーズで迷わず進められる。
+
+結論:
+- LGTM。レビュー完了。
+
+## オーナー向け要約
+- Compose 定義ファイルは `docker-compose.yml` から `compose.yaml` へ移行する設計に確定した。  
+- 既存の `docker compose up -d` などの通常運用コマンドはそのまま維持する。  
+- CI やスクリプト類の旧ファイル名参照も確認対象に入れて、実装後の取りこぼしを防ぐ。  
+- README には移行メモと旧→新コマンドの置換例を入れて、チーム内の混乱を防ぐ。  
+- 受け入れ条件は `test` / `docker compose config` / `rg` で判定できる形にした。  
