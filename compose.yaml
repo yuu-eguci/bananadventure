@@ -10,7 +10,7 @@ services:
       dockerfile: Dockerfile
     # NOTE: 他のプロジェクトの mysql との重複を避けるため、変更している。
     ports:
-      - 3307:3306
+      - 3395:3306
     volumes:
       - ./db/mysql_data:/var/lib/mysql
       - ./db/mysql_log:/var/log/mysql
