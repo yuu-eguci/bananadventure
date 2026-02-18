@@ -93,7 +93,7 @@ function HomePage() {
   };
 
   return (
-    <Box sx={{ width: "100%", maxWidth: 1040, mx: "auto" }}>
+    <Box sx={{ width: "100%", maxWidth: 960, mx: "auto" }}>
       <Grid container spacing={2}>
         <Grid size={{ xs: 12, md: 8 }}>
           <Paper sx={{ p: 0, position: "relative", overflow: "hidden", mb: 2 }}>
@@ -121,12 +121,14 @@ function HomePage() {
             <Box
               sx={{
                 position: "absolute",
+                left: 0,
+                right: 0,
                 bottom: 0,
-                width: "100%",
                 bgcolor: "rgba(0, 0, 0, 0.62)",
                 color: "white",
                 px: 2,
                 py: 2,
+                boxSizing: "border-box",
                 zIndex: 2,
               }}
             >
@@ -154,7 +156,6 @@ function HomePage() {
                         sx={{
                           height: "100%",
                           bgcolor: "primary.main",
-                          color: "text.primary",
                         }}
                       >
                         <CardActionArea

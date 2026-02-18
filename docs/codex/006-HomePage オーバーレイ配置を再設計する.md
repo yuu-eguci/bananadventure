@@ -90,6 +90,14 @@ HomePage オーバーレイ配置を再設計する
 結論:
 - LGTM。レビュー完了。
 
+## 実装結果
+- `HomePage.tsx` の全体ラッパーを `maxWidth: 960` に変更して、画像サイズを抑えた。
+- オーバーレイ本体に `left: 0` / `right: 0` / `bottom: 0` と `boxSizing: border-box` を適用した。
+- オーバーレイ内の選択肢は CSS Grid (`Box`) で維持し、幅計算の安定性を優先した。
+- 選択肢カード色は `primary.main` に統一し、旧トーンへ戻した。
+- 検証:
+  - `docker compose exec react-service yarn lint` 成功。
+
 ## オーナー向け要約
 - 今回は既存実装を前提にせず、オーバーレイ配置を再設計した。  
 - ズレ対策として `left/right` 固定と `boxSizing: border-box` を明示し、幅計算のブレを消す。  
