@@ -32,32 +32,30 @@ Django 側の `ALLOWED_HOSTS` 設定を見直して、 `localhost:8001` アク�
 
 ### 2. 修正方針
 - `APP_HOST` は既存互換のため維持する。
+- `APP_HOST` は必須のままにして、未設定時は起動時に失敗させる ( fail fast ) 。
 - 開発アクセスで確実に使う `localhost` / `127.0.0.1` / `[::1]` を `ALLOWED_HOSTS` へ追加する。
-- 任意ホストの追加用に `APP_EXTRA_ALLOWED_HOSTS` ( カンマ区切り ) をサポートする。
 - `ALLOWED_HOSTS` 生成時に空文字除去と重複除去を行う。
 
 ### 3. 実装仕様
 - 対象: `webapp/config/settings.py`
 - 追加ロジック:
-  - `APP_HOST` を 1 件目として採用。
+  - `APP_HOST` を 1 件目として採用 ( `os.environ['APP_HOST']` ) 。
   - 既定ホスト `localhost`, `127.0.0.1`, `[::1]` を追加。
-  - `APP_EXTRA_ALLOWED_HOSTS` を `split(',')` して trim 後に追加。
   - 順序維持で重複除去して `ALLOWED_HOSTS` を作る。
-- `APP_HOST` が空でも落ちないように `os.environ.get` を使う。
 
 ### 4. ドキュメント更新方針
-- `README.md` に `APP_EXTRA_ALLOWED_HOSTS` の説明は必須ではない。
-- ただし運用で迷いを減らすため、 `local.env` の `APP_HOST` 意味を 1 行コメントで補足する。
+- このタスクでは新しい env は増やさない。
+- `README.md` / `local.env` は変更しない。
 
 ### 5. 確認観点
 - Django shell / `manage.py check` で `ALLOWED_HOSTS` に `localhost` が含まれること。
 - 既存の `APP_HOST` ( `gemini-django-container` ) も引き続き含まれること。
-- `APP_EXTRA_ALLOWED_HOSTS=foo.example,bar.local` を与えたときに両方入ること。
+- `curl -H \"Host: localhost:8001\" http://localhost:8001/` で `Invalid HTTP_HOST header` が出ないこと。
 
 ### 6. 実装タスク ( 予定 )
 1. `settings.py` の `ALLOWED_HOSTS` 生成ロジックを更新する。  
-2. 必要なら `local.env` に補足コメントを追加する。  
-3. `docker compose exec django-service ...` で `ALLOWED_HOSTS` の値を確認する。  
+2. `docker compose exec django-service ...` で `ALLOWED_HOSTS` の値を確認する。  
+3. `curl -H \"Host: localhost:8001\" http://localhost:8001/` で実リクエスト確認する。  
 
 ### 7. 受け入れ条件
 - `http://localhost:8001/` アクセスで `Invalid HTTP_HOST header` が再発しない。  
@@ -74,7 +72,8 @@ Django 側の `ALLOWED_HOSTS` 設定を見直して、 `localhost:8001` アク�
 - 少なくとも設計上で「設定漏れを検知する」か「意図的に許容する」かを明言すること。
 
 対応内容 ( プランナー記入 ) :
-- 未対応
+- 妥当な指摘。 `APP_HOST` は必須扱いを維持し、 `os.environ['APP_HOST']` を使う方針に固定した。  
+- 設定漏れは fail fast で検知する設計へ更新した。  
 
 ### 指摘 2 ( 中 ): `APP_EXTRA_ALLOWED_HOSTS` 追加時のドキュメント不足
 新規 env を追加するなら、利用方法がどこにも書かれないと運用で迷う。  
@@ -85,7 +84,8 @@ Django 側の `ALLOWED_HOSTS` 設定を見直して、 `localhost:8001` アク�
 - 導入しないなら、設計から削除して範囲を絞ること。
 
 対応内容 ( プランナー記入 ) :
-- 未対応
+- 妥当な指摘。今回タスクは最小修正を優先し、 `APP_EXTRA_ALLOWED_HOSTS` 案は削除した。  
+- 新規 env を増やさない構成へ整理した。  
 
 ### 指摘 3 ( 中 ): 検証が Python 内省のみで HTTP リクエスト確認が不足
 `ALLOWED_HOSTS` の配列確認だけでは、実アクセス時の Host ヘッダ判定まで保証できない。  
@@ -96,4 +96,18 @@ Django 側の `ALLOWED_HOSTS` 設定を見直して、 `localhost:8001` アク�
 - 実装タスクにも実リクエスト確認手順を追加すること。
 
 対応内容 ( プランナー記入 ) :
-- 未対応
+- 妥当な指摘。確認観点、実装タスク、受け入れ条件に実リクエスト確認を追加した。  
+- `curl -H \"Host: localhost:8001\" http://localhost:8001/` で再現しないことを判定に含める。  
+
+### 再レビュー結果
+3 件の指摘が設計本文へ反映されたことを確認した。  
+修正範囲が最小で、受け入れ確認手順も具体化されている。
+
+結論:
+- LGTM。レビュー完了。
+
+## オーナー向け要約
+- 原因は `ALLOWED_HOSTS` が `APP_HOST` の 1 件固定だったこと。  
+- `APP_HOST` は必須のまま維持しつつ、 `localhost` / `127.0.0.1` / `[::1]` を追加する設計に確定した。  
+- 新しい env は追加せず、最小差分で `localhost:8001` のエラーを解消する。  
+- 検証は設定値確認だけでなく、 `curl` で実リクエスト確認まで実施する。  
