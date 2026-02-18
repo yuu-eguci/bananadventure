@@ -93,73 +93,81 @@ function HomePage() {
   };
 
   return (
-    <Grid container spacing={2}>
-      <Grid size={{ xs: 12, md: 8 }}>
-        <Paper sx={{ p: 0, position: "relative", overflow: "hidden", mb: 2 }}>
-          <img
-            src={viewModel?.scene.image || dummyImage}
-            alt="Scene"
-            style={{
-              width: "100%",
-              display: "block",
-              userSelect: "none",
-              pointerEvents: "none",
-            }}
-            draggable={false}
-          />
-          <Box
-            sx={{
-              position: "absolute",
-              top: 0,
-              left: 0,
-              width: "100%",
-              height: "100%",
-              zIndex: 1,
-            }}
-          />
-          <Box
-            sx={{
-              position: "absolute",
-              bottom: 0,
-              width: "100%",
-              bgcolor: "rgba(0, 0, 0, 0.5)",
-              color: "white",
-              px: 0,
-              py: 3,
-              zIndex: 2,
-            }}
-          >
-            <Typography variant="h6">
-              {viewModel?.scene.text || dummyText}
-            </Typography>
-          </Box>
-        </Paper>
+    <Box sx={{ width: "100%", maxWidth: 1040, mx: "auto" }}>
+      <Grid container spacing={2}>
+        <Grid size={{ xs: 12, md: 8 }}>
+          <Paper sx={{ p: 0, position: "relative", overflow: "hidden", mb: 2 }}>
+            <img
+              src={viewModel?.scene.image || dummyImage}
+              alt="Scene"
+              style={{
+                width: "100%",
+                display: "block",
+                userSelect: "none",
+                pointerEvents: "none",
+              }}
+              draggable={false}
+            />
+            <Box
+              sx={{
+                position: "absolute",
+                top: 0,
+                left: 0,
+                width: "100%",
+                height: "100%",
+                zIndex: 1,
+              }}
+            />
+            <Box
+              sx={{
+                position: "absolute",
+                bottom: 0,
+                width: "100%",
+                bgcolor: "rgba(0, 0, 0, 0.62)",
+                color: "white",
+                px: 2,
+                py: 2,
+                zIndex: 2,
+              }}
+            >
+              <Typography variant="h6" sx={{ mb: 1.5 }}>
+                {viewModel?.scene.text || dummyText}
+              </Typography>
 
-        <Typography variant="subtitle1" align="center" sx={{ mt: 3, mb: 2 }}>
-          選択肢 - ストーリーが進みます
-        </Typography>
+              <Typography variant="subtitle2" sx={{ mb: 1 }}>
+                選択肢
+              </Typography>
 
-        <Grid container spacing={2}>
-          {viewModel == null
-            ? null
-            : viewModel.scene.sceneChoices.map((choice) => (
-                <Grid key={choice.id} size={{ xs: 12, sm: 6 }}>
-                  <Card sx={{ height: "100%", bgcolor: "primary.main" }}>
-                    <CardActionArea
-                      sx={{ height: "100%" }}
-                      onClick={() => onPressSceneChoice(choice)}
-                    >
-                      <CardContent>
-                        <Typography variant="body2">{choice.text}</Typography>
-                      </CardContent>
-                    </CardActionArea>
-                  </Card>
-                </Grid>
-              ))}
+              <Grid container spacing={1}>
+                {viewModel == null
+                  ? null
+                  : viewModel.scene.sceneChoices.map((choice) => (
+                      <Grid key={choice.id} size={{ xs: 12, sm: 6 }}>
+                        <Card
+                          sx={{
+                            height: "100%",
+                            bgcolor: "rgba(255, 255, 255, 0.16)",
+                            border: "1px solid rgba(255, 255, 255, 0.32)",
+                            color: "white",
+                          }}
+                        >
+                          <CardActionArea
+                            sx={{ height: "100%" }}
+                            onClick={() => onPressSceneChoice(choice)}
+                          >
+                            <CardContent>
+                              <Typography variant="body2">{choice.text}</Typography>
+                            </CardContent>
+                          </CardActionArea>
+                        </Card>
+                      </Grid>
+                    ))}
+              </Grid>
+            </Box>
+          </Paper>
         </Grid>
-      </Grid>
 
-      <Grid size={{ xs: 12, md: 4 }}>
+        <Grid size={{ xs: 12, md: 4 }}>
         <Card sx={{ mb: 2, bgcolor: "primary.main" }}>
           <CardContent
             sx={{
@@ -223,42 +231,43 @@ function HomePage() {
                 </CardActionArea>
               </Card>
             ))}
+        </Grid>
+
+        <Backdrop
+          open={isJingleOpen}
+          sx={{ zIndex: (theme) => theme.zIndex.modal + 1 }}
+        >
+          <Box>
+            <img
+              src="/jingle-gif/loading-00001.gif"
+              alt="jingle"
+              style={{ width: 200 }}
+            />
+          </Box>
+        </Backdrop>
+
+        <ResetButton
+          onClick={() => {
+            setJingleOpen(true);
+            initializeScene();
+            setTimeout(() => {
+              setJingleOpen(false);
+            }, 1000);
+          }}
+        />
+
+        <Dialog open={openDialog} onClose={onCloseDialog}>
+          <DialogContent>
+            <DialogContentText>{dialogMessage}</DialogContentText>
+          </DialogContent>
+          <DialogActions>
+            <Button onClick={onCloseDialog} color="primary">
+              OK
+            </Button>
+          </DialogActions>
+        </Dialog>
       </Grid>
-
-      <Backdrop
-        open={isJingleOpen}
-        sx={{ zIndex: (theme) => theme.zIndex.modal + 1 }}
-      >
-        <Box>
-          <img
-            src="/jingle-gif/loading-00001.gif"
-            alt="jingle"
-            style={{ width: 200 }}
-          />
-        </Box>
-      </Backdrop>
-
-      <ResetButton
-        onClick={() => {
-          setJingleOpen(true);
-          initializeScene();
-          setTimeout(() => {
-            setJingleOpen(false);
-          }, 1000);
-        }}
-      />
-
-      <Dialog open={openDialog} onClose={onCloseDialog}>
-        <DialogContent>
-          <DialogContentText>{dialogMessage}</DialogContentText>
-        </DialogContent>
-        <DialogActions>
-          <Button onClick={onCloseDialog} color="primary">
-            OK
-          </Button>
-        </DialogActions>
-      </Dialog>
-    </Grid>
+    </Box>
   );
 }
 
