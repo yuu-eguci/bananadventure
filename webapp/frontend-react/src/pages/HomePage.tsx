@@ -95,15 +95,25 @@ function HomePage() {
   const hasSceneChoices = (viewModel?.scene.sceneChoices.length ?? 0) > 0;
 
   return (
-    <Box sx={{ width: "100%", maxWidth: 960, mx: "auto" }}>
+    <Box sx={{ width: "100%", maxWidth: 960, mx: "auto", px: { xs: 0, sm: 1 } }}>
       <Grid container spacing={2}>
         <Grid size={{ xs: 12, md: 8 }}>
-          <Paper sx={{ p: 0, position: "relative", overflow: "hidden", mb: 2 }}>
+          <Paper
+            sx={{
+              p: 0,
+              position: "relative",
+              overflow: "hidden",
+              mb: 2,
+              height: { xs: 520, md: 560 },
+            }}
+          >
             <img
               src={viewModel?.scene.image || dummyImage}
               alt="Scene"
               style={{
                 width: "100%",
+                height: "100%",
+                objectFit: "cover",
                 display: "block",
                 userSelect: "none",
                 pointerEvents: "none",
@@ -201,46 +211,58 @@ function HomePage() {
           インベントリ - アイテムを使用できます
         </Typography>
 
-        {viewModel == null
-          ? null
-          : viewModel.player.items.map((item) => (
-              <Card
-                key={item.id}
-                sx={{
-                  mb: 2,
-                  opacity: item.used ? 0.5 : 1,
-                  pointerEvents: item.used ? "none" : "auto",
-                  bgcolor: "primary.main",
-                }}
-              >
-                <CardActionArea
-                  onClick={() => onPressItem(item)}
-                  disabled={item.used}
+        <Box
+          sx={{
+            display: "grid",
+            gridTemplateColumns: "repeat(2, minmax(0, 1fr))",
+            gap: 1,
+          }}
+        >
+          {viewModel == null
+            ? null
+            : viewModel.player.items.map((item) => (
+                <Card
+                  key={item.id}
+                  sx={{
+                    opacity: item.used ? 0.5 : 1,
+                    pointerEvents: item.used ? "none" : "auto",
+                    bgcolor: "primary.main",
+                  }}
                 >
-                  <CardContent
-                    sx={{
-                      display: "flex",
-                      flexDirection: "column",
-                      alignItems: "center",
-                      justifyContent: "center",
-                    }}
+                  <CardActionArea
+                    onClick={() => onPressItem(item)}
+                    disabled={item.used}
                   >
-                    <img
-                      src={item.image}
-                      alt={item.text}
-                      onError={(e) => {
-                        e.currentTarget.onerror = null;
-                        e.currentTarget.src = "/sample-image/sample.png";
+                    <CardContent
+                      sx={{
+                        display: "flex",
+                        flexDirection: "column",
+                        alignItems: "center",
+                        justifyContent: "center",
                       }}
-                      style={{ width: 64, height: 64, marginBottom: 8 }}
-                    />
-                    <Typography variant="body2" align="center">
-                      {item.text}（{item.used ? "使用済み" : "未使用"}）
-                    </Typography>
-                  </CardContent>
-                </CardActionArea>
-              </Card>
-            ))}
+                    >
+                      <Box
+                        component="img"
+                        src={item.image}
+                        alt={item.text}
+                        onError={(e: React.SyntheticEvent<HTMLImageElement>) => {
+                          e.currentTarget.onerror = null;
+                          e.currentTarget.src = "/sample-image/sample.png";
+                        }}
+                        sx={{ width: { xs: 48, sm: 64 }, height: { xs: 48, sm: 64 }, mb: 1 }}
+                      />
+                      <Typography
+                        variant="body2"
+                        align="center"
+                        sx={{ wordBreak: "break-word" }}
+                      >
+                        {item.text}（{item.used ? "使用済み" : "未使用"}）
+                      </Typography>
+                    </CardContent>
+                  </CardActionArea>
+                </Card>
+              ))}
+        </Box>
         </Grid>
 
         <Backdrop
