@@ -95,7 +95,7 @@ function HomePage() {
   const hasSceneChoices = (viewModel?.scene.sceneChoices.length ?? 0) > 0;
 
   return (
-    <Box sx={{ width: "100%", maxWidth: 960, mx: "auto", px: { xs: 0.5, sm: 1 } }}>
+    <Box sx={{ width: "100%", maxWidth: 960, mx: "auto", px: { xs: 0, sm: 1 } }}>
       <Grid container spacing={2}>
         <Grid size={{ xs: 12, md: 8 }}>
           <Paper
