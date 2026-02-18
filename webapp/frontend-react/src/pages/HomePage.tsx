@@ -138,31 +138,36 @@ function HomePage() {
                 選択肢
               </Typography>
 
-              <Grid container spacing={1}>
+              <Box
+                sx={{
+                  display: "grid",
+                  gridTemplateColumns: { xs: "1fr", sm: "repeat(2, minmax(0, 1fr))" },
+                  gap: 1,
+                  width: "100%",
+                }}
+              >
                 {viewModel == null
                   ? null
                   : viewModel.scene.sceneChoices.map((choice) => (
-                      <Grid key={choice.id} size={{ xs: 12, sm: 6 }}>
-                        <Card
-                          sx={{
-                            height: "100%",
-                            bgcolor: "rgba(255, 255, 255, 0.16)",
-                            border: "1px solid rgba(255, 255, 255, 0.32)",
-                            color: "white",
-                          }}
+                      <Card
+                        key={choice.id}
+                        sx={{
+                          height: "100%",
+                          bgcolor: "primary.main",
+                          color: "text.primary",
+                        }}
+                      >
+                        <CardActionArea
+                          sx={{ height: "100%" }}
+                          onClick={() => onPressSceneChoice(choice)}
                         >
-                          <CardActionArea
-                            sx={{ height: "100%" }}
-                            onClick={() => onPressSceneChoice(choice)}
-                          >
-                            <CardContent>
-                              <Typography variant="body2">{choice.text}</Typography>
-                            </CardContent>
-                          </CardActionArea>
-                        </Card>
-                      </Grid>
+                          <CardContent>
+                            <Typography variant="body2">{choice.text}</Typography>
+                          </CardContent>
+                        </CardActionArea>
+                      </Card>
                     ))}
-              </Grid>
+              </Box>
             </Box>
           </Paper>
         </Grid>
