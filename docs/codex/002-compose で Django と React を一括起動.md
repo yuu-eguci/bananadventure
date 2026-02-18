@@ -229,9 +229,17 @@ volumes:
 結論:
 - LGTM。レビュー完了。
 
+## 実装後追記 ( 詳細設計から追加で必要になった対応 )
+- 想定外として、 `django-service` の `pipenv sync --dev` で DNS 解決失敗 ( `Temporary failure in name resolution` ) が発生した。  
+- 追加対応として、 `start-django.sh` に `pipenv sync --dev` の 5 回リトライと、失敗時の明示ログを追加した。  
+- 同系の失敗を避けるため、 `start-react.sh` にも `yarn install` の 5 回リトライと、失敗時の明示ログを追加した。  
+- さらに `docker-compose.yml` の `django-service` / `react-service` に `dns` ( `1.1.1.1` / `8.8.8.8` ) を明示して、 Docker 側 DNS 影響を受けにくくした。  
+- README には、 DNS エラー時の再作成手順 ( `docker compose up -d --force-recreate django-service react-service` ) を追記した。  
+- この追加対応により、設計時よりも「ネットワーク不安定時の起動耐性」と「障害切り分けのしやすさ」を強化した。
+
 ## オーナー向け要約
-- あなたの要望「 `docker compose up -d` だけで Django と React を起動したい」は、 `webapp-service` を `django-service` と `react-service` に分離する設計として反映した。  
+- あなたの要望「 `docker compose up -d` だけで Django と React を起動したい」は、 `webapp-service` を `django-service` と `react-service` に分離する設計と実装で反映した。  
 - 起動安定性の要望は、 MySQL の `healthcheck` + Django 側の起動待ち + `migrate` リトライで反映した。  
 - 起動時間と運用性の要望は、 `.venv` / `node_modules` の named volume キャッシュと、 `Pipfile.lock` / `yarn.lock` 変更時の再 install 条件で反映した。  
-- 実装後に確認しやすいよう、受け入れ条件へ `docker compose ps` と `docker compose logs` を追加した。  
-- README も、起動・ログ確認・停止・個別再起動・`exec` 先の変更を `django-service` / `react-service` 前提へ更新する方針で整理した。
+- 実装後に発生した DNS 由来の依存取得失敗には、 install リトライ追加と compose の DNS 明示で追加対応した。  
+- README も、起動・ログ確認・停止・個別再起動・`exec` 先の変更に加えて、 DNS エラー時の復旧手順まで含めて更新した。

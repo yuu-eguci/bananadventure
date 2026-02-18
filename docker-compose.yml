@@ -21,28 +21,36 @@ services:
       - MYSQL_USER=${MYSQL_USER}
       - MYSQL_PASSWORD=${MYSQL_PASSWORD}
       - MYSQL_ROOT_PASSWORD=${MYSQL_ROOT_PASSWORD}
+    healthcheck:
+      test: ["CMD-SHELL", "mysqladmin ping -h 127.0.0.1 -u$$MYSQL_USER -p$$MYSQL_PASSWORD --silent"]
+      interval: 5s
+      timeout: 3s
+      retries: 20
+      start_period: 20s
 
-  webapp-service:
+  django-service:
     # NOTE: container name conflict を防ぐため gemini- をつけている。
-    container_name: gemini-webapp-container
+    container_name: gemini-django-container
     build:
       context: ./webapp-container
       dockerfile: Dockerfile
     # NOTE: 他のプロジェクトの django との重複を避けるため、変更している。
-    # NOTE: それぞれ Django と React のためのポート。
     ports:
       # NOTE: よく間違えるからメモ -> host 側 : container 側
       # Django 用。 runserver も 8000 だし、 gunicorn も 8000 にしてる (Dockerfile で)。
       - 8001:8000
-      # yarn dev で React を配信する用
-      - 5001:5173
-      # yarn preview で React の dist を配信する用
-      - 4001:4173
+    working_dir: /webapp
+    command: ["bash", "-lc", "./scripts/start-django.sh"]
     # tty, stdin_open しておくと exec するときに -it がいらないみたい。
     tty: true
     stdin_open: true
+    # NOTE: ホスト側 DNS が不安定な環境向けに明示する。
+    dns:
+      - 1.1.1.1
+      - 8.8.8.8
     volumes:
       - ./webapp:/webapp
+      - pipenv-venv:/webapp/.venv
     # NOTE: 開発環境では .env を使うし、本番環境では .env を (GitHub Actions が) 上書きして使うことを想定。
     environment:
       # Pipenv 仮想環境を webapp ディレクトリ内に作るための設定。
@@ -56,4 +64,34 @@ services:
       - MYSQL_PORT=${MYSQL_PORT}
       - APP_HOST=${APP_HOST}
     depends_on:
-      - mysql-service
+      mysql-service:
+        condition: service_healthy
+
+  react-service:
+    # NOTE: container name conflict を防ぐため gemini- をつけている。
+    container_name: gemini-react-container
+    build:
+      context: ./webapp-container
+      dockerfile: Dockerfile
+    ports:
+      # yarn dev で React を配信する用
+      - 5001:5173
+      # yarn preview で React の dist を配信する用
+      - 4001:4173
+    working_dir: /webapp/frontend-react
+    command: ["bash", "-lc", "../scripts/start-react.sh"]
+    tty: true
+    stdin_open: true
+    dns:
+      - 1.1.1.1
+      - 8.8.8.8
+    volumes:
+      - ./webapp:/webapp
+      - react-node-modules:/webapp/frontend-react/node_modules
+    depends_on:
+      django-service:
+        condition: service_started
+
+volumes:
+  pipenv-venv:
+  react-node-modules:
