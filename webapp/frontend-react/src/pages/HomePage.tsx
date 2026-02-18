@@ -92,6 +92,8 @@ function HomePage() {
     console.log(item);
   };
 
+  const hasSceneChoices = (viewModel?.scene.sceneChoices.length ?? 0) > 0;
+
   return (
     <Box sx={{ width: "100%", maxWidth: 960, mx: "auto" }}>
       <Grid container spacing={2}>
@@ -136,9 +138,11 @@ function HomePage() {
                 {viewModel?.scene.text || dummyText}
               </Typography>
 
-              <Typography variant="subtitle2" sx={{ mb: 1 }}>
-                選択肢
-              </Typography>
+              {hasSceneChoices ? (
+                <Typography variant="subtitle2" sx={{ mb: 1 }}>
+                  選択肢
+                </Typography>
+              ) : null}
 
               <Box
                 sx={{
