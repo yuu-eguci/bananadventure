@@ -21,7 +21,7 @@ Compose 定義ファイルを `compose.yaml` ベースに移行して、日常�
 - `docker-compose.yml` ( リネーム元 )
 - `compose.yaml` ( リネーム先 )
 - `README.md` ( 参照ファイル名の更新 )
-- `docs/codex/002-compose で Django と React を一括起動.md` ( 過去ノートの呼称整理 )
+- `docs/agent/002-compose で Django と React を一括起動.md` ( 過去ノートの呼称整理 )
 
 ## 進め方
 このノートで先に詳細設計を固めて、 LGTM 後に実装へ進む。
@@ -39,7 +39,7 @@ Compose 定義ファイルを `compose.yaml` ベースに移行して、日常�
 
 ### 3. ドキュメント更新方針
 - `README.md` のファイル名言及を `compose.yaml` に揃える。
-- `docs/codex/002-compose で Django と React を一括起動.md` に残っている `docker-compose.yml` 表記を `compose.yaml` に揃える。
+- `docs/agent/002-compose で Django と React を一括起動.md` に残っている `docker-compose.yml` 表記を `compose.yaml` に揃える。
 - README に「Compose ファイル名移行メモ」を追加し、旧指定からの置換例を入れる。
 - 置換例は最低 1 つ載せる ( 例: `docker compose -f docker-compose.yml up -d` → `docker compose up -d` ) 。
 
@@ -47,7 +47,7 @@ Compose 定義ファイルを `compose.yaml` ベースに移行して、日常�
 - `docker compose config` がエラーなく通る。
 - `docker compose ps` / `docker compose up -d` が従来どおり動く。
 - ルート直下に `docker-compose.yml` が残っていない。
-- README と `docs/codex/002...` のファイル名表記が `compose.yaml` に統一されている。
+- README と `docs/agent/002...` のファイル名表記が `compose.yaml` に統一されている。
 - `.github/workflows/` / `scripts/` / `Makefile*` を含むリポジトリ全体で、旧ファイル名の明示指定が残っていない。
 
 ### 5. 実装タスク ( 予定 )
@@ -109,7 +109,7 @@ README 更新だけだと気づきにくい。
 
 ## 実装結果
 - `docker-compose.yml` を `compose.yaml` にリネームした。
-- `docs/codex/002-compose で Django と React を一括起動.md` の旧ファイル名表記を `compose.yaml` に統一した。
+- `docs/agent/002-compose で Django と React を一括起動.md` の旧ファイル名表記を `compose.yaml` に統一した。
 - `README.md` に「Compose ファイル名移行メモ」を追加し、旧→新コマンド例 ( `docker compose -f docker-compose.yml up -d` → `docker compose up -d` ) を追記した。
 - 検証結果:
   - `test -f compose.yaml && test ! -f docker-compose.yml` は成功。
@@ -120,6 +120,6 @@ README 更新だけだと気づきにくい。
 ## オーナー向け要約
 - Compose 定義ファイルは `docker-compose.yml` から `compose.yaml` へ実際に移行した。  
 - `docker compose up -d` / `down` / `logs` などの通常運用コマンドは変更なしで使える。  
-- `docs/codex/002...` の記述も `compose.yaml` 前提へ更新して、設計との整合を取った。  
+- `docs/agent/002...` の記述も `compose.yaml` 前提へ更新して、設計との整合を取った。  
 - README に移行メモと旧→新コマンド例を追加して、 `-f docker-compose.yml` 利用者が迷わないようにした。  
 - `test` / `docker compose config` / `docker compose ps` / `rg` で移行状態を確認済み。  
