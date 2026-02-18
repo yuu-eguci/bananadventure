@@ -31,7 +31,7 @@ HomePage のレイアウト改善で、次の 2 段階を実施した。
 
 ## 変更対象
 - `webapp/frontend-react/src/pages/HomePage.tsx`
-- `docs/codex/005-HomePage のレイアウトを再配置する.md`
+- `docs/agent/005-HomePage のレイアウトを再配置する.md`
 
 ## 詳細設計
 ### 1. レイアウト構成
