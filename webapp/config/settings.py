@@ -29,7 +29,15 @@ SECRET_KEY = os.environ['DJANGO_SECRET_KEY']
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS: list[str] = [os.environ['APP_HOST']]
+_allowed_hosts_candidates = [
+    os.environ['APP_HOST'],
+    'localhost',
+    '127.0.0.1',
+    '[::1]',
+]
+ALLOWED_HOSTS: list[str] = list(dict.fromkeys(
+    host for host in _allowed_hosts_candidates if host
+))
 
 
 # Application definition
