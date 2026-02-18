@@ -107,9 +107,19 @@ README 更新だけだと気づきにくい。
 結論:
 - LGTM。レビュー完了。
 
+## 実装結果
+- `docker-compose.yml` を `compose.yaml` にリネームした。
+- `docs/codex/002-compose で Django と React を一括起動.md` の旧ファイル名表記を `compose.yaml` に統一した。
+- `README.md` に「Compose ファイル名移行メモ」を追加し、旧→新コマンド例 ( `docker compose -f docker-compose.yml up -d` → `docker compose up -d` ) を追記した。
+- 検証結果:
+  - `test -f compose.yaml && test ! -f docker-compose.yml` は成功。
+  - `docker compose config` は成功。
+  - `docker compose ps` は `mysql-service` / `django-service` / `react-service` が稼働中であることを確認。
+  - `rg -n "docker-compose\\.ya?ml" -S .` の結果、残件は README の移行ガイドと本設計ノート内の履歴記述のみ。
+
 ## オーナー向け要約
-- Compose 定義ファイルは `docker-compose.yml` から `compose.yaml` へ移行する設計に確定した。  
-- 既存の `docker compose up -d` などの通常運用コマンドはそのまま維持する。  
-- CI やスクリプト類の旧ファイル名参照も確認対象に入れて、実装後の取りこぼしを防ぐ。  
-- README には移行メモと旧→新コマンドの置換例を入れて、チーム内の混乱を防ぐ。  
-- 受け入れ条件は `test` / `docker compose config` / `rg` で判定できる形にした。  
+- Compose 定義ファイルは `docker-compose.yml` から `compose.yaml` へ実際に移行した。  
+- `docker compose up -d` / `down` / `logs` などの通常運用コマンドは変更なしで使える。  
+- `docs/codex/002...` の記述も `compose.yaml` 前提へ更新して、設計との整合を取った。  
+- README に移行メモと旧→新コマンド例を追加して、 `-f docker-compose.yml` 利用者が迷わないようにした。  
+- `test` / `docker compose config` / `docker compose ps` / `rg` で移行状態を確認済み。  

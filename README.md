@@ -9,6 +9,13 @@ bananadventure
 
 - [https://github.com/yuu-eguci/django-react-gemini](https://github.com/yuu-eguci/django-react-gemini)
 
+## Compose ファイル名移行メモ
+
+- Compose 定義ファイルは `docker-compose.yml` から `compose.yaml` へ移行済み。
+- ふだんの運用は `docker compose` コマンドをそのまま使えば OK。
+- 旧コマンド例: `docker compose -f docker-compose.yml up -d`
+- 新コマンド例: `docker compose up -d`
+
 ## runserver と yarn dev で起動するところまで
 
 ```bash

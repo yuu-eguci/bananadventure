@@ -14,14 +14,14 @@ Docker Compose で Django と React を一括起動
 このタスクは設計を先に固めて、そのあと実装に入る。
 
 ## 変更対象の候補
-`docker-compose.yml`  
+`compose.yaml`  
 `webapp-container/Dockerfile`  
 `webapp/` 配下の起動関連スクリプト ( 必要なら追加 ) 。
 
 ## 設計で決めること
 起動の責務をどこに寄せるかを決める。
 
-選択肢 A: `docker-compose.yml` の `command` で Django と React を同居起動する  
+選択肢 A: `compose.yaml` の `command` で Django と React を同居起動する  
 選択肢 B: `entrypoint` / 起動スクリプトで 2 プロセスを起動する  
 選択肢 C: Django と React を別サービスに分ける
 
@@ -52,7 +52,7 @@ React は `working_dir` を `webapp/frontend-react` に固定し、 `node_module
 `webapp-service` は廃止して、 `django-service` と `react-service` を追加する。  
 `mysql-service` は継続利用しつつ、 `healthcheck` を追加する。
 
-`docker-compose.yml` の想定差分は次の通り。
+`compose.yaml` の想定差分は次の通り。
 
 ```yaml
 services:
@@ -147,8 +147,8 @@ volumes:
 - 停止: `docker compose down`
 
 ## 実装タスク
-1. 既存の `docker-compose.yml` を読み、現在の起動経路を整理する。  
-2. `docker-compose.yml` を `django-service` / `react-service` 分割構成へ更新する。  
+1. 既存の `compose.yaml` を読み、現在の起動経路を整理する。  
+2. `compose.yaml` を `django-service` / `react-service` 分割構成へ更新する。  
 3. `webapp/scripts/start-django.sh` と `webapp/scripts/start-react.sh` を追加する。  
 4. `docker compose up -d` で起動し、 `docker compose ps` と URL で確認する。  
 5. `README.md` の運用コマンドを更新する。
@@ -233,7 +233,7 @@ volumes:
 - 想定外として、 `django-service` の `pipenv sync --dev` で DNS 解決失敗 ( `Temporary failure in name resolution` ) が発生した。  
 - 追加対応として、 `start-django.sh` に `pipenv sync --dev` の 5 回リトライと、失敗時の明示ログを追加した。  
 - 同系の失敗を避けるため、 `start-react.sh` にも `yarn install` の 5 回リトライと、失敗時の明示ログを追加した。  
-- さらに `docker-compose.yml` の `django-service` / `react-service` に `dns` ( `1.1.1.1` / `8.8.8.8` ) を明示して、 Docker 側 DNS 影響を受けにくくした。  
+- さらに `compose.yaml` の `django-service` / `react-service` に `dns` ( `1.1.1.1` / `8.8.8.8` ) を明示して、 Docker 側 DNS 影響を受けにくくした。  
 - README には、 DNS エラー時の再作成手順 ( `docker compose up -d --force-recreate django-service react-service` ) を追記した。  
 - この追加対応により、設計時よりも「ネットワーク不安定時の起動耐性」と「障害切り分けのしやすさ」を強化した。
 
