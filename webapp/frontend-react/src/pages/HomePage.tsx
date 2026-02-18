@@ -94,7 +94,7 @@ function HomePage() {
 
   return (
     <Grid container spacing={2}>
-      <Grid size={{ xs: 12, md: 7 }}>
+      <Grid size={{ xs: 12, md: 8 }}>
         <Paper sx={{ p: 0, position: "relative", overflow: "hidden", mb: 2 }}>
           <img
             src={viewModel?.scene.image || dummyImage}
@@ -134,9 +134,32 @@ function HomePage() {
             </Typography>
           </Box>
         </Paper>
+
+        <Typography variant="subtitle1" align="center" sx={{ mt: 3, mb: 2 }}>
+          選択肢 - ストーリーが進みます
+        </Typography>
+
+        <Grid container spacing={2}>
+          {viewModel == null
+            ? null
+            : viewModel.scene.sceneChoices.map((choice) => (
+                <Grid key={choice.id} size={{ xs: 12, sm: 6 }}>
+                  <Card sx={{ height: "100%", bgcolor: "primary.main" }}>
+                    <CardActionArea
+                      sx={{ height: "100%" }}
+                      onClick={() => onPressSceneChoice(choice)}
+                    >
+                      <CardContent>
+                        <Typography variant="body2">{choice.text}</Typography>
+                      </CardContent>
+                    </CardActionArea>
+                  </Card>
+                </Grid>
+              ))}
+        </Grid>
       </Grid>
 
-      <Grid size={{ xs: 12, md: 5 }}>
+      <Grid size={{ xs: 12, md: 4 }}>
         <Card sx={{ mb: 2, bgcolor: "primary.main" }}>
           <CardContent
             sx={{
@@ -155,22 +178,6 @@ function HomePage() {
             </Typography>
           </CardContent>
         </Card>
-
-        <Typography variant="subtitle1" align="center" sx={{ my: 2 }}>
-          選択肢 - ストーリーが進みます
-        </Typography>
-
-        {viewModel == null
-          ? null
-          : viewModel.scene.sceneChoices.map((choice) => (
-              <Card key={choice.id} sx={{ mb: 2, bgcolor: "primary.main" }}>
-                <CardActionArea onClick={() => onPressSceneChoice(choice)}>
-                  <CardContent>
-                    <Typography variant="body2">{choice.text}</Typography>
-                  </CardContent>
-                </CardActionArea>
-              </Card>
-            ))}
 
         <Typography variant="subtitle1" align="center" sx={{ my: 2 }}>
           インベントリ - アイテムを使用できます
