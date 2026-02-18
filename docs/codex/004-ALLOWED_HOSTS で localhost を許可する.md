@@ -106,8 +106,16 @@ Django 側の `ALLOWED_HOSTS` 設定を見直して、 `localhost:8001` アク�
 結論:
 - LGTM。レビュー完了。
 
+## 実装結果
+- `webapp/config/settings.py` の `ALLOWED_HOSTS` を更新し、 `APP_HOST` に加えて `localhost` / `127.0.0.1` / `[::1]` を許可した。
+- `APP_HOST` は `os.environ['APP_HOST']` のまま維持して、未設定時は fail fast の挙動を保った。
+- 検証結果:
+  - `docker compose exec django-service pipenv run python manage.py shell -c \"from django.conf import settings; print(settings.ALLOWED_HOSTS)\"`  
+    -> `['gemini-django-container', 'localhost', '127.0.0.1', '[::1]']`
+  - `docker compose exec django-service pipenv run python -c \"... Host='localhost:8001' ...\"`  
+    -> HTTP status `404` ( `DisallowedHost` ではないため許可を確認 )
+
 ## オーナー向け要約
-- 原因は `ALLOWED_HOSTS` が `APP_HOST` の 1 件固定だったこと。  
-- `APP_HOST` は必須のまま維持しつつ、 `localhost` / `127.0.0.1` / `[::1]` を追加する設計に確定した。  
-- 新しい env は追加せず、最小差分で `localhost:8001` のエラーを解消する。  
-- 検証は設定値確認だけでなく、 `curl` で実リクエスト確認まで実施する。  
+- 原因だった `ALLOWED_HOSTS` の 1 件固定を解消して、 `localhost` / `127.0.0.1` / `[::1]` を追加した。  
+- `APP_HOST` は必須のまま維持しているので、既存のコンテナ名ベース運用は壊していない。  
+- 実リクエスト検証で `Host: localhost:8001` を投げても `DisallowedHost` にならず、受け入れ確認まで完了した。  
