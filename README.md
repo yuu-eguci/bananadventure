@@ -12,39 +12,52 @@ bananadventure
 ## runserver と yarn dev で起動するところまで
 
 ```bash
-# NOTE: (2025-03-04) 久しぶりに clone してみたけど、マジで
-#       Create containers -> Django のほう
-#       をサッサと打つだけで開始できた。イイぞ。
-
 # Create containers
 cp ./local.env ./.env; cp ./webapp-container/Dockerfile.local ./webapp-container/Dockerfile;
-docker compose up -d && docker compose exec webapp-service bash
+docker compose up -d
+# 旧 webapp-service が残っている場合の初回移行だけ:
+# docker compose up -d --remove-orphans
 
-# Get into webapp-service
-# NOTE: It's a good practice to have separate terminals for Django and React for easier debugging and log tracking.
-docker compose exec webapp-service bash
-# Check↓
-python -V
-# --> Python 3.12.9
-pipenv --version
-# --> pipenv, version 2024.4.1
-yarn -v
-# --> 1.22.22
+# Status
+docker compose ps
 
-(cd ./frontend-react; yarn list react)
-# --> └─ react@19.0.0
+# Logs
+docker compose logs -f django-service
+docker compose logs -f react-service
+docker compose logs -f mysql-service
 
-# Django のほう。
-# NOTE: PIPENV_VENV_IN_PROJECT は env で設定してある。
-pipenv sync --dev
-pipenv run python manage.py migrate
-pipenv run python manage.py runserver 0.0.0.0:8000
-# --> http://localhost:8001/ でアクセス。
+# Access URLs
+# Django -> http://localhost:8001/
+# React  -> http://localhost:5001/
 
-# React のほう。
-(cd ./frontend-react; yarn install)
-(cd ./frontend-react; yarn dev --host)
-# --> http://localhost:5001/ でアクセス。
+# Get into containers
+docker compose exec django-service bash
+docker compose exec react-service bash
+
+# Restart each service
+docker compose restart django-service
+docker compose restart react-service
+
+# Stop
+docker compose down
+```
+
+```bash
+# Check versions
+docker compose exec django-service python -V
+docker compose exec django-service pipenv --version
+docker compose exec django-service yarn -v
+docker compose exec react-service yarn list react
+```
+
+```bash
+# Troubleshooting: django-service が "Temporary failure in name resolution" で落ちる場合
+docker compose restart django-service
+docker compose logs -f django-service
+# それでも解消しないときは Docker Desktop 側の DNS / ネットワークを確認
+# ( 本 compose では django-service / react-service に 1.1.1.1 と 8.8.8.8 を明示済み )
+# 反映は recreate が必要:
+# docker compose up -d --force-recreate django-service react-service
 ```
 
 ```bash
