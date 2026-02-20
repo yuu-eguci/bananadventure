@@ -423,7 +423,7 @@
           "responseText": "",
           "bananaMeterDelta": 20,
           "bananaMeterDeltaPercent": 0,
-          "image": "",
+          "image": "/item-image/item-soy-banana-drink.webp",
           "used": false
         },
         "nextSceneId": 11
@@ -493,7 +493,7 @@
           "responseText": "",
           "bananaMeterDelta": 10,
           "bananaMeterDeltaPercent": 0,
-          "image": "",
+          "image": "/item-image/item-survival-kit.webp",
           "used": false
         },
         "nextSceneId": 13

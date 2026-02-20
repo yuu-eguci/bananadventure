@@ -93,6 +93,7 @@
 ## 実装結果
 - `webapp/frontend-react/src/data/bananadventure-scenes.json` の `scene id 0 - 15` すべてに `image` を反映しました。
 - `itemsOnSelect` を持つ 3 アイテム (豆乳バナナ / ストロングゼロ / 六角レンチ・エンブレム・ハーブ) に `image` を反映しました。
+- `triggerItems[].item.image` にある同 3 アイテムにも同一パスを反映しました。
 - `sceneChoices[].image` は設計どおり未変更です。
 
 ## オーナー向け要約
