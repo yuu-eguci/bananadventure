@@ -2,7 +2,7 @@
   {
     "id": 0,
     "triggerItems": [],
-    "image": "",
+    "image": "/scene-image/scene-00-title-start.webp",
     "text": "はじめる？",
     "sceneChoices": [
       {
@@ -30,7 +30,7 @@
   {
     "id": 1,
     "triggerItems": [],
-    "image": "",
+    "image": "/scene-image/scene-01-morning-breakfast.webp",
     "text": "ふああぁ、良く寝たのだ。\nさて、朝ご飯はどうしよう？",
     "sceneChoices": [
       {
@@ -69,7 +69,7 @@
             "responseText": "",
             "bananaMeterDelta": 20,
             "bananaMeterDeltaPercent": 0,
-            "image": "",
+            "image": "/item-image/item-soy-banana-drink.webp",
             "used": false
           }
         ]
@@ -89,7 +89,7 @@
   {
     "id": 2,
     "triggerItems": [],
-    "image": "",
+    "image": "/scene-image/scene-02-morning-news.webp",
     "text": "さてさて、今日のニュースをBBCでチェックするのだ\nその前に・・・",
     "sceneChoices": [
       {
@@ -127,7 +127,7 @@
   {
     "id": 3,
     "triggerItems": [],
-    "image": "",
+    "image": "/scene-image/scene-03-invitation-letter.webp",
     "text": "「ピンポーン！郵便でーす」\nおや？ナイスタイミングで手紙が届いたのだ\nビリビリ・・・ふむふむ\n安藤さんからパーティーの誘いなのだ",
     "sceneChoices": [
       {
@@ -165,7 +165,7 @@
   {
     "id": 4,
     "triggerItems": [],
-    "image": "",
+    "image": "/scene-image/scene-04-route-decision.webp",
     "text": "ガスの元栓も閉めた、準備はOK\nよし、出かけるのだ・・・\nあれ？結構遠くの場所だな・・・どうしよう？",
     "sceneChoices": [
       {
@@ -203,7 +203,7 @@
   {
     "id": 5,
     "triggerItems": [],
-    "image": "",
+    "image": "/scene-image/scene-05-meet-u-chan.webp",
     "text": "「おや？ばななちゃん、バッタリですね」\n道中でうーちゃんと出会った\nどうやらうみにょも安藤さんに招待されているらしい",
     "sceneChoices": [
       {
@@ -241,7 +241,7 @@
   {
     "id": 6,
     "triggerItems": [],
-    "image": "",
+    "image": "/scene-image/scene-06-bus-motion-sickness.webp",
     "text": "なんとかバスに間に合ったのだ\nでも・・・結構揺れる\n乗り物酔いが心配なのだ\nどうしよう？",
     "sceneChoices": [
       {
@@ -280,7 +280,7 @@
             "responseText": "",
             "bananaMeterDelta": 0,
             "bananaMeterDeltaPercent": -9,
-            "image": "",
+            "image": "/item-image/item-strong-zero.webp",
             "used": false
           }
         ]
@@ -290,7 +290,7 @@
   {
     "id": 7,
     "triggerItems": [],
-    "image": "",
+    "image": "/scene-image/scene-07-ferry-transfer.webp",
     "text": "ふぅ、ようやくバスから降りられる\n次は船に乗り換えなのだ\nどの船に乗ろう？目的地は一緒みたいだけど・・・",
     "sceneChoices": [
       {
@@ -328,7 +328,7 @@
   {
     "id": 8,
     "triggerItems": [],
-    "image": "",
+    "image": "/scene-image/scene-08-shipwreck-escape.webp",
     "text": "案の定、沈没したのだ！\nさて、逃げるにあたり何を持っていく？",
     "sceneChoices": [
       {
@@ -357,7 +357,7 @@
             "responseText": "",
             "bananaMeterDelta": 10,
             "bananaMeterDeltaPercent": 0,
-            "image": "",
+            "image": "/item-image/item-survival-kit.webp",
             "used": false
           }
         ]
@@ -377,7 +377,7 @@
   {
     "id": 9,
     "triggerItems": [],
-    "image": "",
+    "image": "/scene-image/scene-09-mysterious-island.webp",
     "text": "水に揺られること数分、謎の島にたどり着いた\nここはどこなのだ？\nあたりを見渡した・・・さてどうしよう？",
     "sceneChoices": [
       {
@@ -429,7 +429,7 @@
         "nextSceneId": 11
       }
     ],
-    "image": "",
+    "image": "/scene-image/scene-10-banana-cliff.webp",
     "text": "バナナの木がある！\nでも崖の上にあって、もし落ちたら下まで転げ落ちるのだ\nどうしよう？",
     "sceneChoices": [
       {
@@ -467,7 +467,7 @@
   {
     "id": 11,
     "triggerItems": [],
-    "image": "",
+    "image": "/scene-image/scene-11-spoiled-soy-banana.webp",
     "text": "豆乳バナナが腐って豆乳ヨーグルトに！",
     "sceneChoices": [
       {
@@ -499,7 +499,7 @@
         "nextSceneId": 13
       }
     ],
-    "image": "",
+    "image": "/scene-image/scene-12-fall-into-jungle.webp",
     "text": "いてててて・・・やっぱり落ちたのだ\nあれ？こんなジャングルの中に洋館が\nどうしよう？",
     "sceneChoices": [
       {
@@ -537,7 +537,7 @@
   {
     "id": 13,
     "triggerItems": [],
-    "image": "",
+    "image": "/scene-image/scene-13-fall-mansion-gate.webp",
     "text": "やっぱり落ちちゃったのだ\nなんか洋館があるけど、これがあれば・・・",
     "sceneChoices": [
       {
@@ -555,14 +555,14 @@
   {
     "id": 14,
     "triggerItems": [],
-    "image": "",
+    "image": "/scene-image/scene-14-mansion-arrival.webp",
     "text": "ジャングルを抜けた！あの建物は！？\n安藤さん家なのだ！\nやった！着いたのだ！",
     "sceneChoices": []
   },
   {
     "id": 15,
     "triggerItems": [],
-    "image": "",
+    "image": "/scene-image/scene-15-exhausted-ending.webp",
     "text": "もう疲れたのだ・・・\n居酒屋TaTeTeに行って一杯やるのだ",
     "sceneChoices": []
   }
