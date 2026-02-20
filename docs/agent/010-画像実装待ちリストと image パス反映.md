@@ -68,3 +68,11 @@
 - `14 -> /scene-image/scene-14-mansion-arrival.webp`
 - `15 -> /scene-image/scene-15-exhausted-ending.webp`
 
+## レビュー
+
+### レビュワー指摘 (1 回目)
+1. `scene-12-fall-into-jungle.webp` と `scene-13-fall-mansion-gate.webp` は文脈が近く、制作側が混同しやすいです。差分が一目でわかる補足を追加してください。
+2. `item-survival-kit.webp` は中身が 3 つの複合アイテムなので、どれを主役に描くか指示が必要です。ビジュアル方針を 1 行追加してください。
+3. バナナメーター画像は現状 `json` 管理ではないため、実装先ファイルを明記した方が作業者が迷いません。追記してください。
+
+判定: `Needs Fix`
