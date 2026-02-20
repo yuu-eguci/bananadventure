@@ -32,8 +32,8 @@
 - `/scene-image/scene-09-mysterious-island.webp` - "謎の島にたどり着いた" - 16:9
 - `/scene-image/scene-10-banana-cliff.webp` - "バナナの木がある！" - 16:9
 - `/scene-image/scene-11-spoiled-soy-banana.webp` - "豆乳バナナが腐って豆乳ヨーグルトに！" - 16:9
-- `/scene-image/scene-12-fall-into-jungle.webp` - "やっぱり落ちたのだ" - 16:9
-- `/scene-image/scene-13-fall-mansion-gate.webp` - "なんか洋館があるけど" - 16:9
+- `/scene-image/scene-12-fall-into-jungle.webp` - "いてててて・・・やっぱり落ちたのだ" (落下直後でジャングル内) - 16:9
+- `/scene-image/scene-13-fall-mansion-gate.webp` - "やっぱり落ちちゃったのだ" (落下後に洋館前へ移動) - 16:9
 - `/scene-image/scene-14-mansion-arrival.webp` - "安藤さん家なのだ！" - 16:9
 - `/scene-image/scene-15-exhausted-ending.webp` - "もう疲れたのだ・・・" - 16:9
 
@@ -41,9 +41,11 @@
 - `/item-image/item-soy-banana-drink.webp` - "豆乳バナナ" - 64x64
 - `/item-image/item-strong-zero.webp` - "ストロングゼロ" - 64x64
 - `/item-image/item-survival-kit.webp` - "六角レンチ・エンブレム・ハーブ" - 64x64
+- `item-survival-kit.webp` は「レンチ + 紋章 + ハーブ束」の 3 点が同時に視認できる構図を指定します。
 
 ### バナナメーター画像 (実装待ち一覧)
 - `/ui-image/banana-meter-icon.webp` - "バナナメーター通常表示アイコン" - 64x64
+- 実装先は `webapp/frontend-react/src/pages/HomePage.tsx` で、現状 `dummyImage` を差し替える運用です。
 
 ### `json` 反映方針
 - `webapp/frontend-react/src/data/bananadventure-scenes.json` の各シーンの `image` に、上記メイン画像パスを対応付けて反映します。
@@ -76,3 +78,8 @@
 3. バナナメーター画像は現状 `json` 管理ではないため、実装先ファイルを明記した方が作業者が迷いません。追記してください。
 
 判定: `Needs Fix`
+
+### プランナー対応 (1 回目)
+1. `scene 12 / scene 13` の違いがわかるように、各行へシーン状態の補足を追記しました。
+2. `item-survival-kit.webp` のビジュアル方針を 1 行追記しました。
+3. バナナメーター画像の実装先ファイルを明記しました。
