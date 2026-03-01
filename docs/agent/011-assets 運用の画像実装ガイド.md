@@ -17,5 +17,25 @@ assets 運用の画像実装ガイド
 - `webapp/frontend-react/src/pages/*` (必要に応じて)
 
 ## 詳細設計
-(このセクションはプランナーが更新する)
+### 結論 (見当違いかどうか)
+- 「画像を変更したら URL も変わって再取得させたい」という狙いは見当違いではない。
+- Vite の `src/assets` 経由で参照すると、ビルド時にファイル名へハッシュが付き、差し替え時のキャッシュ更新が効きやすい。
+- ただし `json` に URL 文字列を直接置くだけでは、`assets` のハッシュ URL へ自動変換されないため、解決レイヤーが必要。
+
+### 画像配置ポリシー
+- メイン画像: `webapp/frontend-react/src/assets/scene-image/`
+- インベントリ画像: `webapp/frontend-react/src/assets/item-image/`
+- バナナメーター画像: `webapp/frontend-react/src/assets/ui-image/`
+- `json` には論理パスとして `/scene-image/...` `/item-image/...` `/ui-image/...` を保持し、コード側で `assets` 実 URL に解決する。
+
+### 実装方針
+- `import.meta.glob` で `src/assets` 以下の画像を収集し、`/scene-image/foo.webp` 形式の論理パスからハッシュ URL へ引く辞書を作る。
+- `SceneService` で `scene.image` と `itemsOnSelect[].image` と `triggerItems[].item.image` を解決済み URL に変換して返す。
+- `HomePage` のバナナメーター画像も同じ解決関数で扱い、論理パス `/ui-image/banana-meter-icon.webp` を指定する。
+- 解決できなかった場合は元のパスを返し、既存 fallback を維持する。
+
+### 期待効果
+- 画像変更時、ビルド成果物の URL が変わるため、古い画像が残りづらくなる。
+- `json` 側は論理パスのままなので、データ編集体験を維持できる。
+- 将来 CDN 化する場合も、解決関数の差し替えで対応しやすい。
 
