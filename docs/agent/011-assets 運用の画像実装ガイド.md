@@ -30,9 +30,20 @@ assets 運用の画像実装ガイド
 
 ### 実装方針
 - `import.meta.glob` で `src/assets` 以下の画像を収集し、`/scene-image/foo.webp` 形式の論理パスからハッシュ URL へ引く辞書を作る。
+- 辞書はモジュールスコープで初期化し、描画やシーン遷移のたびに再生成しない。
 - `SceneService` で `scene.image` と `itemsOnSelect[].image` と `triggerItems[].item.image` を解決済み URL に変換して返す。
 - `HomePage` のバナナメーター画像も同じ解決関数で扱い、論理パス `/ui-image/banana-meter-icon.webp` を指定する。
 - 解決できなかった場合は元のパスを返し、既存 fallback を維持する。
+
+### fallback 方針
+- シーン画像: 解決結果が無効な場合も `HomePage` の既存挙動 (`viewModel?.scene.image || dummyImage`) を維持する。
+- インベントリ画像: 既存 `onError` で `/sample-image/sample.png` へフォールバックする。
+
+### 検証観点
+- `scene.image` が解決されること。
+- `itemsOnSelect[].image` が解決されること。
+- `triggerItems[].item.image` も漏れなく解決されること。
+- 画像未配置時に既存 fallback が機能すること。
 
 ### 期待効果
 - 画像変更時、ビルド成果物の URL が変わるため、古い画像が残りづらくなる。
@@ -47,3 +58,14 @@ assets 運用の画像実装ガイド
 3. 画像未配置時の fallback 動作を、シーン画像とインベントリ画像で分けて明記してください。
 
 判定: `Needs Fix`
+
+### プランナー対応 (1 回目)
+1. 画像辞書をモジュールスコープで一度だけ初期化する方針を追記しました。
+2. `triggerItems[].item.image` を検証観点へ明記しました。
+3. シーン画像とインベントリ画像の fallback 方針を分離して追記しました。
+
+### レビュワー再レビュー (2 回目)
+- 指摘 1 から 3 の反映を確認しました。
+- 実装時の見落としポイントと検証観点が明確になっています。
+
+判定: `LGTM`
