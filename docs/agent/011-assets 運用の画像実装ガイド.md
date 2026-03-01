@@ -69,3 +69,20 @@ assets 運用の画像実装ガイド
 - 実装時の見落としポイントと検証観点が明確になっています。
 
 判定: `LGTM`
+
+## 実装結果
+- 画像解決レイヤー `webapp/frontend-react/src/services/assetImageResolver.ts` を追加しました。
+- `SceneService` で `scene.image` `itemsOnSelect[].image` `triggerItems[].item.image` を解決済み URL へ変換するよう変更しました。
+- `HomePage` でバナナメーター画像を `/ui-image/banana-meter-icon.webp` の論理パス指定に変更し、読み込み失敗時の fallback を追加しました。
+- メインシーン画像にも `onError` fallback を追加し、画像未配置時に `dummyImage` へ戻すようにしました。
+- `src/assets/scene-image` `src/assets/item-image` `src/assets/ui-image` を追加しました (空ディレクトリを `.gitkeep` で管理) 。
+
+## 追加対応メモ
+- `assets` 実ファイルがまだ未配置でもアプリが破綻しないよう、既存 fallback を維持したまま切り替えています。
+- ビルド確認は `npx tsc -b` まで実施し成功しました。
+- `vite build` は環境側の optional dependency 不足 (`@rollup/rollup-darwin-arm64`) で失敗したため、依存再インストールが必要です。
+
+## オーナー向け要約
+- 目的の「画像変更時に URL を更新しやすくする」は妥当で、`assets` 運用へ切り替える設計にしました。
+- `json` はこれまでどおり論理パスを保持し、コードで `assets` のハッシュ URL へ解決する方式にしたので運用負荷を増やしていません。
+- 必要なコード変更は完了していて、残作業は `src/assets/...` へ実画像を配置することです。

@@ -20,12 +20,14 @@ import { SceneViewModel } from "@/viewModels";
 import dummyImage from "/sample-image/sample.png";
 import { SceneChoice } from "@/models";
 import ResetButton from "@/components/ResetButton";
+import { resolveImageUrl } from "@/services/assetImageResolver";
 // import bananaIcon from "/icon-image/banana.webp";
 
 const service = new SceneService();
 
 const dummyText =
   "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillu";
+const bananaMeterImagePath = "/ui-image/banana-meter-icon.webp";
 
 function HomePage() {
   const [isJingleOpen, setJingleOpen] = useState(true);
@@ -110,6 +112,10 @@ function HomePage() {
             <img
               src={viewModel?.scene.image || dummyImage}
               alt="Scene"
+              onError={(e: React.SyntheticEvent<HTMLImageElement>) => {
+                e.currentTarget.onerror = null;
+                e.currentTarget.src = dummyImage;
+              }}
               style={{
                 width: "100%",
                 height: "100%",
@@ -198,7 +204,11 @@ function HomePage() {
             }}
           >
             <img
-              src={dummyImage}
+              src={resolveImageUrl(bananaMeterImagePath)}
+              onError={(e: React.SyntheticEvent<HTMLImageElement>) => {
+                e.currentTarget.onerror = null;
+                e.currentTarget.src = dummyImage;
+              }}
               style={{ width: 64, height: 64, marginBottom: 8 }}
             />
             <Typography variant="body2" align="center">
