@@ -25,13 +25,13 @@ assets 画像実装待ち一覧
 - `/scene-image/scene-15-exhausted-ending.webp` - "もう疲れたのだ・・・" - 16:9 (配置先: `webapp/frontend-react/src/assets/scene-image/scene-15-exhausted-ending.webp`)
 
 ## インベントリ画像 (実装待ち一覧)
-- `/item-image/item-soy-banana-drink.webp` - "豆乳バナナ" - 64x64 (配置先: `webapp/frontend-react/src/assets/item-image/item-soy-banana-drink.webp`)
-- `/item-image/item-strong-zero.webp` - "ストロングゼロ" - 64x64 (配置先: `webapp/frontend-react/src/assets/item-image/item-strong-zero.webp`)
-- `/item-image/item-survival-kit.webp` - "六角レンチ・エンブレム・ハーブ" - 64x64 (配置先: `webapp/frontend-react/src/assets/item-image/item-survival-kit.webp`)
+- `/item-image/item-soy-banana-drink.webp` - "豆乳バナナ" - 64x64 (配置先: `webapp/frontend-react/src/assets/item-image/item-soy-banana-drink.webp`) -> 128x128 で完成 OK
+- `/item-image/item-strong-zero.webp` - "ストロングゼロ" - 64x64 (配置先: `webapp/frontend-react/src/assets/item-image/item-strong-zero.webp`) -> 128x128 で完成 OK
+- `/item-image/item-survival-kit.webp` - "六角レンチ・エンブレム・ハーブ" - 64x64 (配置先: `webapp/frontend-react/src/assets/item-image/item-survival-kit.webp`) -> 128x128 で完成 OK
 - `item-survival-kit.webp` は「レンチ + 紋章 + ハーブ束」の 3 点が同時に視認できる構図にしてください。
 
 ## バナナメーター画像 (実装待ち一覧)
-- `/ui-image/banana-meter-icon.webp` - "バナナメーター通常表示アイコン" - 64x64 (配置先: `webapp/frontend-react/src/assets/ui-image/banana-meter-icon.webp`)
+- `/ui-image/banana-meter-icon.webp` - "バナナメーター通常表示アイコン" - 64x64 (配置先: `webapp/frontend-react/src/assets/ui-image/banana-meter-icon.webp`) -> 128x128 で完成 OK
 
 ## 補足
 - `json` に書く値は論理パスのままです。例: `/scene-image/scene-00-title-start.webp`
