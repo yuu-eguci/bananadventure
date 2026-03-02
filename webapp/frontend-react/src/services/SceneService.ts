@@ -1,6 +1,7 @@
 import { SceneViewModel } from "../viewModels";
 import { Scene, Player, SceneChoice } from "../models";
 import sceneData from "@/data/bananadventure-scenes.json";
+import { resolveSceneImages } from "@/services/assetImageResolver";
 
 // 特殊な Scene
 const SPECIAL_SCENE_IDS = {
@@ -31,7 +32,7 @@ export class SceneService {
     if (!scene) {
       throw new Error(`Scene with ID ${sceneId} not found`)
     };
-    return scene;
+    return resolveSceneImages(scene);
   }
 
   async getSceneChoice({
