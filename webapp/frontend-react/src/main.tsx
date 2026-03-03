@@ -1,4 +1,6 @@
 import App from "@/App";
+import bananaMeterIconPng from "@/assets/ui-image/banana-meter-icon.png";
+import bananaMeterIconWebp from "@/assets/ui-image/banana-meter-icon.webp";
 import "@/i18n";
 import "@/index.css";
 import { createTheme, ThemeProvider } from "@mui/material/styles";
@@ -25,6 +27,24 @@ const theme = createTheme({
     },
   },
 });
+
+function appendFaviconLink({ type, href }: { type: string; href: string }) {
+  const link = document.createElement("link");
+  link.rel = "icon";
+  link.type = type;
+  link.href = href;
+  document.head.appendChild(link);
+}
+
+function configureTabMetadata() {
+  document.title = "Bananadventure";
+  document.querySelectorAll("link[rel~='icon']").forEach((link) => link.remove());
+
+  appendFaviconLink({ type: "image/webp", href: bananaMeterIconWebp });
+  appendFaviconLink({ type: "image/png", href: bananaMeterIconPng });
+}
+
+configureTabMetadata();
 
 ReactDOM.createRoot(document.getElementById("root")!).render(
   <React.StrictMode>
