@@ -59,6 +59,10 @@ function HomePage() {
     selectedSceneChoice.current = choice;
 
     const { responseText } = choice;
+    if (responseText.trim().length === 0) {
+      await onCloseDialog();
+      return;
+    }
     setDialogMessage(responseText);
     setOpenDialog(true);
   };
