@@ -57,3 +57,28 @@ GitHub Pages カスタムドメイン設定
 - 実装と運用手順が十分に具体化されています。
 
 判定: `LGTM`
+
+## 実装結果
+- `.github/workflows/pages-deploy.yml` の build コマンドを `yarn run build --base "/"` に変更しました。
+- これにより `www.banana.mrrhp.com` のルート配信と整合する出力パスになります。
+
+## DNS レコード設定 (お願い)
+- `www.banana.mrrhp.com` 用に以下を設定してください。
+  - 種別: `CNAME`
+  - ホスト: `www`
+  - 値: `yuu-eguci.github.io`
+  - TTL: `300` (または DNS 事業者の既定値)
+- `www` に既存の `A` / `AAAA` / 重複 `CNAME` がある場合は削除してください。
+
+## GitHub 側設定 (お願い)
+- `Settings > Pages > Custom domain` に `www.banana.mrrhp.com` を設定してください。
+- HTTPS 証明書発行後に `Enforce HTTPS` を有効化してください。
+
+## 確認コマンド
+- `dig www.banana.mrrhp.com CNAME +short`
+  - 期待値: `yuu-eguci.github.io`
+
+## オーナー向け要約
+- コード側はカスタムドメイン前提の build パスへ変更済みです。
+- DNS 側は `www` の `CNAME -> yuu-eguci.github.io` を設定すれば OK です。
+- GitHub Pages 設定で Custom domain を入れると、`main` マージごとの自動デプロイがそのまま `www.banana.mrrhp.com` に反映されます。
