@@ -46,3 +46,16 @@
 - 実装と検証手順が具体化されているため、この設計で進めて問題ありません。
 
 判定: `LGTM`
+
+## 実装結果
+- `webapp/frontend-react/src/pages/HomePage.tsx` の `onPressSceneChoice` から `<TEST>` 表示を削除しました。
+- `setDialogMessage` は `responseText` のみを設定する形に変更しました。
+- 不要になった `bananaMeterDelta` と `nextSceneId` の参照を削除しました。
+
+## 検証結果
+- `npx tsc -b` で型チェック成功。
+- `<TEST>` 文字列がコード上から消えていることを確認。
+
+## オーナー向け要約
+- プレイ中のダイアログに出ていた `<TEST>` は完全に削除済みです。
+- ダイアログ表示は維持され、通常の `responseText` だけが表示されます。

@@ -58,13 +58,8 @@ function HomePage() {
     }
     selectedSceneChoice.current = choice;
 
-    const { responseText, bananaMeterDelta, nextSceneId } = choice;
-    setDialogMessage(
-      <>
-        {responseText} <br />{" "}
-        {`<TEST> delta: ${bananaMeterDelta}; next: ${nextSceneId}`}
-      </>
-    );
+    const { responseText } = choice;
+    setDialogMessage(responseText);
     setOpenDialog(true);
   };
 
