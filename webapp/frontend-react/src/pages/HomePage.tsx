@@ -237,29 +237,6 @@ function HomePage() {
         </Grid>
 
         <Grid size={{ xs: 12, md: 4 }}>
-        <Card sx={{ mb: 2, bgcolor: "primary.main" }}>
-          <CardContent
-            sx={{
-              display: "flex",
-              flexDirection: "column",
-              alignItems: "center",
-              justifyContent: "center",
-            }}
-          >
-            <img
-              src={resolveImageUrl(bananaMeterImagePath)}
-              onError={(e: React.SyntheticEvent<HTMLImageElement>) => {
-                e.currentTarget.onerror = null;
-                e.currentTarget.src = dummyImage;
-              }}
-              style={{ width: 64, height: 64, marginBottom: 8 }}
-            />
-            <Typography variant="body2" align="center">
-              バナナメーター: {viewModel?.player.bananaMeter || 0}
-            </Typography>
-          </CardContent>
-        </Card>
-
         {isEndingScene ? (
           <Card
             sx={{
@@ -326,6 +303,29 @@ function HomePage() {
             </CardContent>
           </Card>
         ) : null}
+
+        <Card sx={{ mb: 2, bgcolor: "primary.main" }}>
+          <CardContent
+            sx={{
+              display: "flex",
+              flexDirection: "column",
+              alignItems: "center",
+              justifyContent: "center",
+            }}
+          >
+            <img
+              src={resolveImageUrl(bananaMeterImagePath)}
+              onError={(e: React.SyntheticEvent<HTMLImageElement>) => {
+                e.currentTarget.onerror = null;
+                e.currentTarget.src = dummyImage;
+              }}
+              style={{ width: 64, height: 64, marginBottom: 8 }}
+            />
+            <Typography variant="body2" align="center">
+              バナナメーター: {viewModel?.player.bananaMeter || 0}
+            </Typography>
+          </CardContent>
+        </Card>
 
         <Typography variant="subtitle1" align="center" sx={{ my: 2 }}>
           インベントリ - アイテムを使用できます
