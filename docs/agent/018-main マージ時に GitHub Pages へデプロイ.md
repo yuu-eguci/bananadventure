@@ -35,3 +35,12 @@ main マージ時に GitHub Pages へデプロイ
 ### 補足
 - この構成は「GitHub Pages をプロジェクトページとして運用 ( /<repo>/ )」前提。
 - カスタムドメイン運用時は `--base` 値を調整する。
+
+## レビュー
+
+### レビュワー指摘 (1 回目)
+1. `deploy` job で `environment: github-pages` と `url` を明示する設計を追記してください。
+2. リポジトリ設定で Pages の Source を `GitHub Actions` にする前提を、運用手順として追記してください。
+3. workflow 名とファイル名を固定し、どのファイルを追加するかを明記してください。
+
+判定: `Needs Fix`
