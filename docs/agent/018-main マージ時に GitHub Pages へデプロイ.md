@@ -1,0 +1,76 @@
+main マージ時に GitHub Pages へデプロイ
+===
+
+## タスク概要
+- `main` へマージされたとき、フロントエンドを GitHub Pages へ自動デプロイする。
+
+## 今回の要望 (統合者まとめ)
+- `main` へ反映されたタイミングで GitHub Pages デプロイを実行したい。
+- 手動操作を減らし、デプロイを CI 化したい。
+
+## 変更対象
+- `docs/agent/018-main マージ時に GitHub Pages へデプロイ.md`
+- `.github/workflows/*`
+- `webapp/frontend-react/vite.config.ts` (必要に応じて)
+
+## 詳細設計
+### デプロイ方式
+- GitHub Actions の専用 workflow (`.github/workflows/pages-deploy.yml`) を追加する。
+- トリガーは `push` の `main` ブランチに限定する。
+- `workflow_dispatch` も有効化して、必要時に手動実行できるようにする。
+
+### build / deploy フロー
+1. `actions/checkout` でリポジトリ取得
+2. `actions/setup-node` で Node.js 22 をセットアップ
+3. `yarn install --frozen-lockfile` を `webapp/frontend-react` で実行
+4. `yarn run build --base \"/${{ github.event.repository.name }}/\"` を実行して Pages 用 build
+5. `actions/configure-pages` で Pages 設定
+6. `actions/upload-pages-artifact` で `webapp/frontend-react/dist` をアップロード
+7. `actions/deploy-pages` で公開
+
+### deploy job の設定
+- `deploy` job には `environment: github-pages` を設定する。
+- `actions/deploy-pages` の出力 `page_url` を environment URL へ設定する。
+
+### 権限 / 安全性
+- workflow の `permissions` は `contents: read`, `pages: write`, `id-token: write` に限定する。
+- `concurrency` を設定して、同時デプロイを 1 本に制御する。
+
+### 補足
+- この構成は「GitHub Pages をプロジェクトページとして運用 ( /<repo>/ )」前提。
+- カスタムドメイン運用時は `--base` 値を調整する。
+- リポジトリの `Settings > Pages` で Source を `GitHub Actions` にしておく。
+
+## レビュー
+
+### レビュワー指摘 (1 回目)
+1. `deploy` job で `environment: github-pages` と `url` を明示する設計を追記してください。
+2. リポジトリ設定で Pages の Source を `GitHub Actions` にする前提を、運用手順として追記してください。
+3. workflow 名とファイル名を固定し、どのファイルを追加するかを明記してください。
+
+判定: `Needs Fix`
+
+### プランナー対応 (1 回目)
+1. `deploy` job の `environment` / `url` 設定方針を追記しました。
+2. `Settings > Pages` で `GitHub Actions` を選ぶ前提を追記しました。
+3. 追加対象ファイルを `.github/workflows/pages-deploy.yml` で明記しました。
+
+### レビュワー再レビュー (2 回目)
+- 指摘 1 から 3 の反映を確認しました。
+- そのまま実装に移せる内容です。
+
+判定: `LGTM`
+
+## 実装結果
+- `.github/workflows/pages-deploy.yml` を追加しました。
+- `main` への push (マージ含む) と `workflow_dispatch` で Pages デプロイが走る構成です。
+- `build` job で `webapp/frontend-react` を `yarn run build --base \"/${{ github.event.repository.name }}/\"` でビルドします。
+- `deploy` job で `environment: github-pages` と `page_url` 連携を設定しました。
+
+## 運用メモ
+- リポジトリの `Settings > Pages` で Source を `GitHub Actions` に設定してください。
+- カスタムドメインで root 配信する場合は `--base` 値を変更してください。
+
+## オーナー向け要約
+- 要望どおり、`main` マージ時に GitHub Pages へ自動デプロイする仕組みを追加しました。
+- 手動実行 (`workflow_dispatch`) も可能なので、必要時に再デプロイできます。
