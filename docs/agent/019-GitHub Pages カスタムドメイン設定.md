@@ -18,6 +18,7 @@ GitHub Pages カスタムドメイン設定
 - 現在の Pages workflow は `yarn run build --base "/<repo>/"` になっているため、カスタムドメイン運用では不整合が出る。
 - `www.banana.mrrhp.com` 配信時はルート配下公開となるため、build は `--base "/"` (または default) に変更する。
 - GitHub Actions で `deploy-pages` を使う公開では、`CNAME` ファイルをリポジトリに置いても参照されない運用なので、リポジトリ設定側の custom domain を正とする。
+- 変更対象は `.github/workflows/pages-deploy.yml` の build コマンド行で、`--base "/${{ github.event.repository.name }}/"` を `--base "/"` へ変更する。
 
 ### リポジトリ設定 (GitHub 側)
 - `Settings > Pages` の `Custom domain` に `www.banana.mrrhp.com` を設定する。
@@ -27,7 +28,12 @@ GitHub Pages カスタムドメイン設定
 - 取得済みドメイン側 DNS で、`www` サブドメインを GitHub Pages へ向ける。
 - 推奨レコード:
   - `CNAME` : `www` -> `yuu-eguci.github.io`
+- `www` に既存の `A` / `AAAA` / 重複 `CNAME` がある場合は削除し、`CNAME` 1 本だけを残す。
 - ルートドメイン (`banana.mrrhp.com`) も使う場合は、DNS 事業者の ALIAS/ANAME か URL 転送で `www.banana.mrrhp.com` へ寄せる。
+
+### 反映確認
+- DNS 反映後に `dig www.banana.mrrhp.com CNAME +short` で `yuu-eguci.github.io` を返すことを確認する。
+- GitHub Pages 側で `https://www.banana.mrrhp.com` が HTTPS で開けることを確認する。
 
 ### 期待効果
 - `main` マージ時に自動デプロイされ、`www.banana.mrrhp.com` で最新画面を配信できる。
@@ -40,3 +46,14 @@ GitHub Pages カスタムドメイン設定
 3. 反映確認手順として `dig` または `nslookup` での確認観点を追記してください。
 
 判定: `Needs Fix`
+
+### プランナー対応 (1 回目)
+1. workflow で変更する build コマンドを具体的に追記しました。
+2. `www` の競合レコード削除方針を追記しました。
+3. `dig` を使った反映確認手順を追記しました。
+
+### レビュワー再レビュー (2 回目)
+- 指摘 1 から 3 の反映を確認しました。
+- 実装と運用手順が十分に具体化されています。
+
+判定: `LGTM`
