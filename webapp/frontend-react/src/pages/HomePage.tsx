@@ -18,9 +18,10 @@ import { useEffect, useState, useRef } from "react";
 import { SceneService } from "@/services/SceneService";
 import { SceneViewModel } from "@/viewModels";
 import dummyImage from "/sample-image/sample.png";
-import { SceneChoice } from "@/models";
+import { Scene, SceneChoice } from "@/models";
 import ResetButton from "@/components/ResetButton";
 import { resolveImageUrl } from "@/services/assetImageResolver";
+import sceneData from "@/data/bananadventure-scenes.json";
 // import bananaIcon from "/icon-image/banana.webp";
 
 const service = new SceneService();
@@ -28,6 +29,19 @@ const service = new SceneService();
 const dummyText =
   "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillu";
 const bananaMeterImagePath = "/ui-image/banana-meter-icon.webp";
+const ENDING_SCENE_IDS = {
+  TRUE: 14,
+  BAD: 15,
+} as const;
+const allCollectibleItemIds = Array.from(
+  new Set(
+    (sceneData as Scene[]).flatMap((scene) =>
+      scene.sceneChoices.flatMap((sceneChoice) =>
+        sceneChoice.itemsOnSelect.map((item) => item.id),
+      ),
+    ),
+  ),
+);
 
 function HomePage() {
   const [isJingleOpen, setJingleOpen] = useState(true);
@@ -94,6 +108,36 @@ function HomePage() {
   };
 
   const hasSceneChoices = (viewModel?.scene.sceneChoices.length ?? 0) > 0;
+  const currentSceneId = viewModel?.scene.id ?? -1;
+  const isEndingScene =
+    currentSceneId === ENDING_SCENE_IDS.TRUE || currentSceneId === ENDING_SCENE_IDS.BAD;
+  const playerItemIdSet = new Set((viewModel?.player.items ?? []).map((item) => item.id));
+  const collectedItemCount = allCollectibleItemIds.filter((itemId) =>
+    playerItemIdSet.has(itemId),
+  ).length;
+  const isAllItemsCompleted =
+    allCollectibleItemIds.length > 0 &&
+    allCollectibleItemIds.every((itemId) => playerItemIdSet.has(itemId));
+  const achievements = [
+    {
+      id: "true-end",
+      label: "トゥルーエンド",
+      note: "scene 14 に到達",
+      achieved: currentSceneId === ENDING_SCENE_IDS.TRUE,
+    },
+    {
+      id: "bad-end",
+      label: "バッドエンド",
+      note: "scene 15 に到達",
+      achieved: currentSceneId === ENDING_SCENE_IDS.BAD,
+    },
+    {
+      id: "all-items",
+      label: "全アイテムコンプ",
+      note: `${collectedItemCount}/${allCollectibleItemIds.length} アイテム取得`,
+      achieved: isAllItemsCompleted,
+    },
+  ];
 
   return (
     <Box sx={{ width: "100%", maxWidth: 960, mx: "auto", px: { xs: 0, sm: 1 } }}>
@@ -215,6 +259,73 @@ function HomePage() {
             </Typography>
           </CardContent>
         </Card>
+
+        {isEndingScene ? (
+          <Card
+            sx={{
+              mb: 2,
+              color: "white",
+              background:
+                "linear-gradient(135deg, rgba(26,35,126,0.95) 0%, rgba(46,125,50,0.88) 100%)",
+              border: "1px solid rgba(255,255,255,0.25)",
+            }}
+          >
+            <CardContent>
+              <Typography variant="subtitle1" sx={{ fontWeight: 700, mb: 0.75 }}>
+                エンディングアチーブメント
+              </Typography>
+              <Typography variant="caption" sx={{ display: "block", opacity: 0.88, mb: 1.25 }}>
+                取得済み / 未取得をまとめて表示
+              </Typography>
+
+              <Box sx={{ display: "grid", gap: 1 }}>
+                {achievements.map((achievement) => (
+                  <Box
+                    key={achievement.id}
+                    sx={{
+                      display: "flex",
+                      justifyContent: "space-between",
+                      alignItems: "center",
+                      gap: 1,
+                      p: 1,
+                      borderRadius: 1.5,
+                      border: "1px solid",
+                      borderColor: achievement.achieved
+                        ? "rgba(165,214,167,0.95)"
+                        : "rgba(255,255,255,0.3)",
+                      bgcolor: achievement.achieved
+                        ? "rgba(67,160,71,0.22)"
+                        : "rgba(0,0,0,0.22)",
+                    }}
+                  >
+                    <Box sx={{ minWidth: 0 }}>
+                      <Typography variant="body2" sx={{ fontWeight: 700 }}>
+                        {achievement.label}
+                      </Typography>
+                      <Typography variant="caption" sx={{ opacity: 0.9 }}>
+                        {achievement.note}
+                      </Typography>
+                    </Box>
+
+                    <Box
+                      sx={{
+                        px: 1.25,
+                        py: 0.35,
+                        borderRadius: 999,
+                        fontSize: 12,
+                        fontWeight: 700,
+                        whiteSpace: "nowrap",
+                        bgcolor: achievement.achieved ? "#2e7d32" : "#616161",
+                      }}
+                    >
+                      {achievement.achieved ? "取得済み" : "未取得"}
+                    </Box>
+                  </Box>
+                ))}
+              </Box>
+            </CardContent>
+          </Card>
+        ) : null}
 
         <Typography variant="subtitle1" align="center" sx={{ my: 2 }}>
           インベントリ - アイテムを使用できます
