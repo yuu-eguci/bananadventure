@@ -60,3 +60,17 @@ main マージ時に GitHub Pages へデプロイ
 - そのまま実装に移せる内容です。
 
 判定: `LGTM`
+
+## 実装結果
+- `.github/workflows/pages-deploy.yml` を追加しました。
+- `main` への push (マージ含む) と `workflow_dispatch` で Pages デプロイが走る構成です。
+- `build` job で `webapp/frontend-react` を `yarn run build --base \"/${{ github.event.repository.name }}/\"` でビルドします。
+- `deploy` job で `environment: github-pages` と `page_url` 連携を設定しました。
+
+## 運用メモ
+- リポジトリの `Settings > Pages` で Source を `GitHub Actions` に設定してください。
+- カスタムドメインで root 配信する場合は `--base` 値を変更してください。
+
+## オーナー向け要約
+- 要望どおり、`main` マージ時に GitHub Pages へ自動デプロイする仕組みを追加しました。
+- 手動実行 (`workflow_dispatch`) も可能なので、必要時に再デプロイできます。
