@@ -15,7 +15,7 @@ main マージ時に GitHub Pages へデプロイ
 
 ## 詳細設計
 ### デプロイ方式
-- GitHub Actions の専用 workflow (`pages-deploy.yml`) を追加する。
+- GitHub Actions の専用 workflow (`.github/workflows/pages-deploy.yml`) を追加する。
 - トリガーは `push` の `main` ブランチに限定する。
 - `workflow_dispatch` も有効化して、必要時に手動実行できるようにする。
 
@@ -28,6 +28,10 @@ main マージ時に GitHub Pages へデプロイ
 6. `actions/upload-pages-artifact` で `webapp/frontend-react/dist` をアップロード
 7. `actions/deploy-pages` で公開
 
+### deploy job の設定
+- `deploy` job には `environment: github-pages` を設定する。
+- `actions/deploy-pages` の出力 `page_url` を environment URL へ設定する。
+
 ### 権限 / 安全性
 - workflow の `permissions` は `contents: read`, `pages: write`, `id-token: write` に限定する。
 - `concurrency` を設定して、同時デプロイを 1 本に制御する。
@@ -35,6 +39,7 @@ main マージ時に GitHub Pages へデプロイ
 ### 補足
 - この構成は「GitHub Pages をプロジェクトページとして運用 ( /<repo>/ )」前提。
 - カスタムドメイン運用時は `--base` 値を調整する。
+- リポジトリの `Settings > Pages` で Source を `GitHub Actions` にしておく。
 
 ## レビュー
 
@@ -44,3 +49,14 @@ main マージ時に GitHub Pages へデプロイ
 3. workflow 名とファイル名を固定し、どのファイルを追加するかを明記してください。
 
 判定: `Needs Fix`
+
+### プランナー対応 (1 回目)
+1. `deploy` job の `environment` / `url` 設定方針を追記しました。
+2. `Settings > Pages` で `GitHub Actions` を選ぶ前提を追記しました。
+3. 追加対象ファイルを `.github/workflows/pages-deploy.yml` で明記しました。
+
+### レビュワー再レビュー (2 回目)
+- 指摘 1 から 3 の反映を確認しました。
+- そのまま実装に移せる内容です。
+
+判定: `LGTM`
