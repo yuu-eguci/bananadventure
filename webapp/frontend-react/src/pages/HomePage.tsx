@@ -412,7 +412,11 @@ function HomePage() {
           }}
         />
 
-        <Dialog open={openDialog} onClose={onCloseDialog}>
+        <Dialog
+          open={openDialog}
+          onClose={onCloseDialog}
+          slotProps={{ paper: { sx: { borderRadius: "14px" } } }}
+        >
           <DialogContent>
             <DialogContentText>{dialogMessage}</DialogContentText>
           </DialogContent>
