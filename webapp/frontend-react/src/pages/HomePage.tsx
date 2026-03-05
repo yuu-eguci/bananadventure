@@ -148,6 +148,7 @@ function HomePage() {
               p: 0,
               position: "relative",
               overflow: "hidden",
+              borderRadius: "18px",
               mb: 2,
               height: { xs: 520, md: 560 },
             }}
@@ -219,6 +220,7 @@ function HomePage() {
                         sx={{
                           height: "100%",
                           bgcolor: "primary.main",
+                          borderRadius: "14px",
                         }}
                       >
                         <CardActionArea
@@ -245,6 +247,7 @@ function HomePage() {
               background:
                 "linear-gradient(135deg, rgba(26,35,126,0.95) 0%, rgba(46,125,50,0.88) 100%)",
               border: "1px solid rgba(255,255,255,0.25)",
+              borderRadius: "14px",
             }}
           >
             <CardContent>
@@ -265,7 +268,7 @@ function HomePage() {
                       alignItems: "center",
                       gap: 1,
                       p: 1,
-                      borderRadius: 1.5,
+                      borderRadius: "12px",
                       border: "1px solid",
                       borderColor: achievement.achieved
                         ? "rgba(165,214,167,0.95)"
@@ -304,7 +307,7 @@ function HomePage() {
           </Card>
         ) : null}
 
-        <Card sx={{ mb: 2, bgcolor: "primary.main" }}>
+        <Card sx={{ mb: 2, bgcolor: "primary.main", borderRadius: "14px" }}>
           <CardContent
             sx={{
               display: "flex",
@@ -347,6 +350,7 @@ function HomePage() {
                     opacity: item.used ? 0.5 : 1,
                     pointerEvents: item.used ? "none" : "auto",
                     bgcolor: "primary.main",
+                    borderRadius: "14px",
                   }}
                 >
                   <CardActionArea
@@ -408,7 +412,11 @@ function HomePage() {
           }}
         />
 
-        <Dialog open={openDialog} onClose={onCloseDialog}>
+        <Dialog
+          open={openDialog}
+          onClose={onCloseDialog}
+          slotProps={{ paper: { sx: { borderRadius: "14px" } } }}
+        >
           <DialogContent>
             <DialogContentText>{dialogMessage}</DialogContentText>
           </DialogContent>
