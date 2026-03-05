@@ -7,7 +7,6 @@ import {
   CardActionArea,
   CardContent,
   Dialog,
-  DialogActions,
   DialogContent,
   DialogContentText,
   Grid,
@@ -15,7 +14,12 @@ import {
   Snackbar,
   Typography,
 } from "@mui/material";
-import { VolumeOffRounded, VolumeUpRounded } from "@mui/icons-material";
+import {
+  TouchAppOutlined,
+  VolumeOffRounded,
+  VolumeUpRounded,
+} from "@mui/icons-material";
+import { keyframes } from "@mui/system";
 import { useEffect, useState, useRef } from "react";
 
 import { SceneService } from "@/services/SceneService";
@@ -46,6 +50,14 @@ const allCollectibleItemIds = Array.from(
     ),
   ),
 );
+const tapHintBlink = keyframes`
+  0%, 100% {
+    opacity: 0.45;
+  }
+  50% {
+    opacity: 1;
+  }
+`;
 
 function HomePage() {
   const [isJingleOpen, setJingleOpen] = useState(true);
@@ -53,6 +65,7 @@ function HomePage() {
   const [openDialog, setOpenDialog] = useState(false);
   const [dialogMessage, setDialogMessage] = useState<React.ReactNode>(<></>);
   const selectedSceneChoice = useRef<SceneChoice | null>(null);
+  const isClosingRef = useRef<boolean>(false);
   const {
     isPlaying: isBgmPlaying,
     toggle: toggleBgm,
@@ -92,25 +105,35 @@ function HomePage() {
   };
 
   const onCloseDialog = async () => {
-    if (!viewModel || !selectedSceneChoice.current) {
-      console.error("viewModel is null");
-      setOpenDialog(false);
-      return;
+    if (isClosingRef.current) return;
+    isClosingRef.current = true;
+
+    try {
+      if (!viewModel || !selectedSceneChoice.current) {
+        console.error("viewModel is null");
+        setOpenDialog(false);
+        isClosingRef.current = false;
+        return;
+      }
+
+      setJingleOpen(true);
+
+      const _ = await service.selectSceneChoice({
+        viewModel,
+        selectedSceneChoiceId: selectedSceneChoice.current.id,
+      });
+      setViewModel(_);
+
+      setTimeout(() => {
+        setJingleOpen(false);
+        selectedSceneChoice.current = null;
+        setOpenDialog(false);
+        isClosingRef.current = false;
+      }, 1000);
+    } catch (error) {
+      isClosingRef.current = false;
+      throw error;
     }
-
-    setJingleOpen(true);
-
-    const _ = await service.selectSceneChoice({
-      viewModel,
-      selectedSceneChoiceId: selectedSceneChoice.current.id,
-    });
-    setViewModel(_);
-
-    setTimeout(() => {
-      setJingleOpen(false);
-      selectedSceneChoice.current = null;
-      setOpenDialog(false);
-    }, 1000);
   };
 
   const onPressItem = async (item: Item) => {
@@ -454,17 +477,37 @@ function HomePage() {
 
         <Dialog
           open={openDialog}
-          onClose={onCloseDialog}
-          slotProps={{ paper: { sx: { borderRadius: "14px" } } }}
+          onClose={(_, reason) => {
+            if (reason === "backdropClick" || reason === "escapeKeyDown") {
+              void onCloseDialog();
+            }
+          }}
+          slotProps={{
+            paper: {
+              onClick: () => {
+                void onCloseDialog();
+              },
+              sx: { borderRadius: "14px", cursor: "pointer" },
+            },
+          }}
         >
           <DialogContent>
             <DialogContentText>{dialogMessage}</DialogContentText>
+            <Box
+              sx={{
+                mt: 1.5,
+                display: "flex",
+                alignItems: "center",
+                justifyContent: "center",
+                gap: 0.5,
+                color: "text.secondary",
+                animation: `${tapHintBlink} 1.2s ease-in-out infinite`,
+              }}
+            >
+              <TouchAppOutlined sx={{ fontSize: 18 }} />
+              <Typography variant="caption">タップして次へ</Typography>
+            </Box>
           </DialogContent>
-          <DialogActions>
-            <Button onClick={onCloseDialog} color="primary">
-              OK
-            </Button>
-          </DialogActions>
         </Dialog>
       </Grid>
 
