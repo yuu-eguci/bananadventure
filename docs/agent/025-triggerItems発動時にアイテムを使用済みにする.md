@@ -42,9 +42,11 @@ scene 11 「豆乳バナナが腐って豆乳ヨーグルトに！」に trigger
   1. `updatedScene` と `updatedPlayer` をローカル変数で保持して `while` ループ開始
   2. `updatedScene.triggerItems` を先頭から評価
   3. 各 `triggerItem` で `updatedPlayer.items` から「`id` 一致かつ `used === false`」のアイテムを 1 件探す
-  4. 見つかったらその 1 件のみ `used: true` に更新し、`itemsChanged = true` を立てる
-  5. その後 `nextSceneId` の Scene を取得して `updatedScene` を更新し、`for` を抜けて次の `while` へ進む
-  6. どの `triggerItem` も発動しなければ `while` を終了し、`{ scene: updatedScene, player: updatedPlayer }` を返す
+  4. 見つかったら `updatedPlayer.items` を `.map()` でイミュータブルに更新し、該当 1 件のみ `used: true` に変更する
+  5. 同時に `updatedPlayer.itemsChanged = true` を設定する
+  6. `nextSceneId` の Scene を取得して `updatedScene` を更新する
+  7. `for` ループを `break` し、次の `while` イテレーションへ進む
+  8. どの `triggerItem` も発動しなければ `while` を終了し、`{ scene: updatedScene, player: updatedPlayer }` を返す
 - 補足
   - 同一 ID アイテムを複数持っているケースでは、未使用の 1 件だけを消費する
   - `triggerItems` の優先順は現状どおり配列順を維持する（最初に発動した 1 件を採用）
@@ -60,7 +62,8 @@ scene 11 「豆乳バナナが腐って豆乳ヨーグルトに！」に trigger
 
 ### 受け入れ条件
 - 豆乳バナナ未使用で `scene 10` に入ると、`scene 11` へ遷移し、同時に豆乳バナナが `used: true` になる
-- `scene 11` から戻って再度 `scene 10` に来ても、同じ豆乳バナナでは再発動しない
+- 何らかのルートで再度 `scene 10` に来た場合でも、すでに `used: true` の同一アイテムでは再発動しない
+- 同一 `item id` のアイテムを複数保持している場合、`triggerItems` 発動 1 回につき未使用アイテム 1 件だけが消費される
 - `selectSceneChoice` 起点でも `useItem` 起点でも、`triggerItems` 発動時の消費ルールが一致する
 - 既存の `bananaMeter <= 0 -> scene 15` は挙動が変わらない
 
