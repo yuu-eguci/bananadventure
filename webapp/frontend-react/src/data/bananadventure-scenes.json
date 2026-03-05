@@ -387,7 +387,7 @@
         "text": "ビーチを散策",
         "responseText": "何もない・・・おなかが空いてきたのだ\n島の奥はジャングルみたいになっているのだ\nそっちにいってみよう",
         "bananaMeterDelta": -10,
-        "nextSceneId": 11,
+        "nextSceneId": 10,
         "itemsOnSelect": []
       },
       {
@@ -397,7 +397,7 @@
         "text": "島の奥の方へ進む",
         "responseText": "島の奥はジャングルのようになっていた\nおなかがすいてきたし何か食べるものがあったらいいんだけど",
         "bananaMeterDelta": 0,
-        "nextSceneId": 11,
+        "nextSceneId": 10,
         "itemsOnSelect": []
       },
       {
@@ -407,7 +407,7 @@
         "text": "ひたすら救助を待つ",
         "responseText": "誰も来ないのだ・・・\nおなかがすいて何も考えられない\n場所を変えるのだ、何かあるかもしれない",
         "bananaMeterDelta": -20,
-        "nextSceneId": 11,
+        "nextSceneId": 10,
         "itemsOnSelect": []
       }
     ]
