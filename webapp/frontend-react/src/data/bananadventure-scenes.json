@@ -278,7 +278,7 @@
             "text": "ストロングゼロ",
             "description": "",
             "responseText": "",
-            "bananaMeterDelta": 0,
+            "bananaMeterDelta": -9,
             "bananaMeterDeltaPercent": -9,
             "image": "/item-image/item-strong-zero.webp",
             "used": false
