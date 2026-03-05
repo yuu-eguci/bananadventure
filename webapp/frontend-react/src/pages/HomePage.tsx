@@ -8,7 +8,6 @@ import {
   CardContent,
   Dialog,
   DialogContent,
-  DialogContentText,
   Grid,
   Paper,
   Snackbar,
@@ -64,6 +63,7 @@ function HomePage() {
   const [viewModel, setViewModel] = useState<SceneViewModel | null>(null);
   const [openDialog, setOpenDialog] = useState(false);
   const [dialogMessage, setDialogMessage] = useState<React.ReactNode>(<></>);
+  const [dialogType, setDialogType] = useState<"scene" | "item" | null>(null);
   const selectedSceneChoice = useRef<SceneChoice | null>(null);
   const isClosingRef = useRef<boolean>(false);
   const {
@@ -94,6 +94,7 @@ function HomePage() {
       return;
     }
     selectedSceneChoice.current = choice;
+    setDialogType("scene");
 
     const { responseText } = choice;
     if (responseText.trim().length === 0) {
@@ -109,9 +110,25 @@ function HomePage() {
     isClosingRef.current = true;
 
     try {
+      if (dialogType === "item") {
+        setOpenDialog(false);
+        setDialogType(null);
+        isClosingRef.current = false;
+        return;
+      }
+
+      if (dialogType !== "scene") {
+        setOpenDialog(false);
+        setDialogType(null);
+        selectedSceneChoice.current = null;
+        isClosingRef.current = false;
+        return;
+      }
+
       if (!viewModel || !selectedSceneChoice.current) {
         console.error("viewModel is null");
         setOpenDialog(false);
+        setDialogType(null);
         isClosingRef.current = false;
         return;
       }
@@ -128,6 +145,7 @@ function HomePage() {
         setJingleOpen(false);
         selectedSceneChoice.current = null;
         setOpenDialog(false);
+        setDialogType(null);
         isClosingRef.current = false;
       }, 1000);
     } catch (error) {
@@ -141,8 +159,19 @@ function HomePage() {
       return;
     }
 
-    const _ = await service.useItem({ viewModel, itemId: item.id });
-    setViewModel(_);
+    const updatedViewModel = await service.useItem({ viewModel, itemId: item.id });
+    setViewModel(updatedViewModel);
+
+    const signedDelta =
+      item.bananaMeterDelta > 0 ? `+${item.bananaMeterDelta}` : `${item.bananaMeterDelta}`;
+    setDialogMessage(
+      <Box>
+        <Typography component="p">{item.text} を使用した！</Typography>
+        <Typography component="p">ばななメーター {signedDelta}</Typography>
+      </Box>,
+    );
+    setDialogType("item");
+    setOpenDialog(true);
   };
 
   const hasSceneChoices = (viewModel?.scene.sceneChoices.length ?? 0) > 0;
@@ -492,7 +521,11 @@ function HomePage() {
           }}
         >
           <DialogContent>
-            <DialogContentText>{dialogMessage}</DialogContentText>
+            {dialogType === "item" ? (
+              dialogMessage
+            ) : (
+              <Typography component="p">{dialogMessage}</Typography>
+            )}
             <Box
               sx={{
                 mt: 1.5,
