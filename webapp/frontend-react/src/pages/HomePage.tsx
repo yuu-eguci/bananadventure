@@ -34,6 +34,8 @@ const service = new SceneService();
 const dummyText =
   "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillu";
 const bananaMeterImagePath = "/ui-image/banana-meter-icon.webp";
+const endingSceneLabel = "FIN";
+const endingSceneHint = "アチーブメントを確認してね";
 const ENDING_SCENE_IDS = {
   TRUE: 14,
   BAD: 15,
@@ -337,6 +339,44 @@ function HomePage() {
                       </Card>
                     ))}
               </Box>
+
+              {isEndingScene ? (
+                <Box
+                  sx={{
+                    mt: 1.25,
+                    display: "flex",
+                    justifyContent: "flex-end",
+                  }}
+                >
+                  <Box
+                    sx={{
+                      display: "flex",
+                      alignItems: "baseline",
+                      gap: 0.75,
+                      px: 1.5,
+                      py: 0.5,
+                      borderRadius: 999,
+                      bgcolor: "rgba(0,0,0,0.3)",
+                      border: "1px solid rgba(255,255,255,0.45)",
+                    }}
+                  >
+                    <Typography
+                      component="span"
+                      variant="subtitle2"
+                      sx={{ fontWeight: 800, letterSpacing: "0.12em", lineHeight: 1 }}
+                    >
+                      {endingSceneLabel}
+                    </Typography>
+                    <Typography
+                      component="span"
+                      variant="caption"
+                      sx={{ opacity: 0.92, lineHeight: 1.2 }}
+                    >
+                      {endingSceneHint}
+                    </Typography>
+                  </Box>
+                </Box>
+              ) : null}
             </Box>
           </Paper>
         </Grid>
