@@ -6,8 +6,6 @@ import {
   Card,
   CardActionArea,
   CardContent,
-  Dialog,
-  DialogContent,
   Grid,
   Paper,
   Snackbar,
@@ -57,14 +55,15 @@ const tapHintBlink = keyframes`
     opacity: 1;
   }
 `;
+type InlineMessageState =
+  | { kind: "scene"; sceneChoiceId: number; text: string }
+  | { kind: "item"; itemName: string; signedDeltaText: string }
+  | null;
 
 function HomePage() {
   const [isJingleOpen, setJingleOpen] = useState(true);
   const [viewModel, setViewModel] = useState<SceneViewModel | null>(null);
-  const [openDialog, setOpenDialog] = useState(false);
-  const [dialogMessage, setDialogMessage] = useState<React.ReactNode>(<></>);
-  const [dialogType, setDialogType] = useState<"scene" | "item" | null>(null);
-  const selectedSceneChoice = useRef<SceneChoice | null>(null);
+  const [inlineMessage, setInlineMessage] = useState<InlineMessageState>(null);
   const isClosingRef = useRef<boolean>(false);
   const {
     isPlaying: isBgmPlaying,
@@ -93,43 +92,27 @@ function HomePage() {
       console.error("viewModel is null");
       return;
     }
-    selectedSceneChoice.current = choice;
+    if (isClosingRef.current) return;
+
+    if (inlineMessage?.kind === "item") {
+      setInlineMessage(null);
+    }
 
     const { responseText } = choice;
     if (responseText.trim().length === 0) {
-      await onCloseDialog("scene");
+      await advanceScene(choice.id);
       return;
     }
-    setDialogType("scene");
-    setDialogMessage(responseText);
-    setOpenDialog(true);
+    setInlineMessage({ kind: "scene", sceneChoiceId: choice.id, text: responseText });
   };
 
-  const onCloseDialog = async (explicitType?: "scene" | "item") => {
-    const type = explicitType ?? dialogType;
+  const advanceScene = async (sceneChoiceId: number) => {
     if (isClosingRef.current) return;
     isClosingRef.current = true;
 
     try {
-      if (type === "item") {
-        setOpenDialog(false);
-        setDialogType(null);
-        isClosingRef.current = false;
-        return;
-      }
-
-      if (type !== "scene") {
-        setOpenDialog(false);
-        setDialogType(null);
-        selectedSceneChoice.current = null;
-        isClosingRef.current = false;
-        return;
-      }
-
-      if (!viewModel || !selectedSceneChoice.current) {
+      if (!viewModel) {
         console.error("viewModel is null");
-        setOpenDialog(false);
-        setDialogType(null);
         isClosingRef.current = false;
         return;
       }
@@ -138,15 +121,13 @@ function HomePage() {
 
       const _ = await service.selectSceneChoice({
         viewModel,
-        selectedSceneChoiceId: selectedSceneChoice.current.id,
+        selectedSceneChoiceId: sceneChoiceId,
       });
       setViewModel(_);
 
       setTimeout(() => {
         setJingleOpen(false);
-        selectedSceneChoice.current = null;
-        setOpenDialog(false);
-        setDialogType(null);
+        setInlineMessage(null);
         isClosingRef.current = false;
       }, 1000);
     } catch (error) {
@@ -156,23 +137,16 @@ function HomePage() {
   };
 
   const onPressItem = async (item: Item) => {
-    if (!viewModel) {
+    if (!viewModel || isClosingRef.current || inlineMessage?.kind === "scene") {
       return;
     }
 
     const updatedViewModel = await service.useItem({ viewModel, itemId: item.id });
     setViewModel(updatedViewModel);
 
-    const signedDelta =
+    const signedDeltaText =
       item.bananaMeterDelta > 0 ? `+${item.bananaMeterDelta}` : `${item.bananaMeterDelta}`;
-    setDialogMessage(
-      <Box>
-        <Typography component="p">{item.text} を使用した！</Typography>
-        <Typography component="p">ばななメーター {signedDelta}</Typography>
-      </Box>,
-    );
-    setDialogType("item");
-    setOpenDialog(true);
+    setInlineMessage({ kind: "item", itemName: item.text, signedDeltaText });
   };
 
   const hasSceneChoices = (viewModel?.scene.sceneChoices.length ?? 0) > 0;
@@ -305,7 +279,41 @@ function HomePage() {
                   width: "100%",
                 }}
               >
-                {viewModel == null
+                {inlineMessage?.kind === "scene" ? (
+                  <Card
+                    sx={{
+                      height: "100%",
+                      bgcolor: "primary.main",
+                      borderRadius: "14px",
+                      gridColumn: "1 / -1",
+                    }}
+                  >
+                    <CardActionArea
+                      sx={{ height: "100%" }}
+                      onClick={() => {
+                        void advanceScene(inlineMessage.sceneChoiceId);
+                      }}
+                    >
+                      <CardContent>
+                        <Typography variant="body2">{inlineMessage.text}</Typography>
+                        <Box
+                          sx={{
+                            mt: 1.5,
+                            display: "flex",
+                            alignItems: "center",
+                            justifyContent: "center",
+                            gap: 0.5,
+                            color: "text.secondary",
+                            animation: `${tapHintBlink} 1.2s ease-in-out infinite`,
+                          }}
+                        >
+                          <TouchAppOutlined sx={{ fontSize: 18 }} />
+                          <Typography variant="caption">タップして次へ</Typography>
+                        </Box>
+                      </CardContent>
+                    </CardActionArea>
+                  </Card>
+                ) : viewModel == null
                   ? null
                   : viewModel.scene.sceneChoices.map((choice) => (
                       <Card
@@ -318,7 +326,9 @@ function HomePage() {
                       >
                         <CardActionArea
                           sx={{ height: "100%" }}
-                          onClick={() => onPressSceneChoice(choice)}
+                          onClick={() => {
+                            void onPressSceneChoice(choice);
+                          }}
                         >
                           <CardContent>
                             <Typography variant="body2">{choice.text}</Typography>
@@ -434,21 +444,59 @@ function HomePage() {
             gap: 1,
           }}
         >
-          {viewModel == null
+          {inlineMessage?.kind === "item" ? (
+            <Card
+              sx={{
+                bgcolor: "primary.main",
+                borderRadius: "14px",
+                gridColumn: "1 / -1",
+              }}
+            >
+              <CardActionArea
+                onClick={() => {
+                  setInlineMessage(null);
+                }}
+              >
+                <CardContent>
+                  <Typography component="p">{inlineMessage.itemName} を使用した！</Typography>
+                  <Typography component="p">
+                    ばななメーター {inlineMessage.signedDeltaText}
+                  </Typography>
+                  <Box
+                    sx={{
+                      mt: 1.5,
+                      display: "flex",
+                      alignItems: "center",
+                      justifyContent: "center",
+                      gap: 0.5,
+                      color: "text.secondary",
+                      animation: `${tapHintBlink} 1.2s ease-in-out infinite`,
+                    }}
+                  >
+                    <TouchAppOutlined sx={{ fontSize: 18 }} />
+                    <Typography variant="caption">タップして次へ</Typography>
+                  </Box>
+                </CardContent>
+              </CardActionArea>
+            </Card>
+          ) : viewModel == null
             ? null
             : viewModel.player.items.map((item) => (
                 <Card
                   key={item.id}
                   sx={{
-                    opacity: item.used ? 0.5 : 1,
-                    pointerEvents: item.used ? "none" : "auto",
+                    opacity: item.used || inlineMessage?.kind === "scene" ? 0.5 : 1,
+                    pointerEvents:
+                      item.used || inlineMessage?.kind === "scene" ? "none" : "auto",
                     bgcolor: "primary.main",
                     borderRadius: "14px",
                   }}
                 >
                   <CardActionArea
-                    onClick={() => onPressItem(item)}
-                    disabled={item.used}
+                    onClick={() => {
+                      void onPressItem(item);
+                    }}
+                    disabled={item.used || inlineMessage?.kind === "scene"}
                   >
                     <CardContent
                       sx={{
@@ -498,51 +546,13 @@ function HomePage() {
         <ResetButton
           onClick={() => {
             setJingleOpen(true);
+            setInlineMessage(null);
             initializeScene();
             setTimeout(() => {
               setJingleOpen(false);
             }, 1000);
           }}
         />
-
-        <Dialog
-          open={openDialog}
-          onClose={(_, reason) => {
-            if (reason === "backdropClick" || reason === "escapeKeyDown") {
-              void onCloseDialog();
-            }
-          }}
-          slotProps={{
-            paper: {
-              onClick: () => {
-                void onCloseDialog();
-              },
-              sx: { borderRadius: "14px", cursor: "pointer" },
-            },
-          }}
-        >
-          <DialogContent>
-            {dialogType === "item" ? (
-              dialogMessage
-            ) : (
-              <Typography component="p">{dialogMessage}</Typography>
-            )}
-            <Box
-              sx={{
-                mt: 1.5,
-                display: "flex",
-                alignItems: "center",
-                justifyContent: "center",
-                gap: 0.5,
-                color: "text.secondary",
-                animation: `${tapHintBlink} 1.2s ease-in-out infinite`,
-              }}
-            >
-              <TouchAppOutlined sx={{ fontSize: 18 }} />
-              <Typography variant="caption">タップして次へ</Typography>
-            </Box>
-          </DialogContent>
-        </Dialog>
       </Grid>
 
       <Snackbar
