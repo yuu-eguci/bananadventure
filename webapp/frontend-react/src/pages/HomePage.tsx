@@ -94,30 +94,31 @@ function HomePage() {
       return;
     }
     selectedSceneChoice.current = choice;
-    setDialogType("scene");
 
     const { responseText } = choice;
     if (responseText.trim().length === 0) {
-      await onCloseDialog();
+      await onCloseDialog("scene");
       return;
     }
+    setDialogType("scene");
     setDialogMessage(responseText);
     setOpenDialog(true);
   };
 
-  const onCloseDialog = async () => {
+  const onCloseDialog = async (explicitType?: "scene" | "item") => {
+    const type = explicitType ?? dialogType;
     if (isClosingRef.current) return;
     isClosingRef.current = true;
 
     try {
-      if (dialogType === "item") {
+      if (type === "item") {
         setOpenDialog(false);
         setDialogType(null);
         isClosingRef.current = false;
         return;
       }
 
-      if (dialogType !== "scene") {
+      if (type !== "scene") {
         setOpenDialog(false);
         setDialogType(null);
         selectedSceneChoice.current = null;
