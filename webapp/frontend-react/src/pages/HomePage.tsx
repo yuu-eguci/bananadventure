@@ -1,18 +1,21 @@
 import {
+  Alert,
   Backdrop,
   Box,
+  Button,
   Card,
   CardActionArea,
   CardContent,
-  Grid,
-  Paper,
-  Typography,
-  Button,
   Dialog,
   DialogActions,
   DialogContent,
   DialogContentText,
+  Grid,
+  Paper,
+  Snackbar,
+  Typography,
 } from "@mui/material";
+import { VolumeOffRounded, VolumeUpRounded } from "@mui/icons-material";
 import { useEffect, useState, useRef } from "react";
 
 import { SceneService } from "@/services/SceneService";
@@ -22,6 +25,7 @@ import { Item, Scene, SceneChoice } from "@/models";
 import ResetButton from "@/components/ResetButton";
 import { resolveImageUrl } from "@/services/assetImageResolver";
 import sceneData from "@/data/bananadventure-scenes.json";
+import { useBgmPlayer } from "@/hooks/useBgmPlayer";
 // import bananaIcon from "/icon-image/banana.webp";
 
 const service = new SceneService();
@@ -49,6 +53,12 @@ function HomePage() {
   const [openDialog, setOpenDialog] = useState(false);
   const [dialogMessage, setDialogMessage] = useState<React.ReactNode>(<></>);
   const selectedSceneChoice = useRef<SceneChoice | null>(null);
+  const {
+    isPlaying: isBgmPlaying,
+    toggle: toggleBgm,
+    errorMessage: bgmErrorMessage,
+    clearError: clearBgmError,
+  } = useBgmPlayer();
 
   useEffect(() => {
     setTimeout(() => {
@@ -158,6 +168,31 @@ function HomePage() {
               height: { xs: 520, md: 560 },
             }}
           >
+            <Button
+              onClick={() => {
+                void toggleBgm();
+              }}
+              variant="contained"
+              size="small"
+              color={isBgmPlaying ? "success" : "inherit"}
+              startIcon={isBgmPlaying ? <VolumeUpRounded /> : <VolumeOffRounded />}
+              aria-label={isBgmPlaying ? "BGM を停止" : "BGM を再生"}
+              sx={{
+                position: "absolute",
+                top: "12px",
+                right: "12px",
+                zIndex: 3,
+                color: "common.white",
+                ...(isBgmPlaying
+                  ? {}
+                  : {
+                      bgcolor: "grey.700",
+                      "&:hover": { bgcolor: "grey.800" },
+                    }),
+              }}
+            >
+              {isBgmPlaying ? "BGM ON" : "BGM OFF"}
+            </Button>
             <img
               src={viewModel?.scene.image || dummyImage}
               alt="Scene"
@@ -432,6 +467,21 @@ function HomePage() {
           </DialogActions>
         </Dialog>
       </Grid>
+
+      <Snackbar
+        open={bgmErrorMessage !== null}
+        autoHideDuration={4000}
+        onClose={(_, reason) => {
+          if (reason === "clickaway") {
+            return;
+          }
+          clearBgmError();
+        }}
+      >
+        <Alert onClose={clearBgmError} severity="warning" sx={{ width: "100%" }}>
+          {bgmErrorMessage ?? ""}
+        </Alert>
+      </Snackbar>
     </Box>
   );
 }
