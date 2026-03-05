@@ -267,78 +267,83 @@ function HomePage() {
                 {viewModel?.scene.text || dummyText}
               </Typography>
 
-              {hasSceneChoices ? (
-                <Typography variant="subtitle2" sx={{ mb: 1 }}>
-                  選択肢
-                </Typography>
-              ) : null}
-
-              <Box
-                sx={{
-                  display: "grid",
-                  gridTemplateColumns: { xs: "1fr", sm: "repeat(2, minmax(0, 1fr))" },
-                  gap: 1,
-                  width: "100%",
-                }}
-              >
-                {inlineMessage?.kind === "scene" ? (
-                  <Card
+              {inlineMessage?.kind === "scene" ? (
+                <Card
+                  sx={{
+                    width: "100%",
+                    bgcolor: "primary.main",
+                    borderRadius: "14px",
+                  }}
+                >
+                  <CardActionArea
                     sx={{
-                      height: "100%",
-                      bgcolor: "primary.main",
-                      borderRadius: "14px",
-                      gridColumn: "1 / -1",
+                      minHeight: { xs: 140, sm: 168 },
+                      display: "flex",
+                      alignItems: "stretch",
+                    }}
+                    onClick={() => {
+                      void advanceScene(inlineMessage.sceneChoiceId);
                     }}
                   >
-                    <CardActionArea
-                      sx={{ height: "100%" }}
-                      onClick={() => {
-                        void advanceScene(inlineMessage.sceneChoiceId);
-                      }}
-                    >
-                      <CardContent>
-                        <Typography variant="body2">{inlineMessage.text}</Typography>
-                        <Box
-                          sx={{
-                            mt: 1.5,
-                            display: "flex",
-                            alignItems: "center",
-                            justifyContent: "center",
-                            gap: 0.5,
-                            color: "text.secondary",
-                            animation: `${tapHintBlink} 1.2s ease-in-out infinite`,
-                          }}
-                        >
-                          <TouchAppOutlined sx={{ fontSize: 18 }} />
-                          <Typography variant="caption">タップして次へ</Typography>
-                        </Box>
-                      </CardContent>
-                    </CardActionArea>
-                  </Card>
-                ) : viewModel == null
-                  ? null
-                  : viewModel.scene.sceneChoices.map((choice) => (
-                      <Card
-                        key={choice.id}
+                    <CardContent sx={{ width: "100%", py: { xs: 2.5, sm: 3 } }}>
+                      <Typography variant="body2">{inlineMessage.text}</Typography>
+                      <Box
                         sx={{
-                          height: "100%",
-                          bgcolor: "primary.main",
-                          borderRadius: "14px",
+                          mt: 1.5,
+                          display: "flex",
+                          alignItems: "center",
+                          justifyContent: "center",
+                          gap: 0.5,
+                          color: "text.secondary",
+                          animation: `${tapHintBlink} 1.2s ease-in-out infinite`,
                         }}
                       >
-                        <CardActionArea
-                          sx={{ height: "100%" }}
-                          onClick={() => {
-                            void onPressSceneChoice(choice);
-                          }}
-                        >
-                          <CardContent>
-                            <Typography variant="body2">{choice.text}</Typography>
-                          </CardContent>
-                        </CardActionArea>
-                      </Card>
-                    ))}
-              </Box>
+                        <TouchAppOutlined sx={{ fontSize: 18 }} />
+                        <Typography variant="caption">タップして次へ</Typography>
+                      </Box>
+                    </CardContent>
+                  </CardActionArea>
+                </Card>
+              ) : hasSceneChoices ? (
+                <>
+                  <Typography variant="subtitle2" sx={{ mb: 1 }}>
+                    選択肢
+                  </Typography>
+
+                  <Box
+                    sx={{
+                      display: "grid",
+                      gridTemplateColumns: { xs: "1fr", sm: "repeat(2, minmax(0, 1fr))" },
+                      gap: 1,
+                      width: "100%",
+                    }}
+                  >
+                    {viewModel == null
+                      ? null
+                      : viewModel.scene.sceneChoices.map((choice) => (
+                          <Card
+                            key={choice.id}
+                            sx={{
+                              height: "100%",
+                              bgcolor: "primary.main",
+                              borderRadius: "14px",
+                            }}
+                          >
+                            <CardActionArea
+                              sx={{ height: "100%" }}
+                              onClick={() => {
+                                void onPressSceneChoice(choice);
+                              }}
+                            >
+                              <CardContent>
+                                <Typography variant="body2">{choice.text}</Typography>
+                              </CardContent>
+                            </CardActionArea>
+                          </Card>
+                        ))}
+                  </Box>
+                </>
+              ) : null}
 
               {isEndingScene ? (
                 <Box
