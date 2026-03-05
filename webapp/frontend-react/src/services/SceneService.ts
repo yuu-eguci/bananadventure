@@ -12,6 +12,55 @@ export class SceneService {
   // NOTE: いやあ、 private method 使いたいので constructor 作った。
   constructor() {}
 
+  private async resolveTriggeredScene({
+    scene,
+    player,
+  }: {
+    scene: Scene;
+    player: Player;
+  }): Promise<{ scene: Scene; player: Player }> {
+    let updatedScene = scene;
+    let updatedPlayer = player;
+
+    while (true) {
+      const triggers = updatedScene.triggerItems;
+      let triggered = false;
+
+      for (const triggerItem of triggers) {
+        const { item, nextSceneId } = triggerItem;
+        const hasUnusedItem = updatedPlayer.items.some((i) => i.id === item.id && !i.used);
+
+        if (hasUnusedItem) {
+          let consumed = false;
+          updatedPlayer = {
+            ...updatedPlayer,
+            items: updatedPlayer.items.map((targetItem) => {
+              if (!consumed && targetItem.id === item.id && !targetItem.used) {
+                consumed = true;
+                return { ...targetItem, used: true };
+              }
+
+              return targetItem;
+            }),
+            itemsChanged: true,
+          };
+          updatedScene = await this.getScene({ sceneId: nextSceneId });
+          triggered = true;
+          break;
+        }
+      }
+
+      if (!triggered) {
+        break;
+      }
+    }
+
+    return {
+      scene: updatedScene,
+      player: updatedPlayer,
+    };
+  }
+
   private async getInitialPlayer(): Promise<Player> {
     // NOTE: Django のノリで new しちゃいそうになるが、 Player は type/interface ベースの定義である。 class ではない。
     //       new するんじゃなくて、オブジェクトの構造を表すだけ。
@@ -64,6 +113,49 @@ export class SceneService {
     };
   }
 
+  async useItem({
+    viewModel,
+    itemId,
+  }: {
+    viewModel: SceneViewModel;
+    itemId: number;
+  }): Promise<SceneViewModel> {
+    const targetItem = viewModel.player.items.find((item) => item.id === itemId);
+    if (!targetItem || targetItem.used) {
+      return viewModel;
+    }
+
+    let updatedPlayer: Player = {
+      ...viewModel.player,
+      items: viewModel.player.items.map((item) =>
+        item.id === itemId ? { ...item, used: true } : item,
+      ),
+    };
+
+    if (targetItem.bananaMeterDelta !== 0) {
+      updatedPlayer.bananaMeter += targetItem.bananaMeterDelta;
+      updatedPlayer.bananaMeterChanged = true;
+    }
+    updatedPlayer.itemsChanged = true;
+
+    let updatedScene = null;
+    if (updatedPlayer.bananaMeter <= 0) {
+      updatedScene = await this.getScene({ sceneId: SPECIAL_SCENE_IDS.GAMEOVER });
+    } else {
+      const resolved = await this.resolveTriggeredScene({
+        scene: viewModel.scene,
+        player: updatedPlayer,
+      });
+      updatedScene = resolved.scene;
+      updatedPlayer = resolved.player;
+    }
+
+    return {
+      scene: updatedScene,
+      player: updatedPlayer,
+    };
+  }
+
   async selectSceneChoice({
     viewModel,
     selectedSceneChoiceId,
@@ -81,7 +173,7 @@ export class SceneService {
     }
 
     // 返却のため、 Player を複製
-    const updatedPlayer = { ...viewModel.player };
+    let updatedPlayer = { ...viewModel.player };
 
     // SceneModelView.player.items 更新
 
@@ -106,25 +198,12 @@ export class SceneService {
       updatedScene = await this.getScene({ sceneId: selectedSceneChoice.nextSceneId });
     }
 
-    // SceneModelView.scene.triggerItems 処理
-    while (true) {
-      const triggers = updatedScene.triggerItems;
-      let triggered = false;
-
-      for (const triggerItem of triggers) {
-        const { item, nextSceneId } = triggerItem;
-        const hasItem = updatedPlayer.items.some((i) => i.id === item.id);
-        if (hasItem) {
-          updatedScene = await this.getScene({ sceneId: nextSceneId });
-          triggered = true;
-          break;
-        }
-      }
-
-      if (!triggered) {
-        break
-      };
-    }
+    const resolved = await this.resolveTriggeredScene({
+      scene: updatedScene,
+      player: updatedPlayer,
+    });
+    updatedScene = resolved.scene;
+    updatedPlayer = resolved.player;
 
     // SceneModelView を返す
     return {

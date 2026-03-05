@@ -18,7 +18,7 @@ import { useEffect, useState, useRef } from "react";
 import { SceneService } from "@/services/SceneService";
 import { SceneViewModel } from "@/viewModels";
 import dummyImage from "/sample-image/sample.png";
-import { Scene, SceneChoice } from "@/models";
+import { Item, Scene, SceneChoice } from "@/models";
 import ResetButton from "@/components/ResetButton";
 import { resolveImageUrl } from "@/services/assetImageResolver";
 import sceneData from "@/data/bananadventure-scenes.json";
@@ -103,8 +103,13 @@ function HomePage() {
     }, 1000);
   };
 
-  const onPressItem = (item: object) => {
-    console.log(item);
+  const onPressItem = async (item: Item) => {
+    if (!viewModel) {
+      return;
+    }
+
+    const _ = await service.useItem({ viewModel, itemId: item.id });
+    setViewModel(_);
   };
 
   const hasSceneChoices = (viewModel?.scene.sceneChoices.length ?? 0) > 0;
