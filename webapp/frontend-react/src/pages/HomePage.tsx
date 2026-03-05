@@ -152,6 +152,8 @@ function HomePage() {
   };
 
   const hasSceneChoices = (viewModel?.scene.sceneChoices.length ?? 0) > 0;
+  const shouldShowSceneTapHint = inlineMessage?.kind === "scene";
+  const shouldShowItemTapHint = inlineMessage?.kind === "item" && !hasSceneChoices;
   const currentSceneId = viewModel?.scene.id ?? -1;
   const isEndingScene =
     currentSceneId === ENDING_SCENE_IDS.TRUE || currentSceneId === ENDING_SCENE_IDS.BAD;
@@ -287,20 +289,22 @@ function HomePage() {
                   >
                     <CardContent sx={{ width: "100%", py: { xs: 2.5, sm: 3 } }}>
                       <Typography variant="body2">{inlineMessage.text}</Typography>
-                      <Box
-                        sx={{
-                          mt: 1.5,
-                          display: "flex",
-                          alignItems: "center",
-                          justifyContent: "center",
-                          gap: 0.5,
-                          color: "text.secondary",
-                          animation: `${tapHintBlink} 1.2s ease-in-out infinite`,
-                        }}
-                      >
-                        <TouchAppOutlined sx={{ fontSize: 18 }} />
-                        <Typography variant="caption">タップして次へ</Typography>
-                      </Box>
+                      {shouldShowSceneTapHint ? (
+                        <Box
+                          sx={{
+                            mt: 1.5,
+                            display: "flex",
+                            alignItems: "center",
+                            justifyContent: "center",
+                            gap: 0.5,
+                            color: "text.secondary",
+                            animation: `${tapHintBlink} 1.2s ease-in-out infinite`,
+                          }}
+                        >
+                          <TouchAppOutlined sx={{ fontSize: 18 }} />
+                          <Typography variant="caption">タップして次へ</Typography>
+                        </Box>
+                      ) : null}
                     </CardContent>
                   </CardActionArea>
                 </Card>
@@ -498,29 +502,38 @@ function HomePage() {
               }}
             >
               <CardActionArea
+                sx={{
+                  minHeight: hasSceneChoices ? { xs: 132, sm: 148 } : { xs: 112, sm: 128 },
+                }}
                 onClick={() => {
                   setInlineMessage(null);
                 }}
               >
-                <CardContent>
+                <CardContent
+                  sx={{
+                    py: hasSceneChoices ? { xs: 2.5, sm: 3 } : { xs: 2, sm: 2.5 },
+                  }}
+                >
                   <Typography component="p">{inlineMessage.itemName} を使用した！</Typography>
                   <Typography component="p">
                     ばななメーター {inlineMessage.signedDeltaText}
                   </Typography>
-                  <Box
-                    sx={{
-                      mt: 1.5,
-                      display: "flex",
-                      alignItems: "center",
-                      justifyContent: "center",
-                      gap: 0.5,
-                      color: "text.secondary",
-                      animation: `${tapHintBlink} 1.2s ease-in-out infinite`,
-                    }}
-                  >
-                    <TouchAppOutlined sx={{ fontSize: 18 }} />
-                    <Typography variant="caption">タップして次へ</Typography>
-                  </Box>
+                  {shouldShowItemTapHint ? (
+                    <Box
+                      sx={{
+                        mt: 1.5,
+                        display: "flex",
+                        alignItems: "center",
+                        justifyContent: "center",
+                        gap: 0.5,
+                        color: "text.secondary",
+                        animation: `${tapHintBlink} 1.2s ease-in-out infinite`,
+                      }}
+                    >
+                      <TouchAppOutlined sx={{ fontSize: 18 }} />
+                      <Typography variant="caption">タップして次へ</Typography>
+                    </Box>
+                  ) : null}
                 </CardContent>
               </CardActionArea>
             </Card>
