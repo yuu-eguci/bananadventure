@@ -18,8 +18,9 @@ export class SceneService {
   }: {
     scene: Scene;
     player: Player;
-  }): Promise<Scene> {
+  }): Promise<{ scene: Scene; player: Player }> {
     let updatedScene = scene;
+    let updatedPlayer = player;
 
     while (true) {
       const triggers = updatedScene.triggerItems;
@@ -27,9 +28,22 @@ export class SceneService {
 
       for (const triggerItem of triggers) {
         const { item, nextSceneId } = triggerItem;
-        const hasUnusedItem = player.items.some((i) => i.id === item.id && !i.used);
+        const hasUnusedItem = updatedPlayer.items.some((i) => i.id === item.id && !i.used);
 
         if (hasUnusedItem) {
+          let consumed = false;
+          updatedPlayer = {
+            ...updatedPlayer,
+            items: updatedPlayer.items.map((targetItem) => {
+              if (!consumed && targetItem.id === item.id && !targetItem.used) {
+                consumed = true;
+                return { ...targetItem, used: true };
+              }
+
+              return targetItem;
+            }),
+            itemsChanged: true,
+          };
           updatedScene = await this.getScene({ sceneId: nextSceneId });
           triggered = true;
           break;
@@ -41,7 +55,10 @@ export class SceneService {
       }
     }
 
-    return updatedScene;
+    return {
+      scene: updatedScene,
+      player: updatedPlayer,
+    };
   }
 
   private async getInitialPlayer(): Promise<Player> {
@@ -108,7 +125,7 @@ export class SceneService {
       return viewModel;
     }
 
-    const updatedPlayer: Player = {
+    let updatedPlayer: Player = {
       ...viewModel.player,
       items: viewModel.player.items.map((item) =>
         item.id === itemId ? { ...item, used: true } : item,
@@ -125,10 +142,12 @@ export class SceneService {
     if (updatedPlayer.bananaMeter <= 0) {
       updatedScene = await this.getScene({ sceneId: SPECIAL_SCENE_IDS.GAMEOVER });
     } else {
-      updatedScene = await this.resolveTriggeredScene({
+      const resolved = await this.resolveTriggeredScene({
         scene: viewModel.scene,
         player: updatedPlayer,
       });
+      updatedScene = resolved.scene;
+      updatedPlayer = resolved.player;
     }
 
     return {
@@ -154,7 +173,7 @@ export class SceneService {
     }
 
     // 返却のため、 Player を複製
-    const updatedPlayer = { ...viewModel.player };
+    let updatedPlayer = { ...viewModel.player };
 
     // SceneModelView.player.items 更新
 
@@ -179,10 +198,12 @@ export class SceneService {
       updatedScene = await this.getScene({ sceneId: selectedSceneChoice.nextSceneId });
     }
 
-    updatedScene = await this.resolveTriggeredScene({
+    const resolved = await this.resolveTriggeredScene({
       scene: updatedScene,
       player: updatedPlayer,
     });
+    updatedScene = resolved.scene;
+    updatedPlayer = resolved.player;
 
     // SceneModelView を返す
     return {
