@@ -280,6 +280,7 @@ function HomePage() {
                   <CardActionArea
                     sx={{
                       minHeight: { xs: 140, sm: 168 },
+                      height: "100%",
                       display: "flex",
                       alignItems: "stretch",
                     }}
@@ -287,12 +288,32 @@ function HomePage() {
                       void advanceScene(inlineMessage.sceneChoiceId);
                     }}
                   >
-                    <CardContent sx={{ width: "100%", py: { xs: 2.5, sm: 3 } }}>
-                      <Typography variant="body2">{inlineMessage.text}</Typography>
+                    <CardContent
+                      sx={{
+                        width: "100%",
+                        height: "100%",
+                        py: { xs: 2.5, sm: 3 },
+                        display: "flex",
+                        flexDirection: "column",
+                        gap: 1,
+                      }}
+                    >
+                      <Box
+                        sx={{
+                          flex: 1,
+                          display: "flex",
+                          alignItems: "center",
+                          justifyContent: "center",
+                        }}
+                      >
+                        <Typography variant="body2" sx={{ width: "100%", textAlign: "center" }}>
+                          {inlineMessage.text}
+                        </Typography>
+                      </Box>
                       {shouldShowSceneTapHint ? (
                         <Box
                           sx={{
-                            mt: 1.5,
+                            mt: "auto",
                             display: "flex",
                             alignItems: "center",
                             justifyContent: "center",
