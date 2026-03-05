@@ -152,6 +152,8 @@ function HomePage() {
   };
 
   const hasSceneChoices = (viewModel?.scene.sceneChoices.length ?? 0) > 0;
+  const shouldShowSceneTapHint = inlineMessage?.kind === "scene";
+  const shouldShowItemTapHint = inlineMessage?.kind === "item" && !hasSceneChoices;
   const currentSceneId = viewModel?.scene.id ?? -1;
   const isEndingScene =
     currentSceneId === ENDING_SCENE_IDS.TRUE || currentSceneId === ENDING_SCENE_IDS.BAD;
@@ -267,40 +269,51 @@ function HomePage() {
                 {viewModel?.scene.text || dummyText}
               </Typography>
 
-              {hasSceneChoices ? (
-                <Typography variant="subtitle2" sx={{ mb: 1 }}>
-                  選択肢
-                </Typography>
-              ) : null}
-
-              <Box
-                sx={{
-                  display: "grid",
-                  gridTemplateColumns: { xs: "1fr", sm: "repeat(2, minmax(0, 1fr))" },
-                  gap: 1,
-                  width: "100%",
-                }}
-              >
-                {inlineMessage?.kind === "scene" ? (
-                  <Card
+              {inlineMessage?.kind === "scene" ? (
+                <Card
+                  sx={{
+                    width: "100%",
+                    bgcolor: "primary.main",
+                    borderRadius: "14px",
+                  }}
+                >
+                  <CardActionArea
                     sx={{
+                      minHeight: { xs: 140, sm: 168 },
                       height: "100%",
-                      bgcolor: "primary.main",
-                      borderRadius: "14px",
-                      gridColumn: "1 / -1",
+                      display: "flex",
+                      alignItems: "stretch",
+                    }}
+                    onClick={() => {
+                      void advanceScene(inlineMessage.sceneChoiceId);
                     }}
                   >
-                    <CardActionArea
-                      sx={{ height: "100%" }}
-                      onClick={() => {
-                        void advanceScene(inlineMessage.sceneChoiceId);
+                    <CardContent
+                      sx={{
+                        width: "100%",
+                        height: "100%",
+                        py: { xs: 2.5, sm: 3 },
+                        display: "flex",
+                        flexDirection: "column",
+                        gap: 1,
                       }}
                     >
-                      <CardContent>
-                        <Typography variant="body2">{inlineMessage.text}</Typography>
+                      <Box
+                        sx={{
+                          flex: 1,
+                          display: "flex",
+                          alignItems: "center",
+                          justifyContent: "center",
+                        }}
+                      >
+                        <Typography variant="body2" sx={{ width: "100%", textAlign: "center" }}>
+                          {inlineMessage.text}
+                        </Typography>
+                      </Box>
+                      {shouldShowSceneTapHint ? (
                         <Box
                           sx={{
-                            mt: 1.5,
+                            mt: "auto",
                             display: "flex",
                             alignItems: "center",
                             justifyContent: "center",
@@ -312,33 +325,50 @@ function HomePage() {
                           <TouchAppOutlined sx={{ fontSize: 18 }} />
                           <Typography variant="caption">タップして次へ</Typography>
                         </Box>
-                      </CardContent>
-                    </CardActionArea>
-                  </Card>
-                ) : viewModel == null
-                  ? null
-                  : viewModel.scene.sceneChoices.map((choice) => (
-                      <Card
-                        key={choice.id}
-                        sx={{
-                          height: "100%",
-                          bgcolor: "primary.main",
-                          borderRadius: "14px",
-                        }}
-                      >
-                        <CardActionArea
-                          sx={{ height: "100%" }}
-                          onClick={() => {
-                            void onPressSceneChoice(choice);
-                          }}
-                        >
-                          <CardContent>
-                            <Typography variant="body2">{choice.text}</Typography>
-                          </CardContent>
-                        </CardActionArea>
-                      </Card>
-                    ))}
-              </Box>
+                      ) : null}
+                    </CardContent>
+                  </CardActionArea>
+                </Card>
+              ) : hasSceneChoices ? (
+                <>
+                  <Typography variant="subtitle2" sx={{ mb: 1 }}>
+                    選択肢
+                  </Typography>
+
+                  <Box
+                    sx={{
+                      display: "grid",
+                      gridTemplateColumns: { xs: "1fr", sm: "repeat(2, minmax(0, 1fr))" },
+                      gap: 1,
+                      width: "100%",
+                    }}
+                  >
+                    {viewModel == null
+                      ? null
+                      : viewModel.scene.sceneChoices.map((choice) => (
+                          <Card
+                            key={choice.id}
+                            sx={{
+                              height: "100%",
+                              bgcolor: "primary.main",
+                              borderRadius: "14px",
+                            }}
+                          >
+                            <CardActionArea
+                              sx={{ height: "100%" }}
+                              onClick={() => {
+                                void onPressSceneChoice(choice);
+                              }}
+                            >
+                              <CardContent>
+                                <Typography variant="body2">{choice.text}</Typography>
+                              </CardContent>
+                            </CardActionArea>
+                          </Card>
+                        ))}
+                  </Box>
+                </>
+              ) : null}
 
               {isEndingScene ? (
                 <Box
@@ -493,29 +523,38 @@ function HomePage() {
               }}
             >
               <CardActionArea
+                sx={{
+                  minHeight: hasSceneChoices ? { xs: 132, sm: 148 } : { xs: 112, sm: 128 },
+                }}
                 onClick={() => {
                   setInlineMessage(null);
                 }}
               >
-                <CardContent>
+                <CardContent
+                  sx={{
+                    py: hasSceneChoices ? { xs: 2.5, sm: 3 } : { xs: 2, sm: 2.5 },
+                  }}
+                >
                   <Typography component="p">{inlineMessage.itemName} を使用した！</Typography>
                   <Typography component="p">
                     ばななメーター {inlineMessage.signedDeltaText}
                   </Typography>
-                  <Box
-                    sx={{
-                      mt: 1.5,
-                      display: "flex",
-                      alignItems: "center",
-                      justifyContent: "center",
-                      gap: 0.5,
-                      color: "text.secondary",
-                      animation: `${tapHintBlink} 1.2s ease-in-out infinite`,
-                    }}
-                  >
-                    <TouchAppOutlined sx={{ fontSize: 18 }} />
-                    <Typography variant="caption">タップして次へ</Typography>
-                  </Box>
+                  {shouldShowItemTapHint ? (
+                    <Box
+                      sx={{
+                        mt: 1.5,
+                        display: "flex",
+                        alignItems: "center",
+                        justifyContent: "center",
+                        gap: 0.5,
+                        color: "text.secondary",
+                        animation: `${tapHintBlink} 1.2s ease-in-out infinite`,
+                      }}
+                    >
+                      <TouchAppOutlined sx={{ fontSize: 18 }} />
+                      <Typography variant="caption">タップして次へ</Typography>
+                    </Box>
+                  ) : null}
                 </CardContent>
               </CardActionArea>
             </Card>
