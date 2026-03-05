@@ -532,7 +532,10 @@ function HomePage() {
 
         <Backdrop
           open={isJingleOpen}
-          sx={{ zIndex: (theme) => theme.zIndex.modal + 1 }}
+          sx={{
+            zIndex: (theme) => theme.zIndex.modal + 1,
+            backgroundColor: "rgba(0, 0, 0, 0.15)",
+          }}
         >
           <Box>
             <img
