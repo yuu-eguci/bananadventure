@@ -280,7 +280,7 @@ function HomePage() {
                   <CardActionArea
                     sx={{
                       minHeight: { xs: 140, sm: 168 },
-                      height: "100%",
+                      width: "100%",
                       display: "flex",
                       alignItems: "stretch",
                     }}
@@ -290,8 +290,8 @@ function HomePage() {
                   >
                     <CardContent
                       sx={{
+                        flex: 1,
                         width: "100%",
-                        height: "100%",
                         py: { xs: 2.5, sm: 3 },
                         display: "flex",
                         flexDirection: "column",
@@ -300,7 +300,7 @@ function HomePage() {
                     >
                       <Box
                         sx={{
-                          flex: 1,
+                          flexGrow: 1,
                           display: "flex",
                           alignItems: "center",
                           justifyContent: "center",
@@ -313,7 +313,6 @@ function HomePage() {
                       {shouldShowSceneTapHint ? (
                         <Box
                           sx={{
-                            mt: "auto",
                             display: "flex",
                             alignItems: "center",
                             justifyContent: "center",
