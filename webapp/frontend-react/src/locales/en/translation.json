@@ -1,5 +1,10 @@
 {
   "Button がクリックされた!": "Button がクリックされた!",
   "Welcome to the Home Page": "Welcome to the Home Page",
-  "Click Me": "Click Me"
+  "Click Me": "Click Me",
+  "lore.title": "Lore",
+  "lore.subtitle": "Let me tell you Banana-chan's secrets!",
+  "lore.backToGame": "Back to Game",
+  "lore.bgm.question": "What kind of music does this game have?",
+  "lore.bgm.answer": "There are 2 tracks! \"Banana-chan's Theme\" and \"Banana-chan's Theme - Piano\". The theme song plays during normal scenes, and the piano version plays during the ending."
 }

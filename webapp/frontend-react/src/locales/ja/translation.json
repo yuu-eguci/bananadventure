@@ -1,5 +1,10 @@
 {
   "Button がクリックされた!": "Button がクリックされた!",
   "Welcome to the Home Page": "Welcome to the Home Page",
-  "Click Me": "Click Me"
+  "Click Me": "Click Me",
+  "lore.title": "設定資料集",
+  "lore.subtitle": "ばななちゃんのひみつ、教えちゃうよ！",
+  "lore.backToGame": "ゲームに戻る",
+  "lore.bgm.question": "このゲームにはどんな曲がある？",
+  "lore.bgm.answer": "2 曲あるよ！「ばななちゃんのテーマ」と「ばななちゃんのテーマ - ピアノ」の 2 曲。通常のシーンではテーマ曲が流れて、エンディングではピアノ版が流れるんだ。"
 }

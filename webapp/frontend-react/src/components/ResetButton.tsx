@@ -1,10 +1,13 @@
 import { Button, Box } from "@mui/material";
+import { Link } from "react-router-dom";
+import { useTranslation } from "react-i18next";
 
 type Props = {
   onClick: () => void;
 };
 
 const ResetButton = ({ onClick }: Props) => {
+  const { t } = useTranslation();
   return (
     <Box
       sx={{
@@ -17,6 +20,9 @@ const ResetButton = ({ onClick }: Props) => {
         zIndex: (theme) => theme.zIndex.tooltip + 1,
       }}
     >
+      <Button variant="outlined" component={Link} to="/lore" color="info">
+        {t("lore.title")}
+      </Button>
       {/* color は main.tsx の theme から。 */}
       <Button variant="outlined" onClick={onClick} color="info">
         Reset
