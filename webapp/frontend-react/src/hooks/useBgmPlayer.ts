@@ -2,12 +2,12 @@ import { useCallback, useEffect, useRef, useState } from "react";
 
 export const BGM_TRACKS = {
   main: {
-    src: "/bgm/banana-theme-piano-64.mp3",
-    label: "ばななちゃんのテーマ - ピアノ",
-  },
-  ending: {
     src: "/bgm/banana-theme-64.mp3",
     label: "ばななちゃんのテーマ",
+  },
+  ending: {
+    src: "/bgm/banana-theme-piano-64.mp3",
+    label: "ばななちゃんのテーマ - ピアノ",
   },
 } as const;
 
