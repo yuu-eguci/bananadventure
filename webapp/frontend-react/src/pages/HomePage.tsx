@@ -27,6 +27,7 @@ import ResetButton from "@/components/ResetButton";
 import { resolveImageUrl } from "@/services/assetImageResolver";
 import sceneData from "@/data/bananadventure-scenes.json";
 import { useBgmPlayer } from "@/hooks/useBgmPlayer";
+import type { BgmTrackKey } from "@/hooks/useBgmPlayer";
 // import bananaIcon from "/icon-image/banana.webp";
 
 const service = new SceneService();
@@ -67,12 +68,17 @@ function HomePage() {
   const [viewModel, setViewModel] = useState<SceneViewModel | null>(null);
   const [inlineMessage, setInlineMessage] = useState<InlineMessageState>(null);
   const isClosingRef = useRef<boolean>(false);
+  const currentSceneId = viewModel?.scene.id ?? -1;
+  const isEndingScene =
+    currentSceneId === ENDING_SCENE_IDS.TRUE || currentSceneId === ENDING_SCENE_IDS.BAD;
+  const trackKey: BgmTrackKey = isEndingScene ? "ending" : "main";
   const {
     isPlaying: isBgmPlaying,
     toggle: toggleBgm,
     errorMessage: bgmErrorMessage,
     clearError: clearBgmError,
-  } = useBgmPlayer();
+    currentTrackLabel,
+  } = useBgmPlayer(trackKey);
 
   useEffect(() => {
     setTimeout(() => {
@@ -154,9 +160,6 @@ function HomePage() {
   const hasSceneChoices = (viewModel?.scene.sceneChoices.length ?? 0) > 0;
   const shouldShowSceneTapHint = inlineMessage?.kind === "scene";
   const shouldShowItemTapHint = inlineMessage?.kind === "item" && !hasSceneChoices;
-  const currentSceneId = viewModel?.scene.id ?? -1;
-  const isEndingScene =
-    currentSceneId === ENDING_SCENE_IDS.TRUE || currentSceneId === ENDING_SCENE_IDS.BAD;
   const playerItemIdSet = new Set((viewModel?.player.items ?? []).map((item) => item.id));
   const collectedItemCount = allCollectibleItemIds.filter((itemId) =>
     playerItemIdSet.has(itemId),
@@ -189,6 +192,17 @@ function HomePage() {
     <Box sx={{ width: "100%", maxWidth: 960, mx: "auto", px: { xs: 0, sm: 1 } }}>
       <Grid container spacing={2}>
         <Grid size={{ xs: 12, md: 8 }}>
+          <Typography
+            variant="caption"
+            sx={{
+              display: "block",
+              textAlign: "right",
+              mb: 0.5,
+              color: "text.secondary",
+            }}
+          >
+            ♪ {currentTrackLabel}
+          </Typography>
           <Paper
             sx={{
               p: 0,
