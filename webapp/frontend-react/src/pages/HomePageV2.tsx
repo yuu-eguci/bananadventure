@@ -1,5 +1,6 @@
 import { Alert, Box, Snackbar, Typography } from "@mui/material";
 
+import BananaMeterWidget from "@/components/HomePageV2/BananaMeterWidget";
 import BgmToggleButton from "@/components/HomePageV2/BgmToggleButton";
 import MainSection from "@/components/HomePageV2/MainSection";
 import { useBgmPlayer } from "@/hooks/useBgmPlayer";
@@ -36,6 +37,7 @@ function HomePageV2() {
         </Typography>
         <MainSection imageSrc="/sample-image/sample.png">
           <BgmToggleButton isPlaying={isBgmPlaying} onToggle={toggleBgm} />
+          <BananaMeterWidget value={0} />
         </MainSection>
       </Box>
 
