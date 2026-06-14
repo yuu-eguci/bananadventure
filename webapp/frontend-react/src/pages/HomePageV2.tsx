@@ -1,4 +1,4 @@
-import { useCallback, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 
 import { Alert, Box, Button, Snackbar, Typography } from "@mui/material";
 import { Link } from "react-router-dom";
@@ -43,7 +43,25 @@ function HomePageV2() {
   const [isSystemDialogOpen, setIsSystemDialogOpen] = useState(false);
   // バナナメーターの明滅シグナル。明滅のタイミングはメッセージ描画側（SceneOverlay）が制御する。
   const [bananaMeterFlashSignal, setBananaMeterFlashSignal] = useState(0);
+
+  // バナナメーターの「実値」と「表示値」を分離する。
+  // 実値はシーン切替（setViewModel）の時点で変わるが、表示値は明滅トリガーのタイミングで実値へ合わせる。
+  const actualBananaMeter = player?.bananaMeter ?? 0;
+  const actualBananaMeterRef = useRef(actualBananaMeter);
+  const [displayedBananaMeter, setDisplayedBananaMeter] = useState(actualBananaMeter);
+
+  useEffect(() => {
+    actualBananaMeterRef.current = actualBananaMeter;
+    // 増減のない遷移（初期化・リセット・delta=0 の選択肢）では明滅しないので、表示値をすぐ合わせる。
+    // 増減のある選択肢（leadBananaMeterDelta !== 0）は、明滅トリガー時にコミットするため、ここでは合わせない。
+    if (leadBananaMeterDelta === 0) {
+      setDisplayedBananaMeter(actualBananaMeter);
+    }
+  }, [actualBananaMeter, leadBananaMeterDelta]);
+
   const triggerBananaMeterFlash = useCallback(() => {
+    // 明滅と同時に、表示値を実値へコミットする。
+    setDisplayedBananaMeter(actualBananaMeterRef.current);
     setBananaMeterFlashSignal((signal) => signal + 1);
   }, []);
   const currentSceneId = scene?.id ?? -1;
@@ -121,7 +139,7 @@ function HomePageV2() {
               zIndex: 3,
             }}
           >
-            <BananaMeterWidget value={player?.bananaMeter ?? 0} flashSignal={bananaMeterFlashSignal} />
+            <BananaMeterWidget value={displayedBananaMeter} flashSignal={bananaMeterFlashSignal} />
           </Box>
           <HomePageV2RightPanel isBgmPlaying={isBgmPlaying} onToggleBgm={toggleBgm}>
             {(player?.items ?? []).map((item) => (
