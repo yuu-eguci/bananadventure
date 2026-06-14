@@ -1,55 +1,55 @@
-import { VolumeOffRounded } from "@mui/icons-material";
-import { Box, Button, Paper } from "@mui/material";
+import { Box, Paper, Typography } from "@mui/material";
+
+import BgmToggleButton from "@/components/HomePageV2/BgmToggleButton";
 
 type Props = {
   imageSrc: string;
+  currentTrackLabel: string;
+  isBgmPlaying: boolean;
+  onToggleBgm: () => void;
 };
 
-function MainSection({ imageSrc }: Props) {
+function MainSection({ imageSrc, currentTrackLabel, isBgmPlaying, onToggleBgm }: Props) {
   return (
-    <Paper
-      sx={{
-        p: 0,
-        position: "relative",
-        overflow: "hidden",
-        borderRadius: "18px",
-        mb: 2,
-        height: { xs: 520, md: 560 },
-      }}
-    >
-      <Button
-        variant="contained"
-        size="small"
-        color="inherit"
-        startIcon={<VolumeOffRounded />}
-        aria-label="BGM を再生"
+    <Box sx={{ width: "100%" }}>
+      <Typography
+        variant="caption"
         sx={{
-          position: "absolute",
-          top: "12px",
-          right: "12px",
-          zIndex: 3,
-          color: "common.white",
-          bgcolor: "grey.700",
-          "&:hover": { bgcolor: "grey.800" },
+          display: "block",
+          textAlign: "right",
+          mb: 0.5,
+          color: "text.secondary",
         }}
       >
-        BGM OFF
-      </Button>
-      <Box
-        component="img"
-        src={imageSrc}
-        alt="Main"
+        ♪ {currentTrackLabel}
+      </Typography>
+      <Paper
         sx={{
-          width: "100%",
-          height: "100%",
-          objectFit: "cover",
-          display: "block",
-          userSelect: "none",
-          pointerEvents: "none",
+          p: 0,
+          position: "relative",
+          overflow: "hidden",
+          borderRadius: "18px",
+          mb: 2,
+          height: { xs: 520, md: 560 },
         }}
-        draggable={false}
-      />
-    </Paper>
+      >
+        <BgmToggleButton isPlaying={isBgmPlaying} onToggle={onToggleBgm} />
+        <Box
+          component="img"
+          src={imageSrc}
+          alt="Main"
+          sx={{
+            width: "100%",
+            height: "100%",
+            objectFit: "cover",
+            display: "block",
+            userSelect: "none",
+            pointerEvents: "none",
+          }}
+          draggable={false}
+        />
+      </Paper>
+    </Box>
   );
 }
 
