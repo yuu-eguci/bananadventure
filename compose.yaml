@@ -1,72 +1,5 @@
 # service = container
 services:
-
-  # service name (ほかから参照するとき使うので重要です。)
-  mysql-service:
-    # NOTE: container name conflict を防ぐため gemini- をつけている。
-    container_name: gemini-mysql-container
-    build:
-      context: ./mysql-container
-      dockerfile: Dockerfile
-    # NOTE: 他のプロジェクトの mysql との重複を避けるため、変更している。
-    ports:
-      - 3395:3306
-    volumes:
-      - ./db/mysql_data:/var/lib/mysql
-      - ./db/mysql_log:/var/log/mysql
-      - ./db/mysql_conf:/etc/mysql/conf.d
-    # NOTE: 開発環境では .env を使うし、本番環境では .env を (GitHub Actions が) 上書きして使うことを想定。
-    environment:
-      - MYSQL_DATABASE=${MYSQL_DATABASE}
-      - MYSQL_USER=${MYSQL_USER}
-      - MYSQL_PASSWORD=${MYSQL_PASSWORD}
-      - MYSQL_ROOT_PASSWORD=${MYSQL_ROOT_PASSWORD}
-    healthcheck:
-      test: ["CMD-SHELL", "mysqladmin ping -h 127.0.0.1 -u$$MYSQL_USER -p$$MYSQL_PASSWORD --silent"]
-      interval: 5s
-      timeout: 3s
-      retries: 20
-      start_period: 20s
-
-  django-service:
-    # NOTE: container name conflict を防ぐため gemini- をつけている。
-    container_name: gemini-django-container
-    build:
-      context: ./webapp-container
-      dockerfile: Dockerfile
-    # NOTE: 他のプロジェクトの django との重複を避けるため、変更している。
-    ports:
-      # NOTE: よく間違えるからメモ -> host 側 : container 側
-      # Django 用。 runserver も 8000 だし、 gunicorn も 8000 にしてる (Dockerfile で)。
-      - 8001:8000
-    working_dir: /webapp
-    command: ["bash", "-lc", "./scripts/start-django.sh"]
-    # tty, stdin_open しておくと exec するときに -it がいらないみたい。
-    tty: true
-    stdin_open: true
-    # NOTE: ホスト側 DNS が不安定な環境向けに明示する。
-    dns:
-      - 1.1.1.1
-      - 8.8.8.8
-    volumes:
-      - ./webapp:/webapp
-      - pipenv-venv:/webapp/.venv
-    # NOTE: 開発環境では .env を使うし、本番環境では .env を (GitHub Actions が) 上書きして使うことを想定。
-    environment:
-      # Pipenv 仮想環境を webapp ディレクトリ内に作るための設定。
-      - PIPENV_VENV_IN_PROJECT=1
-      - DJANGO_SECRET_KEY=${DJANGO_SECRET_KEY}
-      - MYSQL_DATABASE=${MYSQL_DATABASE}
-      - MYSQL_USER=${MYSQL_USER}
-      - MYSQL_PASSWORD=${MYSQL_PASSWORD}
-      - MYSQL_ROOT_PASSWORD=${MYSQL_ROOT_PASSWORD}
-      - MYSQL_HOSTNAME=${MYSQL_HOSTNAME}
-      - MYSQL_PORT=${MYSQL_PORT}
-      - APP_HOST=${APP_HOST}
-    depends_on:
-      mysql-service:
-        condition: service_healthy
-
   react-service:
     # NOTE: container name conflict を防ぐため gemini- をつけている。
     container_name: gemini-react-container
@@ -88,9 +21,6 @@ services:
     volumes:
       - ./webapp:/webapp
       - react-node-modules:/webapp/frontend-react/node_modules
-    depends_on:
-      django-service:
-        condition: service_started
 
 volumes:
   pipenv-venv:
