@@ -23,6 +23,9 @@ const ResetButton = ({ onClick }: Props) => {
       <Button variant="outlined" component={Link} to="/lore" color="info">
         {t("lore.title")}
       </Button>
+      <Button variant="outlined" component={Link} to="/v2" color="info">
+        V2
+      </Button>
       {/* color は main.tsx の theme から。 */}
       <Button variant="outlined" onClick={onClick} color="info">
         Reset
