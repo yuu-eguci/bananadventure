@@ -1,6 +1,6 @@
 import { useLayoutEffect, useRef, useState } from "react";
 
-import { MAIN_SECTION_HEIGHT } from "@/components/HomePageV2/MainSection";
+import { MAIN_SECTION_HEIGHT } from "@/components/HomePageV2/mainSectionLayout";
 
 const SCENE_OVERLAY_HEIGHT_RATIO = 0.3;
 

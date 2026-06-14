@@ -4,6 +4,7 @@ import { Box, Card, CardActionArea, CardContent, Fade, Typography } from "@mui/m
 
 import useTypewriter from "@/hooks/useTypewriter";
 import { WIDGET_FLASH_DURATION_MS } from "@/components/HomePageV2/widgetFlash";
+import { buildLeadMessageSegments } from "@/components/HomePageV2/leadMessage";
 import { Item, Scene, SceneChoice } from "@/models";
 
 type Props = {
@@ -25,12 +26,6 @@ type Props = {
 
 const ENDING_SCENE_LABEL = "FIN";
 const ENDING_SCENE_HINT = "アチーブメントを確認";
-
-const buildMeterLine = (delta: number) =>
-  `（バナナメーター ${delta > 0 ? `+${delta}` : `${delta}`}）`;
-
-const buildItemLine = (items: Item[]) =>
-  `（${items.map((item) => item.text).join("、")} を手に入れた）`;
 
 const SceneOverlay = forwardRef<HTMLDivElement, Props>(function SceneOverlay(
   {
@@ -58,36 +53,15 @@ const SceneOverlay = forwardRef<HTMLDivElement, Props>(function SceneOverlay(
   // - 増減行の末尾で止めてバナナメーターを明滅
   // - 入手行の末尾で止めてアイテムウィジェットを追加
   const sceneText = scene?.text ?? "";
-  const { leadText, meterPauseIndex, itemPauseIndex } = useMemo(() => {
-    const segments: string[] = [];
-    const response = leadResponseText ?? "";
-    if (response.length > 0) {
-      segments.push(response);
-    }
-
-    let meterEnd: number | null = null;
-    let itemEnd: number | null = null;
-
-    const appendSegment = (text: string): number => {
-      // セグメント間は改行で区切る。区切りの分だけ開始位置をずらす。
-      const start = segments.length === 0 ? 0 : segments.join("\n").length + 1;
-      segments.push(text);
-      return start + text.length;
-    };
-
-    if (leadBananaMeterDelta !== 0) {
-      meterEnd = appendSegment(buildMeterLine(leadBananaMeterDelta));
-    }
-    if (leadAddedItems.length > 0) {
-      itemEnd = appendSegment(buildItemLine(leadAddedItems));
-    }
-
-    return {
-      leadText: segments.join("\n"),
-      meterPauseIndex: meterEnd,
-      itemPauseIndex: itemEnd,
-    };
-  }, [leadResponseText, leadBananaMeterDelta, leadAddedItems]);
+  const { leadText, meterPauseIndex, itemPauseIndex } = useMemo(
+    () =>
+      buildLeadMessageSegments({
+        leadResponseText,
+        leadBananaMeterDelta,
+        leadAddedItems,
+      }),
+    [leadResponseText, leadBananaMeterDelta, leadAddedItems],
+  );
 
   const pausePoints = useMemo(
     () => [meterPauseIndex, itemPauseIndex].filter((index): index is number => index !== null),

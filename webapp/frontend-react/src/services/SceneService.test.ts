@@ -32,6 +32,28 @@ describe("SceneService", () => {
     expect(viewModel.player.bananaMeter).toBe(100);
   });
 
+  it("does not mutate the input viewModel when a choice grants items", async () => {
+    const service = new SceneService();
+    let viewModel = await service.fetchInitialViewModel();
+
+    // scene 0 -> 1（バナナバー）。 scene 1 で choice 2 を選ぶと soy banana を入手する。
+    viewModel = await advanceScene(service, viewModel, 0);
+
+    const choiceWithItem = expectCurrentSceneChoice(viewModel, 2);
+    expect(choiceWithItem.itemsOnSelect.length).toBeGreaterThan(0);
+
+    const itemsBefore = viewModel.player.items;
+    const itemsLengthBefore = itemsBefore.length;
+
+    const nextViewModel = await advanceScene(service, viewModel, 2);
+
+    // 入力 viewModel の items 配列・件数は変わらない（参照も別物）。
+    expect(viewModel.player.items).toBe(itemsBefore);
+    expect(viewModel.player.items.length).toBe(itemsLengthBefore);
+    expect(nextViewModel.player.items).not.toBe(itemsBefore);
+    expect(nextViewModel.player.items.length).toBe(itemsLengthBefore + choiceWithItem.itemsOnSelect.length);
+  });
+
   it("moves to gameover scene when banana meter reaches zero after a scene choice", async () => {
     const service = new SceneService();
     let viewModel = await service.fetchInitialViewModel();

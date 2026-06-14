@@ -8,7 +8,8 @@ import BananaMeterWidget from "@/components/HomePageV2/BananaMeterWidget";
 import EndingAchievementsDialog from "@/components/HomePageV2/EndingAchievementsDialog";
 import HomePageV2RightPanel from "@/components/HomePageV2/HomePageV2RightPanel";
 import JingleBackdrop from "@/components/HomePageV2/JingleBackdrop";
-import MainSection, { MAIN_SECTION_MAX_WIDTH } from "@/components/HomePageV2/MainSection";
+import MainSection from "@/components/HomePageV2/MainSection";
+import { MAIN_SECTION_MAX_WIDTH } from "@/components/HomePageV2/mainSectionLayout";
 import ItemWidget from "@/components/HomePageV2/ItemWidget";
 import SceneOverlay from "@/components/HomePageV2/SceneOverlay";
 import SystemDialog from "@/components/HomePageV2/SystemDialog";
@@ -19,14 +20,9 @@ import { BgmTrackKey, useBgmPlayer } from "@/hooks/useBgmPlayer";
 import { MESSAGE_SPEEDS, useMessageSpeed } from "@/hooks/useMessageSpeed";
 import { Scene } from "@/models";
 import { SPECIAL_SCENE_IDS } from "@/services/SceneService";
+import { buildAchievements, collectAllCollectibleItemIds } from "@/services/achievement";
 
-const allCollectibleItemIds = Array.from(
-  new Set(
-    (sceneData as Scene[]).flatMap((scene) =>
-      scene.sceneChoices.flatMap((sceneChoice) => sceneChoice.itemsOnSelect.map((item) => item.id)),
-    ),
-  ),
-);
+const allCollectibleItemIds = collectAllCollectibleItemIds(sceneData as Scene[]);
 
 function HomePageV2() {
   const { t } = useTranslation();
@@ -39,6 +35,8 @@ function HomePageV2() {
     leadResponseText,
     leadBananaMeterDelta,
     leadAddedItems,
+    errorMessage: gameErrorMessage,
+    clearError: clearGameError,
     selectChoice,
     applyItem,
     reset,
@@ -97,31 +95,11 @@ function HomePageV2() {
     currentTrackLabel,
   } = useBgmPlayer(trackKey);
 
-  const playerItemIdSet = new Set((player?.items ?? []).map((item) => item.id));
-  const collectedItemCount = allCollectibleItemIds.filter((itemId) => playerItemIdSet.has(itemId)).length;
-  const isAllItemsCompleted =
-    allCollectibleItemIds.length > 0 &&
-    allCollectibleItemIds.every((itemId) => playerItemIdSet.has(itemId));
-  const achievements = [
-    {
-      id: "true-end",
-      label: "トゥルーエンド",
-      note: "scene 14 に到達",
-      achieved: currentSceneId === SPECIAL_SCENE_IDS.TRUE_END,
-    },
-    {
-      id: "bad-end",
-      label: "バッドエンド",
-      note: "scene 15 に到達",
-      achieved: currentSceneId === SPECIAL_SCENE_IDS.GAMEOVER,
-    },
-    {
-      id: "all-items",
-      label: "全アイテムコンプ",
-      note: `${collectedItemCount}/${allCollectibleItemIds.length} アイテム取得`,
-      achieved: isAllItemsCompleted,
-    },
-  ];
+  const achievements = buildAchievements({
+    allCollectibleItemIds,
+    player,
+    currentSceneId,
+  });
 
   return (
     <>
@@ -219,6 +197,21 @@ function HomePageV2() {
       >
         <Alert onClose={clearBgmError} severity="warning" sx={{ width: "100%" }}>
           {bgmErrorMessage ?? ""}
+        </Alert>
+      </Snackbar>
+
+      <Snackbar
+        open={gameErrorMessage !== null}
+        autoHideDuration={4000}
+        onClose={(_, reason) => {
+          if (reason === "clickaway") {
+            return;
+          }
+          clearGameError();
+        }}
+      >
+        <Alert onClose={clearGameError} severity="error" sx={{ width: "100%" }}>
+          {gameErrorMessage ?? ""}
         </Alert>
       </Snackbar>
 

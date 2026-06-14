@@ -173,15 +173,19 @@ export class SceneService {
       throw new Error(`SceneChoice with ID ${selectedSceneChoiceId} not found`);
     }
 
-    // 返却のため、 Player を複製
-    let updatedPlayer = { ...viewModel.player };
+    // 返却のため、 Player を複製。
+    // items 配列とその要素も複製し、入力 viewModel.player.items を直接 mutate しないようにする。
+    let updatedPlayer: Player = {
+      ...viewModel.player,
+      items: viewModel.player.items.map((item) => ({ ...item })),
+    };
 
     // SceneModelView.player.items 更新
-
     if (selectedSceneChoice.itemsOnSelect.length) {
-      for (const itemOnSelect of selectedSceneChoice.itemsOnSelect) {
-        updatedPlayer.items.push(itemOnSelect);
-      }
+      updatedPlayer.items = [
+        ...updatedPlayer.items,
+        ...selectedSceneChoice.itemsOnSelect.map((item) => ({ ...item })),
+      ];
       updatedPlayer.itemsChanged = true;
     }
 
