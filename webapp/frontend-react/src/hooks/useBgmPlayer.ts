@@ -16,6 +16,13 @@ export type BgmTrackKey = keyof typeof BGM_TRACKS;
 const BLOCKED_MESSAGE = "再生がブロックされました。もう一度ボタンを押してください";
 const GENERIC_MESSAGE = "BGM の再生に失敗しました。時間をおいて再試行してください";
 
+const createLoopingAudio = (src: string) => {
+  const audio = new Audio(src);
+  audio.loop = true;
+  audio.volume = 0.25;
+  return audio;
+};
+
 export const useBgmPlayer = (trackKey: BgmTrackKey) => {
   const audioRef = useRef<HTMLAudioElement | null>(null);
   const [isPlaying, setIsPlaying] = useState(false);
@@ -28,49 +35,34 @@ export const useBgmPlayer = (trackKey: BgmTrackKey) => {
     isPlayingRef.current = value;
   }, []);
 
-  // 初回マウント時に Audio オブジェクトを作成します。
-  useEffect(() => {
-    const audio = new Audio(BGM_TRACKS[trackKey].src);
-    audio.loop = true;
-    audio.volume = 0.25;
-    audioRef.current = audio;
+  const updatePlaybackError = useCallback((error: unknown) => {
+    if (error instanceof DOMException && error.name === "NotAllowedError") {
+      setErrorMessage(BLOCKED_MESSAGE);
+      return;
+    }
 
-    return () => {
-      audio.pause();
-      audioRef.current = null;
-    };
-    // eslint-disable-next-line react-hooks/exhaustive-deps
+    console.error("BGM playback failed:", error);
+    setErrorMessage(GENERIC_MESSAGE);
   }, []);
 
-  // trackKey が変わったら曲を差し替えます。
   useEffect(() => {
-    const prevAudio = audioRef.current;
-    if (!prevAudio) return;
-
-    const newSrc = BGM_TRACKS[trackKey].src;
-
-    // 同じ曲なら何もしません。
-    if (prevAudio.src.endsWith(newSrc)) return;
-
-    prevAudio.pause();
-
-    const newAudio = new Audio(newSrc);
-    newAudio.loop = true;
-    newAudio.volume = 0.25;
-    audioRef.current = newAudio;
+    const audio = createLoopingAudio(BGM_TRACKS[trackKey].src);
+    audioRef.current = audio;
 
     if (isPlayingRef.current) {
-      newAudio.play().catch((error) => {
-        if (error instanceof DOMException && error.name === "NotAllowedError") {
-          setErrorMessage(BLOCKED_MESSAGE);
-        } else {
-          console.error("BGM playback failed:", error);
-          setErrorMessage(GENERIC_MESSAGE);
-        }
+      audio.play().catch((error) => {
+        updatePlaybackError(error);
         updateIsPlaying(false);
       });
     }
-  }, [trackKey, updateIsPlaying]);
+
+    return () => {
+      audio.pause();
+      if (audioRef.current === audio) {
+        audioRef.current = null;
+      }
+    };
+  }, [trackKey, updateIsPlaying, updatePlaybackError]);
 
   const toggle = useCallback(async () => {
     const audio = audioRef.current;
@@ -85,12 +77,7 @@ export const useBgmPlayer = (trackKey: BgmTrackKey) => {
         updateIsPlaying(true);
         setErrorMessage(null);
       } catch (error) {
-        if (error instanceof DOMException && error.name === "NotAllowedError") {
-          setErrorMessage(BLOCKED_MESSAGE);
-        } else {
-          console.error("BGM playback failed:", error);
-          setErrorMessage(GENERIC_MESSAGE);
-        }
+        updatePlaybackError(error);
         updateIsPlaying(false);
       }
       return;
@@ -98,7 +85,7 @@ export const useBgmPlayer = (trackKey: BgmTrackKey) => {
 
     audio.pause();
     updateIsPlaying(false);
-  }, [updateIsPlaying]);
+  }, [updateIsPlaying, updatePlaybackError]);
 
   const clearError = useCallback(() => {
     setErrorMessage(null);

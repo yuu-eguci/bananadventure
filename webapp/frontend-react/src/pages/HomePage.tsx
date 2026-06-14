@@ -19,7 +19,8 @@ import {
 import { keyframes } from "@mui/system";
 import { useEffect, useState, useRef } from "react";
 
-import { SceneService } from "@/services/SceneService";
+import { SceneService, SPECIAL_SCENE_IDS } from "@/services/SceneService";
+import { buildAchievements, collectAllCollectibleItemIds } from "@/services/achievement";
 import { SceneViewModel } from "@/viewModels";
 import dummyImage from "/sample-image/sample.png";
 import { Item, Scene, SceneChoice } from "@/models";
@@ -37,19 +38,7 @@ const dummyText =
 const bananaMeterImagePath = "/ui-image/banana-meter-icon.webp";
 const endingSceneLabel = "FIN";
 const endingSceneHint = "アチーブメントを確認してね";
-const ENDING_SCENE_IDS = {
-  TRUE: 14,
-  BAD: 15,
-} as const;
-const allCollectibleItemIds = Array.from(
-  new Set(
-    (sceneData as Scene[]).flatMap((scene) =>
-      scene.sceneChoices.flatMap((sceneChoice) =>
-        sceneChoice.itemsOnSelect.map((item) => item.id),
-      ),
-    ),
-  ),
-);
+const allCollectibleItemIds = collectAllCollectibleItemIds(sceneData as Scene[]);
 const tapHintBlink = keyframes`
   0%, 100% {
     opacity: 0.45;
@@ -70,7 +59,8 @@ function HomePage() {
   const isClosingRef = useRef<boolean>(false);
   const currentSceneId = viewModel?.scene.id ?? -1;
   const isEndingScene =
-    currentSceneId === ENDING_SCENE_IDS.TRUE || currentSceneId === ENDING_SCENE_IDS.BAD;
+    currentSceneId === SPECIAL_SCENE_IDS.TRUE_END ||
+    currentSceneId === SPECIAL_SCENE_IDS.GAMEOVER;
   const trackKey: BgmTrackKey = isEndingScene ? "ending" : "main";
   const {
     isPlaying: isBgmPlaying,
@@ -160,33 +150,11 @@ function HomePage() {
   const hasSceneChoices = (viewModel?.scene.sceneChoices.length ?? 0) > 0;
   const shouldShowSceneTapHint = inlineMessage?.kind === "scene";
   const shouldShowItemTapHint = inlineMessage?.kind === "item" && !hasSceneChoices;
-  const playerItemIdSet = new Set((viewModel?.player.items ?? []).map((item) => item.id));
-  const collectedItemCount = allCollectibleItemIds.filter((itemId) =>
-    playerItemIdSet.has(itemId),
-  ).length;
-  const isAllItemsCompleted =
-    allCollectibleItemIds.length > 0 &&
-    allCollectibleItemIds.every((itemId) => playerItemIdSet.has(itemId));
-  const achievements = [
-    {
-      id: "true-end",
-      label: "トゥルーエンド",
-      note: "scene 14 に到達",
-      achieved: currentSceneId === ENDING_SCENE_IDS.TRUE,
-    },
-    {
-      id: "bad-end",
-      label: "バッドエンド",
-      note: "scene 15 に到達",
-      achieved: currentSceneId === ENDING_SCENE_IDS.BAD,
-    },
-    {
-      id: "all-items",
-      label: "全アイテムコンプ",
-      note: `${collectedItemCount}/${allCollectibleItemIds.length} アイテム取得`,
-      achieved: isAllItemsCompleted,
-    },
-  ];
+  const achievements = buildAchievements({
+    allCollectibleItemIds,
+    player: viewModel?.player ?? null,
+    currentSceneId,
+  });
 
   return (
     <Box sx={{ width: "100%", maxWidth: 960, mx: "auto", px: { xs: 0, sm: 1 } }}>
