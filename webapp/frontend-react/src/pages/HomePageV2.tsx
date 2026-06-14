@@ -4,6 +4,7 @@ import BananaMeterWidget from "@/components/HomePageV2/BananaMeterWidget";
 import BgmToggleButton from "@/components/HomePageV2/BgmToggleButton";
 import ItemWidget from "@/components/HomePageV2/ItemWidget";
 import MainSection from "@/components/HomePageV2/MainSection";
+import SceneOverlayPreview from "@/components/HomePageV2/SceneOverlayPreview";
 import { useBgmPlayer } from "@/hooks/useBgmPlayer";
 import { Item } from "@/models";
 import { resolveImageUrl } from "@/services/assetImageResolver";
@@ -91,6 +92,7 @@ function HomePageV2() {
             <ItemWidget item={stubItem2} onUse={() => {}} />
             <ItemWidget item={stubItem3} onUse={() => {}} />
           </Box>
+          <SceneOverlayPreview />
         </MainSection>
       </Box>
 
