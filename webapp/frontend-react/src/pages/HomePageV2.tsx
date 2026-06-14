@@ -1,18 +1,21 @@
 import { useState } from "react";
 
-import { Alert, Box, Snackbar, Typography } from "@mui/material";
+import { Alert, Box, Button, Snackbar, Typography } from "@mui/material";
+import { Link } from "react-router-dom";
+import { useTranslation } from "react-i18next";
 
-import ResetButton from "@/components/ResetButton";
 import EndingAchievementsDialog from "@/components/HomePageV2/EndingAchievementsDialog";
 import HomePageV2RightPanel from "@/components/HomePageV2/HomePageV2RightPanel";
 import JingleBackdrop from "@/components/HomePageV2/JingleBackdrop";
 import MainSection, { MAIN_SECTION_MAX_WIDTH } from "@/components/HomePageV2/MainSection";
 import ItemWidget from "@/components/HomePageV2/ItemWidget";
 import SceneOverlay from "@/components/HomePageV2/SceneOverlay";
+import SystemDialog from "@/components/HomePageV2/SystemDialog";
 import sceneData from "@/data/bananadventure-scenes.json";
 import useHomePageV2SceneOverlayLayout from "@/hooks/useHomePageV2SceneOverlayLayout";
 import useHomePageV2Game from "@/hooks/useHomePageV2Game";
 import { BgmTrackKey, useBgmPlayer } from "@/hooks/useBgmPlayer";
+import { useMessageSpeed } from "@/hooks/useMessageSpeed";
 import { Scene } from "@/models";
 
 const ENDING_SCENE_IDS = {
@@ -29,11 +32,14 @@ const allCollectibleItemIds = Array.from(
 );
 
 function HomePageV2() {
+  const { t } = useTranslation();
   const { mainImageRef, sceneOverlayContentRef, sceneOverlayTop, overlayExtensionHeight } =
     useHomePageV2SceneOverlayLayout();
   const { scene, player, isLoading, leadResponseText, selectChoice, useItem, reset } =
     useHomePageV2Game();
+  const { messageSpeed, changeMessageSpeed } = useMessageSpeed();
   const [isEndingDialogOpen, setIsEndingDialogOpen] = useState(false);
+  const [isSystemDialogOpen, setIsSystemDialogOpen] = useState(false);
   const currentSceneId = scene?.id ?? -1;
   const isEndingScene =
     currentSceneId === ENDING_SCENE_IDS.TRUE || currentSceneId === ENDING_SCENE_IDS.BAD;
@@ -127,15 +133,13 @@ function HomePageV2() {
           />
         </MainSection>
 
-        <Box sx={{ mt: 2 }}>
-          <ResetButton
-            page="v2"
-            layout="inline"
-            onClick={() => {
-              setIsEndingDialogOpen(false);
-              void reset();
-            }}
-          />
+        <Box sx={{ mt: 2, display: "flex", justifyContent: "center", gap: 2 }}>
+          <Button variant="outlined" component={Link} to="/lore" color="info">
+            {t("lore.title")}
+          </Button>
+          <Button variant="outlined" color="info" onClick={() => setIsSystemDialogOpen(true)}>
+            システム
+          </Button>
         </Box>
       </Box>
 
@@ -159,6 +163,16 @@ function HomePageV2() {
         open={isEndingDialogOpen}
         onClose={() => setIsEndingDialogOpen(false)}
         achievements={achievements}
+      />
+      <SystemDialog
+        open={isSystemDialogOpen}
+        onClose={() => setIsSystemDialogOpen(false)}
+        messageSpeed={messageSpeed}
+        onChangeMessageSpeed={changeMessageSpeed}
+        onReset={() => {
+          setIsEndingDialogOpen(false);
+          void reset();
+        }}
       />
     </>
   );

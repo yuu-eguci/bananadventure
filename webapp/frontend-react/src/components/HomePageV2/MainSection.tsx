@@ -2,7 +2,7 @@ import { type ReactNode, type Ref } from "react";
 
 import { Box, Paper } from "@mui/material";
 
-export const MAIN_SECTION_MAX_WIDTH = 720;
+export const MAIN_SECTION_MAX_WIDTH = 640;
 
 export const MAIN_SECTION_HEIGHT = {
   xs: 520,
