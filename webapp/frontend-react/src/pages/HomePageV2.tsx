@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useState } from "react";
 
 import { Alert, Box, Snackbar, Typography } from "@mui/material";
 
@@ -29,7 +29,7 @@ const allCollectibleItemIds = Array.from(
 );
 
 function HomePageV2() {
-  const { rightPanelRef, sceneOverlayRef, sceneOverlayTop, overlayExtensionHeight } =
+  const { mainImageRef, sceneOverlayRef, sceneOverlayTop, overlayExtensionHeight } =
     useHomePageV2SceneOverlayLayout();
   const { scene, player, isLoading, leadResponseText, selectChoice, useItem, reset } =
     useHomePageV2Game();
@@ -45,15 +45,6 @@ function HomePageV2() {
     clearError: clearBgmError,
     currentTrackLabel,
   } = useBgmPlayer(trackKey);
-
-  useEffect(() => {
-    if (isEndingScene) {
-      setIsEndingDialogOpen(true);
-      return;
-    }
-
-    setIsEndingDialogOpen(false);
-  }, [isEndingScene]);
 
   const playerItemIdSet = new Set((player?.items ?? []).map((item) => item.id));
   const collectedItemCount = allCollectibleItemIds.filter((itemId) => playerItemIdSet.has(itemId)).length;
@@ -105,9 +96,9 @@ function HomePageV2() {
         <MainSection
           imageSrc={scene?.image ?? "/sample-image/sample.png"}
           overlayExtensionHeight={overlayExtensionHeight}
+          imageAreaRef={mainImageRef}
         >
           <HomePageV2RightPanel
-            ref={rightPanelRef}
             isBgmPlaying={isBgmPlaying}
             onToggleBgm={toggleBgm}
             bananaMeterValue={player?.bananaMeter ?? 0}
@@ -128,6 +119,8 @@ function HomePageV2() {
             leadResponseText={leadResponseText}
             top={sceneOverlayTop}
             isLoading={isLoading}
+            isEndingScene={isEndingScene}
+            onOpenEnding={() => setIsEndingDialogOpen(true)}
             onSelectChoice={(choice) => {
               void selectChoice(choice);
             }}

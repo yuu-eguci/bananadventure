@@ -9,15 +9,21 @@ type Props = {
   leadResponseText: string | null;
   top: number;
   isLoading: boolean;
+  isEndingScene: boolean;
+  onOpenEnding: () => void;
   onSelectChoice: (choice: SceneChoice) => void;
 };
 
+const ENDING_SCENE_LABEL = "FIN";
+const ENDING_SCENE_HINT = "アチーブメントを確認";
+
 const SceneOverlay = forwardRef<HTMLDivElement, Props>(function SceneOverlay(
-  { scene, leadResponseText, top, isLoading, onSelectChoice }: Props,
+  { scene, leadResponseText, top, isLoading, isEndingScene, onOpenEnding, onSelectChoice }: Props,
   ref,
 ) {
   const sceneChoices = scene?.sceneChoices ?? [];
   const hasSceneChoices = sceneChoices.length > 0;
+  const shouldShowActionArea = isEndingScene || hasSceneChoices;
 
   return (
     <Box
@@ -39,16 +45,53 @@ const SceneOverlay = forwardRef<HTMLDivElement, Props>(function SceneOverlay(
       }}
     >
       {leadResponseText ? (
-        <Typography variant="body2" sx={{ mb: 1 }}>
-          {leadResponseText}
-        </Typography>
+        <>
+          <Typography variant="subtitle1" sx={{ mb: 1 }}>
+            {leadResponseText}
+          </Typography>
+          <Typography variant="subtitle1" sx={{ mb: 1, textAlign: "center", opacity: 0.7 }}>
+            ***
+          </Typography>
+        </>
       ) : null}
 
-      <Typography variant="subtitle1" sx={{ mb: hasSceneChoices ? 1.5 : 0 }}>
+      <Typography variant="subtitle1" sx={{ mb: shouldShowActionArea ? 1.5 : 0 }}>
         {scene?.text ?? ""}
       </Typography>
 
-      {hasSceneChoices ? (
+      {isEndingScene ? (
+        <>
+          <Box
+            sx={{
+              display: "grid",
+              width: "100%",
+              pb: 2,
+            }}
+          >
+            <Card
+              sx={{
+                height: "100%",
+                bgcolor: "primary.main",
+                borderRadius: "14px",
+                opacity: isLoading ? 0.7 : 1,
+              }}
+            >
+              <CardActionArea
+                sx={{ height: "100%" }}
+                disabled={isLoading}
+                onClick={onOpenEnding}
+              >
+                <CardContent sx={{ p: 2, textAlign: "center" }}>
+                  <Typography variant="subtitle2" sx={{ fontWeight: 800, letterSpacing: "0.12em" }}>
+                    {ENDING_SCENE_LABEL}
+                  </Typography>
+                  <Typography variant="body2">{ENDING_SCENE_HINT}</Typography>
+                </CardContent>
+              </CardActionArea>
+            </Card>
+          </Box>
+        </>
+      ) : hasSceneChoices ? (
         <>
           <Typography variant="subtitle2" sx={{ mb: 1 }}>
             選択肢

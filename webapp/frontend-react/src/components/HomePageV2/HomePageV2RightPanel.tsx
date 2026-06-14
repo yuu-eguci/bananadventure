@@ -1,4 +1,4 @@
-import { forwardRef, type ReactNode } from "react";
+import { type ReactNode } from "react";
 
 import { Box } from "@mui/material";
 
@@ -12,13 +12,9 @@ type Props = {
   children?: ReactNode;
 };
 
-const HomePageV2RightPanel = forwardRef<HTMLDivElement, Props>(function HomePageV2RightPanel(
-  { isBgmPlaying, onToggleBgm, bananaMeterValue, children }: Props,
-  ref,
-) {
+function HomePageV2RightPanel({ isBgmPlaying, onToggleBgm, bananaMeterValue, children }: Props) {
   return (
     <Box
-      ref={ref}
       sx={{
         position: "absolute",
         top: "12px",
@@ -35,6 +31,6 @@ const HomePageV2RightPanel = forwardRef<HTMLDivElement, Props>(function HomePage
       {children}
     </Box>
   );
-});
+}
 
 export default HomePageV2RightPanel;

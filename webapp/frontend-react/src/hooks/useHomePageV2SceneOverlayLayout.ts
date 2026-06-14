@@ -1,35 +1,33 @@
 import { useLayoutEffect, useRef, useState } from "react";
-import { useMediaQuery, useTheme } from "@mui/material";
 
 import { MAIN_SECTION_HEIGHT } from "@/components/HomePageV2/MainSection";
 
-const RIGHT_PANEL_TO_OVERLAY_GAP_PX = 24;
+const SCENE_OVERLAY_HEIGHT_RATIO = 0.45;
 
 function useHomePageV2SceneOverlayLayout() {
-  const rightPanelRef = useRef<HTMLDivElement | null>(null);
+  const mainImageRef = useRef<HTMLDivElement | null>(null);
   const sceneOverlayRef = useRef<HTMLDivElement | null>(null);
-  const theme = useTheme();
-  const isMdUp = useMediaQuery(theme.breakpoints.up("md"));
-  const [sceneOverlayTop, setSceneOverlayTop] = useState(0);
+  const [mainImageHeight, setMainImageHeight] = useState<number>(MAIN_SECTION_HEIGHT.xs);
   const [overlayExtensionHeight, setOverlayExtensionHeight] = useState(0);
+  const sceneOverlayTop = Math.round(mainImageHeight * (1 - SCENE_OVERLAY_HEIGHT_RATIO));
 
   useLayoutEffect(() => {
-    const rightPanelElement = rightPanelRef.current;
-    if (!rightPanelElement) {
+    const mainImageElement = mainImageRef.current;
+    if (!mainImageElement) {
       return;
     }
 
-    const updateSceneOverlayTop = () => {
-      setSceneOverlayTop(rightPanelElement.getBoundingClientRect().height + RIGHT_PANEL_TO_OVERLAY_GAP_PX);
+    const updateMainImageHeight = () => {
+      setMainImageHeight(mainImageElement.getBoundingClientRect().height);
     };
 
-    updateSceneOverlayTop();
+    updateMainImageHeight();
 
     const resizeObserver = new ResizeObserver(() => {
-      updateSceneOverlayTop();
+      updateMainImageHeight();
     });
 
-    resizeObserver.observe(rightPanelElement);
+    resizeObserver.observe(mainImageElement);
 
     return () => {
       resizeObserver.disconnect();
@@ -42,11 +40,9 @@ function useHomePageV2SceneOverlayLayout() {
       return;
     }
 
-    const baseHeight = isMdUp ? MAIN_SECTION_HEIGHT.md : MAIN_SECTION_HEIGHT.xs;
-
     const updateOverlayExtensionHeight = () => {
       const requiredHeight = sceneOverlayTop + sceneOverlayElement.scrollHeight;
-      setOverlayExtensionHeight(Math.max(0, requiredHeight - baseHeight));
+      setOverlayExtensionHeight(Math.max(0, Math.ceil(requiredHeight - mainImageHeight)));
     };
 
     updateOverlayExtensionHeight();
@@ -60,10 +56,10 @@ function useHomePageV2SceneOverlayLayout() {
     return () => {
       resizeObserver.disconnect();
     };
-  }, [isMdUp, sceneOverlayTop]);
+  }, [mainImageHeight, sceneOverlayTop]);
 
   return {
-    rightPanelRef,
+    mainImageRef,
     sceneOverlayRef,
     sceneOverlayTop,
     overlayExtensionHeight,

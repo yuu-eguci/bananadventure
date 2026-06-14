@@ -1,19 +1,19 @@
-import { type ReactNode } from "react";
+import { type ReactNode, type Ref } from "react";
 
 import { Box, Paper } from "@mui/material";
 
 export const MAIN_SECTION_HEIGHT = {
   xs: 520,
-  md: 560,
 } as const;
 
 type Props = {
   imageSrc: string;
   children?: ReactNode;
   overlayExtensionHeight?: number;
+  imageAreaRef?: Ref<HTMLDivElement>;
 };
 
-function MainSection({ imageSrc, children, overlayExtensionHeight = 0 }: Props) {
+function MainSection({ imageSrc, children, overlayExtensionHeight = 0, imageAreaRef }: Props) {
   return (
     <Paper
       sx={{
@@ -25,9 +25,12 @@ function MainSection({ imageSrc, children, overlayExtensionHeight = 0 }: Props) 
       }}
     >
       <Box
+        ref={imageAreaRef}
         sx={{
           position: "relative",
-          height: MAIN_SECTION_HEIGHT,
+          width: "100%",
+          height: { xs: MAIN_SECTION_HEIGHT.xs, sm: "auto" },
+          aspectRatio: { xs: "auto", sm: "1 / 1" },
         }}
       >
         <Box

@@ -9,8 +9,6 @@ type Props = {
 
 const ResetButton = ({ onClick, page = "v1" }: Props) => {
   const { t } = useTranslation();
-  const versionLink = page === "v2" ? "/" : "/v2";
-  const versionLabel = page === "v2" ? "V1" : "V2";
 
   return (
     <Box
@@ -27,9 +25,11 @@ const ResetButton = ({ onClick, page = "v1" }: Props) => {
       <Button variant="outlined" component={Link} to="/lore" color="info">
         {t("lore.title")}
       </Button>
-      <Button variant="outlined" component={Link} to={versionLink} color="info">
-        {versionLabel}
-      </Button>
+      {page !== "v2" ? (
+        <Button variant="outlined" component={Link} to="/v2" color="info">
+          V2
+        </Button>
+      ) : null}
       {/* color は main.tsx の theme から。 */}
       <Button variant="outlined" onClick={onClick} color="info">
         Reset
