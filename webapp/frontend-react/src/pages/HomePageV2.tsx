@@ -2,6 +2,7 @@ import { useEffect, useState } from "react";
 
 import { Alert, Box, Snackbar, Typography } from "@mui/material";
 
+import ResetButton from "@/components/ResetButton";
 import EndingAchievementsDialog from "@/components/HomePageV2/EndingAchievementsDialog";
 import HomePageV2RightPanel from "@/components/HomePageV2/HomePageV2RightPanel";
 import JingleBackdrop from "@/components/HomePageV2/JingleBackdrop";
@@ -30,7 +31,8 @@ const allCollectibleItemIds = Array.from(
 function HomePageV2() {
   const { rightPanelRef, sceneOverlayRef, sceneOverlayTop, overlayExtensionHeight } =
     useHomePageV2SceneOverlayLayout();
-  const { scene, player, isLoading, leadResponseText, selectChoice, useItem } = useHomePageV2Game();
+  const { scene, player, isLoading, leadResponseText, selectChoice, useItem, reset } =
+    useHomePageV2Game();
   const [isEndingDialogOpen, setIsEndingDialogOpen] = useState(false);
   const currentSceneId = scene?.id ?? -1;
   const isEndingScene =
@@ -153,6 +155,13 @@ function HomePageV2() {
         open={isEndingDialogOpen}
         onClose={() => setIsEndingDialogOpen(false)}
         achievements={achievements}
+      />
+      <ResetButton
+        page="v2"
+        onClick={() => {
+          setIsEndingDialogOpen(false);
+          void reset();
+        }}
       />
     </>
   );

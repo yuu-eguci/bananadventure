@@ -4,10 +4,14 @@ import { useTranslation } from "react-i18next";
 
 type Props = {
   onClick: () => void;
+  page?: "v1" | "v2";
 };
 
-const ResetButton = ({ onClick }: Props) => {
+const ResetButton = ({ onClick, page = "v1" }: Props) => {
   const { t } = useTranslation();
+  const versionLink = page === "v2" ? "/" : "/v2";
+  const versionLabel = page === "v2" ? "V1" : "V2";
+
   return (
     <Box
       sx={{
@@ -23,8 +27,8 @@ const ResetButton = ({ onClick }: Props) => {
       <Button variant="outlined" component={Link} to="/lore" color="info">
         {t("lore.title")}
       </Button>
-      <Button variant="outlined" component={Link} to="/v2" color="info">
-        V2
+      <Button variant="outlined" component={Link} to={versionLink} color="info">
+        {versionLabel}
       </Button>
       {/* color は main.tsx の theme から。 */}
       <Button variant="outlined" onClick={onClick} color="info">
