@@ -1,4 +1,4 @@
-import { Box, Card, CardContent, Typography } from "@mui/material";
+import { Box, Card, CardActionArea, CardContent, Typography } from "@mui/material";
 
 const previewChoices = [
   "バナナをひろう",
@@ -43,24 +43,16 @@ function SceneOverlayPreview() {
           <Card
             key={choice}
             sx={{
-              minHeight: { xs: 72, sm: 84 },
+              height: "100%",
               bgcolor: "primary.main",
               borderRadius: "14px",
             }}
           >
-            <CardContent
-              sx={{
-                height: "100%",
-                display: "flex",
-                alignItems: "center",
-                justifyContent: "center",
-                py: 1.5,
-              }}
-            >
-              <Typography variant="body2" sx={{ textAlign: "center" }}>
-                {choice}
-              </Typography>
-            </CardContent>
+            <CardActionArea sx={{ height: "100%" }}>
+              <CardContent sx={{ p: 2 }}>
+                <Typography variant="body2">{choice}</Typography>
+              </CardContent>
+            </CardActionArea>
           </Card>
         ))}
       </Box>
