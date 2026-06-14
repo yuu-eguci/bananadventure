@@ -5,9 +5,9 @@ import { useCallback, useState } from "react";
 // charDelayMs は 1 文字あたりの送り間隔（ミリ秒）で、実際のメッセージ表示への
 // 組み込みは次のタスクで行う。ここでは定義だけ用意しておく。
 export const MESSAGE_SPEEDS = {
-  verySlow: { label: "激遅", charDelayMs: 120 },
-  slow: { label: "ゆっくり", charDelayMs: 70 },
-  fast: { label: "はやめ", charDelayMs: 35 },
+  verySlow: { label: "激遅", charDelayMs: 1000 },
+  slow: { label: "ゆっくり", charDelayMs: 100 },
+  fast: { label: "はやめ", charDelayMs: 70 },
   lightSpeed: { label: "光速", charDelayMs: 0 },
 } as const;
 
