@@ -18,10 +18,6 @@ function BgmToggleButton({ isPlaying, onToggle }: Props) {
       startIcon={isPlaying ? <VolumeUpRounded /> : <VolumeOffRounded />}
       aria-label={isPlaying ? "BGM を停止" : "BGM を再生"}
       sx={{
-        position: "absolute",
-        top: "12px",
-        right: "12px",
-        zIndex: 3,
         color: "common.white",
         ...(isPlaying
           ? {}

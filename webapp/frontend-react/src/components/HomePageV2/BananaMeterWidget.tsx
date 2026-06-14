@@ -27,10 +27,6 @@ function BananaMeterWidget({ value }: Props) {
         onClick={() => setOpen(true)}
         elevation={2}
         sx={{
-          position: "absolute",
-          top: "58px",
-          right: "12px",
-          zIndex: 3,
           display: "flex",
           flexDirection: "column",
           alignItems: "center",
@@ -56,7 +52,7 @@ function BananaMeterWidget({ value }: Props) {
         </Typography>
       </Paper>
 
-      <Dialog open={open} onClose={() => setOpen(false)} maxWidth="xs" fullWidth>
+      <Dialog open={open} onClose={() => setOpen(false)} maxWidth="xs" fullWidth PaperProps={{ sx: { borderRadius: "18px" } }}>
         <DialogTitle
           sx={{
             pr: 6,
