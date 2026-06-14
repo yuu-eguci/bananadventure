@@ -3,8 +3,9 @@ import { Alert, Box, Snackbar, Typography } from "@mui/material";
 import HomePageV2RightPanel from "@/components/HomePageV2/HomePageV2RightPanel";
 import MainSection from "@/components/HomePageV2/MainSection";
 import ItemWidget from "@/components/HomePageV2/ItemWidget";
-import SceneOverlayPreview from "@/components/HomePageV2/SceneOverlayPreview";
+import SceneOverlay from "@/components/HomePageV2/SceneOverlay";
 import useHomePageV2SceneOverlayLayout from "@/hooks/useHomePageV2SceneOverlayLayout";
+import useHomePageV2Game from "@/hooks/useHomePageV2Game";
 import { useBgmPlayer } from "@/hooks/useBgmPlayer";
 import { Item } from "@/models";
 import { resolveImageUrl } from "@/services/assetImageResolver";
@@ -45,6 +46,7 @@ const stubItem3: Item = {
 function HomePageV2() {
   const { rightPanelRef, sceneOverlayRef, sceneOverlayTop, overlayExtensionHeight } =
     useHomePageV2SceneOverlayLayout();
+  const { scene, player, isLoading, leadResponseText, selectChoice } = useHomePageV2Game();
   const {
     isPlaying: isBgmPlaying,
     toggle: toggleBgm,
@@ -74,18 +76,30 @@ function HomePageV2() {
         >
           ♪ {currentTrackLabel}
         </Typography>
-        <MainSection imageSrc="/sample-image/sample.png" overlayExtensionHeight={overlayExtensionHeight}>
+        <MainSection
+          imageSrc={scene?.image ?? "/sample-image/sample.png"}
+          overlayExtensionHeight={overlayExtensionHeight}
+        >
           <HomePageV2RightPanel
             ref={rightPanelRef}
             isBgmPlaying={isBgmPlaying}
             onToggleBgm={toggleBgm}
-            bananaMeterValue={0}
+            bananaMeterValue={player?.bananaMeter ?? 0}
           >
             <ItemWidget item={stubItem1} onUse={() => {}} />
             <ItemWidget item={stubItem2} onUse={() => {}} />
             <ItemWidget item={stubItem3} onUse={() => {}} />
           </HomePageV2RightPanel>
-          <SceneOverlayPreview ref={sceneOverlayRef} top={sceneOverlayTop} />
+          <SceneOverlay
+            ref={sceneOverlayRef}
+            scene={scene}
+            leadResponseText={leadResponseText}
+            top={sceneOverlayTop}
+            isLoading={isLoading}
+            onSelectChoice={(choice) => {
+              void selectChoice(choice);
+            }}
+          />
         </MainSection>
       </Box>
 
