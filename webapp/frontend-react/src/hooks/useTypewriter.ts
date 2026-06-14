@@ -37,10 +37,14 @@ export function useTypewriter(
   const pausePointsKey = pausePoints ? pausePoints.join(",") : "";
 
   // テキストが変わったら最初から打ち直す（pause も未消費に戻す）。
-  useEffect(() => {
+  // useEffect（描画後）で戻すと、新 fullText を前回の revealedCount で slice した
+  // フレームが一瞬ペイントされ「冒頭がちらっと出る」ので、レンダー中に同期で 0 へ戻す。
+  const prevFullTextRef = useRef(fullText);
+  if (prevFullTextRef.current !== fullText) {
+    prevFullTextRef.current = fullText;
     setRevealedCount(0);
     consumedPauseCountRef.current = 0;
-  }, [fullText]);
+  }
 
   useEffect(() => {
     const points = pausePointsKey === "" ? [] : pausePointsKey.split(",").map(Number);
