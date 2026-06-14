@@ -4,6 +4,7 @@ import { Alert, Box, Button, Snackbar, Typography } from "@mui/material";
 import { Link } from "react-router-dom";
 import { useTranslation } from "react-i18next";
 
+import BananaMeterWidget from "@/components/HomePageV2/BananaMeterWidget";
 import EndingAchievementsDialog from "@/components/HomePageV2/EndingAchievementsDialog";
 import HomePageV2RightPanel from "@/components/HomePageV2/HomePageV2RightPanel";
 import JingleBackdrop from "@/components/HomePageV2/JingleBackdrop";
@@ -109,12 +110,20 @@ function HomePageV2() {
           overlayExtensionHeight={overlayExtensionHeight}
           imageAreaRef={mainImageRef}
         >
-          <HomePageV2RightPanel
-            isBgmPlaying={isBgmPlaying}
-            onToggleBgm={toggleBgm}
-            bananaMeterValue={player?.bananaMeter ?? 0}
-            bananaMeterFlashSignal={bananaMeterFlashSignal}
+          {/* メッセージオーバーレイ上端のすぐ外側（左）にバナナメーターを置く。
+              top をオーバーレイ上端に合わせ、translateY(-100%) で上へ逃がして貼り付ける。 */}
+          <Box
+            sx={{
+              position: "absolute",
+              left: "12px",
+              top: sceneOverlayTop,
+              transform: "translateY(calc(-100% - 8px))",
+              zIndex: 3,
+            }}
           >
+            <BananaMeterWidget value={player?.bananaMeter ?? 0} flashSignal={bananaMeterFlashSignal} />
+          </Box>
+          <HomePageV2RightPanel isBgmPlaying={isBgmPlaying} onToggleBgm={toggleBgm}>
             {(player?.items ?? []).map((item) => (
               <ItemWidget
                 key={item.id}

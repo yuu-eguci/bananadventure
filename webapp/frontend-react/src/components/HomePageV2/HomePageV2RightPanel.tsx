@@ -2,25 +2,15 @@ import { type ReactNode } from "react";
 
 import { Box } from "@mui/material";
 
-import BananaMeterWidget from "@/components/HomePageV2/BananaMeterWidget";
 import BgmToggleButton from "@/components/HomePageV2/BgmToggleButton";
 
 type Props = {
   isBgmPlaying: boolean;
   onToggleBgm: () => void;
-  bananaMeterValue: number;
-  // 親が増やすたびにバナナメーターを明滅させるシグナル。
-  bananaMeterFlashSignal: number;
   children?: ReactNode;
 };
 
-function HomePageV2RightPanel({
-  isBgmPlaying,
-  onToggleBgm,
-  bananaMeterValue,
-  bananaMeterFlashSignal,
-  children,
-}: Props) {
+function HomePageV2RightPanel({ isBgmPlaying, onToggleBgm, children }: Props) {
   return (
     <Box
       sx={{
@@ -35,7 +25,6 @@ function HomePageV2RightPanel({
       }}
     >
       <BgmToggleButton isPlaying={isBgmPlaying} onToggle={onToggleBgm} />
-      <BananaMeterWidget value={bananaMeterValue} flashSignal={bananaMeterFlashSignal} />
       {children}
     </Box>
   );

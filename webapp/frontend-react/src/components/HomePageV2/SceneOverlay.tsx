@@ -98,7 +98,7 @@ const SceneOverlay = forwardRef<HTMLDivElement, Props>(function SceneOverlay(
       >
         {leadText.length > 0 ? (
           <>
-            <Typography variant="subtitle1" sx={{ mb: 1, whiteSpace: "pre-line" }}>
+            <Typography variant="subtitle1" sx={{ mb: 1, whiteSpace: "pre-line", textAlign: "left" }}>
               {visibleLeadText}
             </Typography>
             {shouldShowSeparator ? (
@@ -109,7 +109,7 @@ const SceneOverlay = forwardRef<HTMLDivElement, Props>(function SceneOverlay(
           </>
         ) : null}
 
-        <Typography variant="subtitle1" sx={{ mb: shouldRenderActionArea ? 1.5 : 0 }}>
+        <Typography variant="subtitle1" sx={{ mb: shouldRenderActionArea ? 1.5 : 0, textAlign: "left" }}>
           {visibleSceneText}
         </Typography>
 
