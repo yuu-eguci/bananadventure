@@ -1,6 +1,7 @@
 import { Alert, Box, Snackbar, Typography } from "@mui/material";
 
 import HomePageV2RightPanel from "@/components/HomePageV2/HomePageV2RightPanel";
+import JingleBackdrop from "@/components/HomePageV2/JingleBackdrop";
 import MainSection from "@/components/HomePageV2/MainSection";
 import ItemWidget from "@/components/HomePageV2/ItemWidget";
 import SceneOverlay from "@/components/HomePageV2/SceneOverlay";
@@ -117,6 +118,8 @@ function HomePageV2() {
           {bgmErrorMessage ?? ""}
         </Alert>
       </Snackbar>
+
+      <JingleBackdrop open={isLoading} />
     </>
   );
 }

@@ -10,6 +10,14 @@ import { SceneViewModel } from "@/viewModels";
  * `HomePageV2` 側には、画面表示に必要な状態と操作 API だけを渡し、ページコンポーネントの責務を薄く保つことを目的としています。
  */
 const service = new SceneService();
+const INITIAL_LOADING_DELAY_MS = 1000;
+const TRANSITION_LOADING_DURATION_MS = 1000;
+
+async function wait(ms: number): Promise<void> {
+  await new Promise((resolve) => {
+    setTimeout(resolve, ms);
+  });
+}
 
 type UseHomePageV2GameResult = {
   viewModel: SceneViewModel | null;
@@ -36,6 +44,7 @@ function useHomePageV2Game(): UseHomePageV2GameResult {
       setIsLoading(true);
 
       try {
+        await wait(INITIAL_LOADING_DELAY_MS);
         const initialViewModel = await service.fetchInitialViewModel();
         if (!isMountedRef.current) {
           return;
@@ -43,6 +52,7 @@ function useHomePageV2Game(): UseHomePageV2GameResult {
 
         setViewModel(initialViewModel);
         setLeadResponseText(null);
+        await wait(TRANSITION_LOADING_DURATION_MS);
       } finally {
         if (isMountedRef.current) {
           setIsLoading(false);
@@ -75,6 +85,7 @@ function useHomePageV2Game(): UseHomePageV2GameResult {
 
       setViewModel(updatedViewModel);
       setLeadResponseText(choice.responseText.trim().length > 0 ? choice.responseText : null);
+      await wait(TRANSITION_LOADING_DURATION_MS);
     } finally {
       isBusyRef.current = false;
 
@@ -123,6 +134,7 @@ function useHomePageV2Game(): UseHomePageV2GameResult {
 
       setViewModel(initialViewModel);
       setLeadResponseText(null);
+      await wait(TRANSITION_LOADING_DURATION_MS);
     } finally {
       isBusyRef.current = false;
 
