@@ -10,10 +10,10 @@ export const MAIN_SECTION_HEIGHT = {
 type Props = {
   imageSrc: string;
   children?: ReactNode;
-  bottomSpace?: number;
+  overlayExtensionHeight?: number;
 };
 
-function MainSection({ imageSrc, children, bottomSpace = 0 }: Props) {
+function MainSection({ imageSrc, children, overlayExtensionHeight = 0 }: Props) {
   return (
     <Paper
       sx={{
@@ -45,10 +45,10 @@ function MainSection({ imageSrc, children, bottomSpace = 0 }: Props) {
           draggable={false}
         />
       </Box>
-      {bottomSpace > 0 ? (
+      {overlayExtensionHeight > 0 ? (
         <Box
           sx={{
-            height: bottomSpace,
+            height: overlayExtensionHeight,
             bgcolor: "rgba(0, 0, 0, 0.62)",
           }}
         />

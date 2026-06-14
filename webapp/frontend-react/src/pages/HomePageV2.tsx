@@ -1,11 +1,10 @@
-import { Alert, Box, Snackbar, Typography, useMediaQuery, useTheme } from "@mui/material";
-import { useLayoutEffect, useRef, useState } from "react";
+import { Alert, Box, Snackbar, Typography } from "@mui/material";
 
-import BananaMeterWidget from "@/components/HomePageV2/BananaMeterWidget";
-import BgmToggleButton from "@/components/HomePageV2/BgmToggleButton";
+import HomePageV2RightPanel from "@/components/HomePageV2/HomePageV2RightPanel";
+import MainSection from "@/components/HomePageV2/MainSection";
 import ItemWidget from "@/components/HomePageV2/ItemWidget";
-import MainSection, { MAIN_SECTION_HEIGHT } from "@/components/HomePageV2/MainSection";
 import SceneOverlayPreview from "@/components/HomePageV2/SceneOverlayPreview";
+import useHomePageV2SceneOverlayLayout from "@/hooks/useHomePageV2SceneOverlayLayout";
 import { useBgmPlayer } from "@/hooks/useBgmPlayer";
 import { Item } from "@/models";
 import { resolveImageUrl } from "@/services/assetImageResolver";
@@ -44,12 +43,8 @@ const stubItem3: Item = {
 };
 
 function HomePageV2() {
-  const rightPanelRef = useRef<HTMLDivElement | null>(null);
-  const sceneOverlayRef = useRef<HTMLDivElement | null>(null);
-  const theme = useTheme();
-  const isMdUp = useMediaQuery(theme.breakpoints.up("md"));
-  const [sceneOverlayTop, setSceneOverlayTop] = useState(0);
-  const [mainSectionBottomSpace, setMainSectionBottomSpace] = useState(0);
+  const { rightPanelRef, sceneOverlayRef, sceneOverlayTop, overlayExtensionHeight } =
+    useHomePageV2SceneOverlayLayout();
   const {
     isPlaying: isBgmPlaying,
     toggle: toggleBgm,
@@ -57,55 +52,6 @@ function HomePageV2() {
     clearError: clearBgmError,
     currentTrackLabel,
   } = useBgmPlayer("main");
-
-  useLayoutEffect(() => {
-    const element = rightPanelRef.current;
-    if (!element) {
-      return;
-    }
-
-    const updateSceneOverlayTop = () => {
-      setSceneOverlayTop(element.getBoundingClientRect().height + 24);
-    };
-
-    updateSceneOverlayTop();
-
-    const resizeObserver = new ResizeObserver(() => {
-      updateSceneOverlayTop();
-    });
-
-    resizeObserver.observe(element);
-
-    return () => {
-      resizeObserver.disconnect();
-    };
-  }, []);
-
-  useLayoutEffect(() => {
-    const overlayElement = sceneOverlayRef.current;
-    if (!overlayElement) {
-      return;
-    }
-
-    const baseHeight = isMdUp ? MAIN_SECTION_HEIGHT.md : MAIN_SECTION_HEIGHT.xs;
-
-    const updateMainSectionBottomSpace = () => {
-      const requiredHeight = sceneOverlayTop + overlayElement.scrollHeight;
-      setMainSectionBottomSpace(Math.max(0, requiredHeight - baseHeight));
-    };
-
-    updateMainSectionBottomSpace();
-
-    const resizeObserver = new ResizeObserver(() => {
-      updateMainSectionBottomSpace();
-    });
-
-    resizeObserver.observe(overlayElement);
-
-    return () => {
-      resizeObserver.disconnect();
-    };
-  }, [isMdUp, sceneOverlayTop]);
 
   return (
     <>
@@ -128,27 +74,17 @@ function HomePageV2() {
         >
           ♪ {currentTrackLabel}
         </Typography>
-        <MainSection imageSrc="/sample-image/sample.png" bottomSpace={mainSectionBottomSpace}>
-          {/* 右パネル: BGM・バナナメーター・アイテムを縦に並べる */}
-          <Box
+        <MainSection imageSrc="/sample-image/sample.png" overlayExtensionHeight={overlayExtensionHeight}>
+          <HomePageV2RightPanel
             ref={rightPanelRef}
-            sx={{
-              position: "absolute",
-              top: "12px",
-              right: "12px",
-              zIndex: 3,
-              display: "flex",
-              flexDirection: "column",
-              alignItems: "flex-end",
-              gap: 1,
-            }}
+            isBgmPlaying={isBgmPlaying}
+            onToggleBgm={toggleBgm}
+            bananaMeterValue={0}
           >
-            <BgmToggleButton isPlaying={isBgmPlaying} onToggle={toggleBgm} />
-            <BananaMeterWidget value={0} />
             <ItemWidget item={stubItem1} onUse={() => {}} />
             <ItemWidget item={stubItem2} onUse={() => {}} />
             <ItemWidget item={stubItem3} onUse={() => {}} />
-          </Box>
+          </HomePageV2RightPanel>
           <SceneOverlayPreview ref={sceneOverlayRef} top={sceneOverlayTop} />
         </MainSection>
       </Box>

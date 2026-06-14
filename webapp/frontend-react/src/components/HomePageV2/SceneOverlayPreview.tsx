@@ -35,7 +35,7 @@ const SceneOverlayPreview = forwardRef<HTMLDivElement, Props>(function SceneOver
         display: "flex",
         flexDirection: "column",
       }}
-      >
+    >
       <Typography variant="subtitle1" sx={{ mb: 1.5 }}>
         ここにメッセージが入る想定
       </Typography>
