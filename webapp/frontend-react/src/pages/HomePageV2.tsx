@@ -126,6 +126,17 @@ function HomePageV2() {
             }}
           />
         </MainSection>
+
+        <Box sx={{ mt: 2 }}>
+          <ResetButton
+            page="v2"
+            layout="inline"
+            onClick={() => {
+              setIsEndingDialogOpen(false);
+              void reset();
+            }}
+          />
+        </Box>
       </Box>
 
       <Snackbar
@@ -148,13 +159,6 @@ function HomePageV2() {
         open={isEndingDialogOpen}
         onClose={() => setIsEndingDialogOpen(false)}
         achievements={achievements}
-      />
-      <ResetButton
-        page="v2"
-        onClick={() => {
-          setIsEndingDialogOpen(false);
-          void reset();
-        }}
       />
     </>
   );
