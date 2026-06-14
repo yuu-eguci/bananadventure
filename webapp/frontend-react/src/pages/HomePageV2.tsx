@@ -1,5 +1,6 @@
-import { Alert, Box, Snackbar } from "@mui/material";
+import { Alert, Box, Snackbar, Typography } from "@mui/material";
 
+import BgmToggleButton from "@/components/HomePageV2/BgmToggleButton";
 import MainSection from "@/components/HomePageV2/MainSection";
 import { useBgmPlayer } from "@/hooks/useBgmPlayer";
 
@@ -22,12 +23,20 @@ function HomePageV2() {
           px: { xs: 0, sm: 1 },
         }}
       >
-        <MainSection
-          imageSrc="/sample-image/sample.png"
-          currentTrackLabel={currentTrackLabel}
-          isBgmPlaying={isBgmPlaying}
-          onToggleBgm={toggleBgm}
-        />
+        <Typography
+          variant="caption"
+          sx={{
+            display: "block",
+            textAlign: "right",
+            mb: 0.5,
+            color: "text.secondary",
+          }}
+        >
+          ♪ {currentTrackLabel}
+        </Typography>
+        <MainSection imageSrc="/sample-image/sample.png">
+          <BgmToggleButton isPlaying={isBgmPlaying} onToggle={toggleBgm} />
+        </MainSection>
       </Box>
 
       <Snackbar

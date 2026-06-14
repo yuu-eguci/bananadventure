@@ -1,55 +1,50 @@
-import { Box, Paper, Typography } from "@mui/material";
+import { type ReactNode } from "react";
 
-import BgmToggleButton from "@/components/HomePageV2/BgmToggleButton";
+import { Box, Paper } from "@mui/material";
 
 type Props = {
   imageSrc: string;
-  currentTrackLabel: string;
-  isBgmPlaying: boolean;
-  onToggleBgm: () => void;
+  children?: ReactNode;
 };
 
-function MainSection({ imageSrc, currentTrackLabel, isBgmPlaying, onToggleBgm }: Props) {
+function MainSection({ imageSrc, children }: Props) {
   return (
-    <Box sx={{ width: "100%" }}>
-      <Typography
-        variant="caption"
+    <Paper
+      sx={{
+        p: 0,
+        position: "relative",
+        overflow: "hidden",
+        borderRadius: "18px",
+        mb: 2,
+        height: { xs: 520, md: 560 },
+      }}
+    >
+      <Box
+        component="img"
+        src={imageSrc}
+        alt="Main"
         sx={{
+          width: "100%",
+          height: "100%",
+          objectFit: "cover",
           display: "block",
-          textAlign: "right",
-          mb: 0.5,
-          color: "text.secondary",
+          userSelect: "none",
+          pointerEvents: "none",
         }}
-      >
-        ♪ {currentTrackLabel}
-      </Typography>
-      <Paper
-        sx={{
-          p: 0,
-          position: "relative",
-          overflow: "hidden",
-          borderRadius: "18px",
-          mb: 2,
-          height: { xs: 520, md: 560 },
-        }}
-      >
-        <BgmToggleButton isPlaying={isBgmPlaying} onToggle={onToggleBgm} />
+        draggable={false}
+      />
+      {children ? (
         <Box
-          component="img"
-          src={imageSrc}
-          alt="Main"
           sx={{
-            width: "100%",
-            height: "100%",
-            objectFit: "cover",
-            display: "block",
-            userSelect: "none",
-            pointerEvents: "none",
+            position: "absolute",
+            inset: 0,
+            zIndex: 2,
           }}
-          draggable={false}
-        />
-      </Paper>
-    </Box>
+        >
+          {children}
+        </Box>
+      ) : null}
+    </Paper>
   );
 }
 
