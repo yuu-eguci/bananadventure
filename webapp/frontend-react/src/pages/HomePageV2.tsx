@@ -114,6 +114,7 @@ function HomePageV2() {
               <ItemWidget
                 key={item.id}
                 item={item}
+                isLoading={isLoading}
                 onUse={async (targetItem) => {
                   await useItem(targetItem);
                 }}

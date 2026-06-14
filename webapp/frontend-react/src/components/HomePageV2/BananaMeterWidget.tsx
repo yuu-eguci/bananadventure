@@ -9,23 +9,10 @@ import {
   Paper,
   Typography,
 } from "@mui/material";
-import { keyframes } from "@mui/system";
-
 import { resolveImageUrl } from "@/services/assetImageResolver";
+import { WIDGET_FLASH_DURATION, widgetFlashKeyframes } from "@/components/HomePageV2/widgetFlash";
 
 const bananaMeterImagePath = "/ui-image/banana-meter-icon.webp";
-
-// バナナメーターが増減したときに目立たせるための明滅（輝度 + グロー）。
-const bananaMeterFlash = keyframes`
-  0%, 50%, 100% {
-    filter: brightness(1);
-    box-shadow: 0 0 0 rgba(255, 255, 255, 0);
-  }
-  25%, 75% {
-    filter: brightness(1.7);
-    box-shadow: 0 0 12px 4px rgba(255, 255, 255, 0.9);
-  }
-`;
 
 type Props = {
   value: number;
@@ -73,7 +60,7 @@ function BananaMeterWidget({ value, isLoading }: Props) {
           px: 1.2,
           py: 0.8,
           // flashCount === 0（初回マウント）では明滅させない。
-          animation: flashCount > 0 ? `${bananaMeterFlash} 0.9s ease` : "none",
+          animation: flashCount > 0 ? `${widgetFlashKeyframes} ${WIDGET_FLASH_DURATION} ease` : "none",
           "&:hover": { filter: "brightness(0.9)" },
         }}
       >

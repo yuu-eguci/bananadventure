@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 
 import {
   Box,
@@ -11,16 +11,35 @@ import {
 } from "@mui/material";
 
 import { Item } from "@/models";
+import { WIDGET_FLASH_DURATION, widgetFlashKeyframes } from "@/components/HomePageV2/widgetFlash";
 
 type Props = {
   item: Item;
+  // ローディング中（JingleBackdrop で隠れている間）は明滅を再生しないために渡す。
+  isLoading: boolean;
   onUse: (item: Item) => Promise<void>;
 };
 
-function ItemWidget({ item, onUse }: Props) {
+function ItemWidget({ item, isLoading, onUse }: Props) {
   const [open, setOpen] = useState(false);
   const [isUsing, setIsUsing] = useState(false);
   const [isResultVisible, setIsResultVisible] = useState(false);
+
+  // アイテムが追加されて初めて画面に見えたとき、一度だけ明滅させる。
+  const [flashCount, setFlashCount] = useState(0);
+  const hasFlashedRef = useRef(false);
+
+  useEffect(() => {
+    // ローディング中はまだ見えていないので、見えるようになってから明滅する。
+    if (isLoading) {
+      return;
+    }
+    if (hasFlashedRef.current) {
+      return;
+    }
+    hasFlashedRef.current = true;
+    setFlashCount(1);
+  }, [isLoading]);
 
   useEffect(() => {
     if (!open) {
@@ -35,6 +54,7 @@ function ItemWidget({ item, onUse }: Props) {
   return (
     <>
       <Paper
+        key={flashCount}
         onClick={() => {
           if (!item.used) setOpen(true);
         }}
@@ -49,6 +69,8 @@ function ItemWidget({ item, onUse }: Props) {
           px: 1.2,
           py: 0.8,
           opacity: item.used ? 0.4 : 1,
+          // flashCount === 0（初回マウント直後）では明滅させない。
+          animation: flashCount > 0 ? `${widgetFlashKeyframes} ${WIDGET_FLASH_DURATION} ease` : "none",
           "&:hover": item.used ? {} : { filter: "brightness(0.9)" },
         }}
       >
