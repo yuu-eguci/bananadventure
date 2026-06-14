@@ -52,13 +52,13 @@ export function buildAchievements({
     {
       id: "true-end",
       label: "トゥルーエンド",
-      note: "scene 14 に到達",
+      note: `scene ${SPECIAL_SCENE_IDS.TRUE_END} に到達`,
       achieved: currentSceneId === SPECIAL_SCENE_IDS.TRUE_END,
     },
     {
       id: "bad-end",
       label: "バッドエンド",
-      note: "scene 15 に到達",
+      note: `scene ${SPECIAL_SCENE_IDS.GAMEOVER} に到達`,
       achieved: currentSceneId === SPECIAL_SCENE_IDS.GAMEOVER,
     },
     {

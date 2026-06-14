@@ -2,8 +2,7 @@ import { useCallback, useState } from "react";
 
 // メッセージスピード設定。
 // label はモーダルの選択肢に表示する文言。
-// charDelayMs は 1 文字あたりの送り間隔（ミリ秒）で、実際のメッセージ表示への
-// 組み込みは次のタスクで行う。ここでは定義だけ用意しておく。
+// charDelayMs は 1 文字あたりの送り間隔（ミリ秒）。SceneOverlay の typewriter に渡す。
 export const MESSAGE_SPEEDS = {
   verySlow: { label: "激遅", charDelayMs: 1000 },
   slow: { label: "ゆっくり", charDelayMs: 70 },

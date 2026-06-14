@@ -12,12 +12,20 @@ import {
 
 import { Item } from "@/models";
 import { WIDGET_FLASH_DURATION, widgetFlashKeyframes } from "@/components/HomePageV2/widgetFlash";
+import {
+  DIALOG_PAPER_PROPS,
+  darkActionButtonSx,
+  dialogSurfaceSx,
+  dialogTitleSx,
+} from "@/components/HomePageV2/dialogStyles";
+import { handleImageError } from "@/components/HomePageV2/imageFallback";
 
 type Props = {
   item: Item;
   // ローディング中（JingleBackdrop で隠れている間）は明滅を再生しないために渡す。
   isLoading: boolean;
-  onUse: (item: Item) => Promise<void>;
+  // アイテム使用処理。成功したら true を返す。false（失敗や多重押下で弾かれた等）なら結果画面は出さない。
+  onUse: (item: Item) => Promise<boolean>;
 };
 
 function ItemWidget({ item, isLoading, onUse }: Props) {
@@ -78,10 +86,7 @@ function ItemWidget({ item, isLoading, onUse }: Props) {
           component="img"
           src={item.image}
           alt={item.text}
-          onError={(e: React.SyntheticEvent<HTMLImageElement>) => {
-            e.currentTarget.onerror = null;
-            e.currentTarget.src = "/sample-image/sample.png";
-          }}
+          onError={handleImageError}
           sx={{ width: 36, height: 36 }}
         />
       </Paper>
@@ -95,29 +100,28 @@ function ItemWidget({ item, isLoading, onUse }: Props) {
         }}
         maxWidth="xs"
         fullWidth
-        PaperProps={{ sx: { borderRadius: "18px" } }}
+        PaperProps={DIALOG_PAPER_PROPS}
       >
-        <DialogTitle sx={{ bgcolor: "primary.main", color: "common.black", fontWeight: "bold" }}>
+        <DialogTitle sx={dialogTitleSx}>
           {isResultVisible ? "アイテム使用結果" : item.text}
         </DialogTitle>
         <DialogContent
-          sx={{
-            bgcolor: "primary.main",
-            pt: "16px !important",
-            display: "flex",
-            flexDirection: "column",
-            alignItems: "center",
-            gap: 2,
-          }}
+          sx={[
+            dialogSurfaceSx,
+            {
+              pt: "16px !important",
+              display: "flex",
+              flexDirection: "column",
+              alignItems: "center",
+              gap: 2,
+            },
+          ]}
         >
           <Box
             component="img"
             src={item.image}
             alt={item.text}
-            onError={(e: React.SyntheticEvent<HTMLImageElement>) => {
-              e.currentTarget.onerror = null;
-              e.currentTarget.src = "/sample-image/sample.png";
-            }}
+            onError={handleImageError}
             sx={{ width: 80, height: 80, objectFit: "contain" }}
           />
           {isResultVisible ? (
@@ -131,13 +135,13 @@ function ItemWidget({ item, isLoading, onUse }: Props) {
             </Box>
           )}
         </DialogContent>
-        <DialogActions sx={{ bgcolor: "primary.main" }}>
+        <DialogActions sx={dialogSurfaceSx}>
           {isResultVisible ? (
             <Button
               onClick={() => setOpen(false)}
               variant="contained"
               color="inherit"
-              sx={{ bgcolor: "grey.800", color: "common.white", "&:hover": { bgcolor: "grey.900" } }}
+              sx={darkActionButtonSx}
             >
               閉じる
             </Button>
@@ -147,8 +151,11 @@ function ItemWidget({ item, isLoading, onUse }: Props) {
                 onClick={async () => {
                   setIsUsing(true);
                   try {
-                    await onUse(item);
-                    setIsResultVisible(true);
+                    // 成功したときだけ結果画面へ進む。失敗時は裏で error Snackbar が出る。
+                    const succeeded = await onUse(item);
+                    if (succeeded) {
+                      setIsResultVisible(true);
+                    }
                   } finally {
                     setIsUsing(false);
                   }
@@ -156,7 +163,7 @@ function ItemWidget({ item, isLoading, onUse }: Props) {
                 disabled={isUsing}
                 variant="contained"
                 color="inherit"
-                sx={{ bgcolor: "grey.800", color: "common.white", "&:hover": { bgcolor: "grey.900" } }}
+                sx={darkActionButtonSx}
               >
                 使う
               </Button>

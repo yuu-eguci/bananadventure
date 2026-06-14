@@ -12,6 +12,8 @@ import { SceneViewModel } from "@/viewModels";
  * `SceneService` は引数で注入できます（テストや将来の save / load・API 化での差し替えを想定）。
  * 省略時は hook 内で 1 度だけ生成し、再レンダーをまたいで同じインスタンスを使い回します。
  */
+// JingleBackdrop（ローディング演出）を見せるための意図的なウェイト。
+// ローカル JSON でも一瞬で終わらせず、初期表示と遷移に演出時間を確保している。
 const INITIAL_LOADING_DELAY_MS = 1000;
 const TRANSITION_LOADING_DURATION_MS = 1000;
 const GENERIC_ERROR_MESSAGE = "エラーが発生しました。もう一度お試しください。";

@@ -16,6 +16,12 @@ import {
   MESSAGE_SPEEDS,
   MessageSpeedKey,
 } from "@/hooks/useMessageSpeed";
+import {
+  DIALOG_PAPER_PROPS,
+  darkActionButtonSx,
+  dialogSurfaceSx,
+  dialogTitleSx,
+} from "@/components/HomePageV2/dialogStyles";
 
 type Props = {
   open: boolean;
@@ -37,16 +43,16 @@ function SystemDialog({ open, onClose, messageSpeed, onChangeMessageSpeed, onRes
   }, [open]);
 
   return (
-    <Dialog open={open} onClose={onClose} maxWidth="xs" fullWidth PaperProps={{ sx: { borderRadius: "18px" } }}>
-      <DialogTitle sx={{ bgcolor: "primary.main", color: "common.black", fontWeight: "bold" }}>
-        システム
-      </DialogTitle>
+    <Dialog open={open} onClose={onClose} maxWidth="xs" fullWidth PaperProps={DIALOG_PAPER_PROPS}>
+      <DialogTitle sx={dialogTitleSx}>システム</DialogTitle>
       <DialogContent
-        sx={{
-          bgcolor: "primary.main",
-          color: "common.black",
-          pt: "16px !important",
-        }}
+        sx={[
+          dialogSurfaceSx,
+          {
+            color: "common.black",
+            pt: "16px !important",
+          },
+        ]}
       >
         <Box sx={{ display: "flex", alignItems: "center", gap: 0.75, mb: 1 }}>
           <Typography variant="subtitle2" sx={{ fontWeight: 700 }}>
@@ -108,18 +114,13 @@ function SystemDialog({ open, onClose, messageSpeed, onChangeMessageSpeed, onRes
           variant="contained"
           color="inherit"
           fullWidth
-          sx={{ bgcolor: "grey.800", color: "common.white", "&:hover": { bgcolor: "grey.900" } }}
+          sx={darkActionButtonSx}
         >
           リセット
         </Button>
       </DialogContent>
-      <DialogActions sx={{ bgcolor: "primary.main" }}>
-        <Button
-          onClick={onClose}
-          variant="contained"
-          color="inherit"
-          sx={{ bgcolor: "grey.800", color: "common.white", "&:hover": { bgcolor: "grey.900" } }}
-        >
+      <DialogActions sx={dialogSurfaceSx}>
+        <Button onClick={onClose} variant="contained" color="inherit" sx={darkActionButtonSx}>
           閉じる
         </Button>
       </DialogActions>

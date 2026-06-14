@@ -62,6 +62,29 @@ export class SceneService {
     };
   }
 
+  /**
+   * Player 更新後の遷移先を解決する共通フロー。
+   * - バナナメーターが 0 以下なら gameover シーンへ（トリガーは解決しない）。
+   * - そうでなければ、与えられた scene からトリガーアイテムを解決する。
+   * useItem / selectSceneChoice で同じ扱いになるよう、ここに集約している。
+   */
+  private async resolveSceneAfterPlayerUpdate({
+    scene,
+    player,
+  }: {
+    scene: Scene;
+    player: Player;
+  }): Promise<{ scene: Scene; player: Player }> {
+    if (player.bananaMeter <= 0) {
+      return {
+        scene: await this.getScene({ sceneId: SPECIAL_SCENE_IDS.GAMEOVER }),
+        player,
+      };
+    }
+
+    return this.resolveTriggeredScene({ scene, player });
+  }
+
   private async getInitialPlayer(): Promise<Player> {
     // NOTE: Django のノリで new しちゃいそうになるが、 Player は type/interface ベースの定義である。 class ではない。
     //       new するんじゃなくて、オブジェクトの構造を表すだけ。
@@ -126,7 +149,7 @@ export class SceneService {
       return viewModel;
     }
 
-    let updatedPlayer: Player = {
+    const updatedPlayer: Player = {
       ...viewModel.player,
       items: viewModel.player.items.map((item) =>
         item.id === itemId ? { ...item, used: true } : item,
@@ -139,21 +162,14 @@ export class SceneService {
     }
     updatedPlayer.itemsChanged = true;
 
-    let updatedScene = null;
-    if (updatedPlayer.bananaMeter <= 0) {
-      updatedScene = await this.getScene({ sceneId: SPECIAL_SCENE_IDS.GAMEOVER });
-    } else {
-      const resolved = await this.resolveTriggeredScene({
-        scene: viewModel.scene,
-        player: updatedPlayer,
-      });
-      updatedScene = resolved.scene;
-      updatedPlayer = resolved.player;
-    }
+    const resolved = await this.resolveSceneAfterPlayerUpdate({
+      scene: viewModel.scene,
+      player: updatedPlayer,
+    });
 
     return {
-      scene: updatedScene,
-      player: updatedPlayer,
+      scene: resolved.scene,
+      player: resolved.player,
     };
   }
 
@@ -175,7 +191,7 @@ export class SceneService {
 
     // 返却のため、 Player を複製。
     // items 配列とその要素も複製し、入力 viewModel.player.items を直接 mutate しないようにする。
-    let updatedPlayer: Player = {
+    const updatedPlayer: Player = {
       ...viewModel.player,
       items: viewModel.player.items.map((item) => ({ ...item })),
     };
@@ -195,25 +211,19 @@ export class SceneService {
       updatedPlayer.bananaMeterChanged = true;
     }
 
-    // SceneModelView.scene 更新
-    let updatedScene = null;
-    if (updatedPlayer.bananaMeter <= 0) {
-      updatedScene = await this.getScene({ sceneId: SPECIAL_SCENE_IDS.GAMEOVER });
-    } else {
-      updatedScene = await this.getScene({ sceneId: selectedSceneChoice.nextSceneId });
-    }
-
-    const resolved = await this.resolveTriggeredScene({
-      scene: updatedScene,
+    // SceneModelView.scene 更新。
+    // メーター 0 以下なら gameover、そうでなければ選択肢の遷移先からトリガー解決する。
+    // gameover 時にトリガーを解決しない扱いは useItem と共通（resolveSceneAfterPlayerUpdate）。
+    const nextScene = await this.getScene({ sceneId: selectedSceneChoice.nextSceneId });
+    const resolved = await this.resolveSceneAfterPlayerUpdate({
+      scene: nextScene,
       player: updatedPlayer,
     });
-    updatedScene = resolved.scene;
-    updatedPlayer = resolved.player;
 
     // SceneModelView を返す
     return {
-      scene: updatedScene,
-      player: updatedPlayer,
+      scene: resolved.scene,
+      player: resolved.player,
     };
   }
 }

@@ -1,11 +1,12 @@
 import { Box, Button, Dialog, DialogActions, DialogContent, DialogTitle, Typography } from "@mui/material";
 
-type Achievement = {
-  id: string;
-  label: string;
-  note: string;
-  achieved: boolean;
-};
+import {
+  DIALOG_PAPER_PROPS,
+  darkActionButtonSx,
+  dialogSurfaceSx,
+  dialogTitleSx,
+} from "@/components/HomePageV2/dialogStyles";
+import { Achievement } from "@/services/achievement";
 
 type Props = {
   open: boolean;
@@ -15,16 +16,16 @@ type Props = {
 
 function EndingAchievementsDialog({ open, onClose, achievements }: Props) {
   return (
-    <Dialog open={open} onClose={onClose} maxWidth="xs" fullWidth PaperProps={{ sx: { borderRadius: "18px" } }}>
-      <DialogTitle sx={{ bgcolor: "primary.main", color: "common.black", fontWeight: "bold" }}>
-        エンディングアチーブメント
-      </DialogTitle>
+    <Dialog open={open} onClose={onClose} maxWidth="xs" fullWidth PaperProps={DIALOG_PAPER_PROPS}>
+      <DialogTitle sx={dialogTitleSx}>エンディングアチーブメント</DialogTitle>
       <DialogContent
-        sx={{
-          bgcolor: "primary.main",
-          color: "common.black",
-          pt: "16px !important",
-        }}
+        sx={[
+          dialogSurfaceSx,
+          {
+            color: "common.black",
+            pt: "16px !important",
+          },
+        ]}
       >
         <Typography variant="body2" sx={{ mb: 1.5 }}>
           取得済み / 未取得をまとめて表示
@@ -71,13 +72,8 @@ function EndingAchievementsDialog({ open, onClose, achievements }: Props) {
           ))}
         </Box>
       </DialogContent>
-      <DialogActions sx={{ bgcolor: "primary.main" }}>
-        <Button
-          onClick={onClose}
-          variant="contained"
-          color="inherit"
-          sx={{ bgcolor: "grey.800", color: "common.white", "&:hover": { bgcolor: "grey.900" } }}
-        >
+      <DialogActions sx={dialogSurfaceSx}>
+        <Button onClick={onClose} variant="contained" color="inherit" sx={darkActionButtonSx}>
           閉じる
         </Button>
       </DialogActions>

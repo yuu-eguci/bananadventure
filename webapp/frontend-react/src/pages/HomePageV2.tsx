@@ -21,6 +21,7 @@ import { MESSAGE_SPEEDS, useMessageSpeed } from "@/hooks/useMessageSpeed";
 import { Scene } from "@/models";
 import { SPECIAL_SCENE_IDS } from "@/services/SceneService";
 import { buildAchievements, collectAllCollectibleItemIds } from "@/services/achievement";
+import { FALLBACK_IMAGE_SRC } from "@/components/HomePageV2/imageFallback";
 
 const allCollectibleItemIds = collectAllCollectibleItemIds(sceneData as Scene[]);
 
@@ -123,7 +124,7 @@ function HomePageV2() {
           ♪ {currentTrackLabel}
         </Typography>
         <MainSection
-          imageSrc={scene?.image ?? "/sample-image/sample.png"}
+          imageSrc={scene?.image ?? FALLBACK_IMAGE_SRC}
           overlayExtensionHeight={overlayExtensionHeight}
           imageAreaRef={mainImageRef}
         >
@@ -152,6 +153,8 @@ function HomePageV2() {
                   if (updatedViewModel && targetItem.bananaMeterDelta !== 0) {
                     triggerBananaMeterFlash(updatedViewModel.player.bananaMeter);
                   }
+                  // 成功（viewModel が返った）かどうかを ItemWidget に伝える。
+                  return updatedViewModel !== null;
                 }}
               />
             ))}

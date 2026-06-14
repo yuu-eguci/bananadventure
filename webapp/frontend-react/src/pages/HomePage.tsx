@@ -20,6 +20,7 @@ import { keyframes } from "@mui/system";
 import { useEffect, useState, useRef } from "react";
 
 import { SceneService, SPECIAL_SCENE_IDS } from "@/services/SceneService";
+import { buildAchievements, collectAllCollectibleItemIds } from "@/services/achievement";
 import { SceneViewModel } from "@/viewModels";
 import dummyImage from "/sample-image/sample.png";
 import { Item, Scene, SceneChoice } from "@/models";
@@ -37,15 +38,7 @@ const dummyText =
 const bananaMeterImagePath = "/ui-image/banana-meter-icon.webp";
 const endingSceneLabel = "FIN";
 const endingSceneHint = "アチーブメントを確認してね";
-const allCollectibleItemIds = Array.from(
-  new Set(
-    (sceneData as Scene[]).flatMap((scene) =>
-      scene.sceneChoices.flatMap((sceneChoice) =>
-        sceneChoice.itemsOnSelect.map((item) => item.id),
-      ),
-    ),
-  ),
-);
+const allCollectibleItemIds = collectAllCollectibleItemIds(sceneData as Scene[]);
 const tapHintBlink = keyframes`
   0%, 100% {
     opacity: 0.45;
@@ -157,33 +150,11 @@ function HomePage() {
   const hasSceneChoices = (viewModel?.scene.sceneChoices.length ?? 0) > 0;
   const shouldShowSceneTapHint = inlineMessage?.kind === "scene";
   const shouldShowItemTapHint = inlineMessage?.kind === "item" && !hasSceneChoices;
-  const playerItemIdSet = new Set((viewModel?.player.items ?? []).map((item) => item.id));
-  const collectedItemCount = allCollectibleItemIds.filter((itemId) =>
-    playerItemIdSet.has(itemId),
-  ).length;
-  const isAllItemsCompleted =
-    allCollectibleItemIds.length > 0 &&
-    allCollectibleItemIds.every((itemId) => playerItemIdSet.has(itemId));
-  const achievements = [
-    {
-      id: "true-end",
-      label: "トゥルーエンド",
-      note: "scene 14 に到達",
-      achieved: currentSceneId === SPECIAL_SCENE_IDS.TRUE_END,
-    },
-    {
-      id: "bad-end",
-      label: "バッドエンド",
-      note: "scene 15 に到達",
-      achieved: currentSceneId === SPECIAL_SCENE_IDS.GAMEOVER,
-    },
-    {
-      id: "all-items",
-      label: "全アイテムコンプ",
-      note: `${collectedItemCount}/${allCollectibleItemIds.length} アイテム取得`,
-      achieved: isAllItemsCompleted,
-    },
-  ];
+  const achievements = buildAchievements({
+    allCollectibleItemIds,
+    player: viewModel?.player ?? null,
+    currentSceneId,
+  });
 
   return (
     <Box sx={{ width: "100%", maxWidth: 960, mx: "auto", px: { xs: 0, sm: 1 } }}>

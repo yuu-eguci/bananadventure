@@ -19,6 +19,8 @@ type PauseOptions = {
  * - `pause.pausePoints` の各位置まで打ったところで、`pauseDurationMs` の間だけ止め、
  *   止めた瞬間に `onReachPause(index)` を呼ぶ。
  *   （メッセージ → 増減/入手の通知 → 止めて明滅やウィジェット追加 → 再開、を実現するため）
+ *   `pausePoints` は昇順でなくてもよい（内部でソートする）。
+ *   `onReachPause` は ref に逃がしているので、毎 render 新しい関数を渡しても pause は途切れない。
  */
 export function useTypewriter(
   fullText: string,
@@ -32,9 +34,16 @@ export function useTypewriter(
 
   const pausePoints = pause?.pausePoints;
   const pauseDurationMs = pause?.pauseDurationMs ?? 0;
-  const onReachPause = pause?.onReachPause;
-  // 依存配列で安定して比較できるよう、位置を文字列キー化する。
-  const pausePointsKey = pausePoints ? pausePoints.join(",") : "";
+
+  // onReachPause は呼び出し側が毎 render 作り直しても pause が途切れないよう ref に逃がす。
+  // （deps に入れると、pause 待機中の effect 再実行で setTimeout が cleanup されてしまう）
+  const onReachPauseRef = useRef(pause?.onReachPause);
+  useEffect(() => {
+    onReachPauseRef.current = pause?.onReachPause;
+  });
+
+  // 依存配列で安定して比較できるよう、位置を昇順ソートしてから文字列キー化する。
+  const pausePointsKey = pausePoints ? [...pausePoints].sort((a, b) => a - b).join(",") : "";
 
   // テキストが変わったら最初から打ち直す（pause も未消費に戻す）。
   // useEffect（描画後）で戻すと、新 fullText を前回の revealedCount で slice した
@@ -63,7 +72,7 @@ export function useTypewriter(
       while (consumedPauseCountRef.current < points.length) {
         const index = points[consumedPauseCountRef.current];
         consumedPauseCountRef.current += 1;
-        onReachPause?.(index);
+        onReachPauseRef.current?.(index);
       }
       return;
     }
@@ -73,7 +82,7 @@ export function useTypewriter(
       consumedPauseCountRef.current < points.length ? points[consumedPauseCountRef.current] : null;
     if (nextPause !== null && revealedCount >= nextPause) {
       consumedPauseCountRef.current += 1;
-      onReachPause?.(nextPause);
+      onReachPauseRef.current?.(nextPause);
 
       const pauseTimer = setTimeout(() => {
         setRevealedCount((count) => Math.min(count + 1, fullText.length));
@@ -90,7 +99,7 @@ export function useTypewriter(
     return () => {
       clearTimeout(timer);
     };
-  }, [fullText, charDelayMs, enabled, revealedCount, pausePointsKey, pauseDurationMs, onReachPause]);
+  }, [fullText, charDelayMs, enabled, revealedCount, pausePointsKey, pauseDurationMs]);
 
   const skip = useCallback(() => {
     setRevealedCount(fullText.length);

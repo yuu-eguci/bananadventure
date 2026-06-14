@@ -11,6 +11,11 @@ import {
 } from "@mui/material";
 import { resolveImageUrl } from "@/services/assetImageResolver";
 import { WIDGET_FLASH_DURATION, widgetFlashKeyframes } from "@/components/HomePageV2/widgetFlash";
+import {
+  DIALOG_PAPER_PROPS,
+  dialogSurfaceSx,
+  dialogTitleSx,
+} from "@/components/HomePageV2/dialogStyles";
 
 const bananaMeterImagePath = "/ui-image/banana-meter-icon.webp";
 
@@ -58,15 +63,8 @@ function BananaMeterWidget({ value, flashSignal }: Props) {
         </Typography>
       </Paper>
 
-      <Dialog open={open} onClose={() => setOpen(false)} maxWidth="xs" fullWidth PaperProps={{ sx: { borderRadius: "18px" } }}>
-        <DialogTitle
-          sx={{
-            pr: 6,
-            bgcolor: "primary.main",
-            color: "common.black",
-            fontWeight: "bold",
-          }}
-        >
+      <Dialog open={open} onClose={() => setOpen(false)} maxWidth="xs" fullWidth PaperProps={DIALOG_PAPER_PROPS}>
+        <DialogTitle sx={[dialogTitleSx, { pr: 6 }]}>
           バナナメーター
           <IconButton
             onClick={() => setOpen(false)}
@@ -77,7 +75,7 @@ function BananaMeterWidget({ value, flashSignal }: Props) {
             ✕
           </IconButton>
         </DialogTitle>
-        <DialogContent sx={{ bgcolor: "primary.main", pt: "16px !important" }}>
+        <DialogContent sx={[dialogSurfaceSx, { pt: "16px !important" }]}>
           <Typography variant="body2" sx={{ color: "common.black" }}>
             バナナメーターだよ。ばななちゃんの体力を意味する。ゼロになると居酒屋TaTeTeへ飲みに行ってしまう（ゲームオーバー）。
           </Typography>
