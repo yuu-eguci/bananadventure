@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useCallback, useState } from "react";
 
 import { Alert, Box, Button, Snackbar, Typography } from "@mui/material";
 import { Link } from "react-router-dom";
@@ -35,11 +35,16 @@ function HomePageV2() {
   const { t } = useTranslation();
   const { mainImageRef, sceneOverlayContentRef, sceneOverlayTop, overlayExtensionHeight } =
     useHomePageV2SceneOverlayLayout();
-  const { scene, player, isLoading, leadResponseText, selectChoice, useItem, reset } =
+  const { scene, player, isLoading, leadResponseText, leadBananaMeterDelta, selectChoice, useItem, reset } =
     useHomePageV2Game();
   const { messageSpeed, changeMessageSpeed } = useMessageSpeed();
   const [isEndingDialogOpen, setIsEndingDialogOpen] = useState(false);
   const [isSystemDialogOpen, setIsSystemDialogOpen] = useState(false);
+  // バナナメーターの明滅シグナル。明滅のタイミングはメッセージ描画側（SceneOverlay）が制御する。
+  const [bananaMeterFlashSignal, setBananaMeterFlashSignal] = useState(0);
+  const triggerBananaMeterFlash = useCallback(() => {
+    setBananaMeterFlashSignal((signal) => signal + 1);
+  }, []);
   const currentSceneId = scene?.id ?? -1;
   const isEndingScene =
     currentSceneId === ENDING_SCENE_IDS.TRUE || currentSceneId === ENDING_SCENE_IDS.BAD;
@@ -108,7 +113,7 @@ function HomePageV2() {
             isBgmPlaying={isBgmPlaying}
             onToggleBgm={toggleBgm}
             bananaMeterValue={player?.bananaMeter ?? 0}
-            isLoading={isLoading}
+            bananaMeterFlashSignal={bananaMeterFlashSignal}
           >
             {(player?.items ?? []).map((item) => (
               <ItemWidget
@@ -117,6 +122,10 @@ function HomePageV2() {
                 isLoading={isLoading}
                 onUse={async (targetItem) => {
                   await useItem(targetItem);
+                  // アイテム使用でメーターが動いたら、その場で明滅させる（メッセージ描画とは競合しない）。
+                  if (targetItem.bananaMeterDelta !== 0) {
+                    triggerBananaMeterFlash();
+                  }
                 }}
               />
             ))}
@@ -125,10 +134,12 @@ function HomePageV2() {
             ref={sceneOverlayContentRef}
             scene={scene}
             leadResponseText={leadResponseText}
+            leadBananaMeterDelta={leadBananaMeterDelta}
             top={sceneOverlayTop}
             isLoading={isLoading}
             isEndingScene={isEndingScene}
             charDelayMs={MESSAGE_SPEEDS[messageSpeed].charDelayMs}
+            onBananaMeterFlash={triggerBananaMeterFlash}
             onOpenEnding={() => setIsEndingDialogOpen(true)}
             onSelectChoice={(choice) => {
               void selectChoice(choice);

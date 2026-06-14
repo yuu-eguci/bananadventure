@@ -3,15 +3,19 @@ import { forwardRef } from "react";
 import { Box, Card, CardActionArea, CardContent, Fade, Typography } from "@mui/material";
 
 import useTypewriter from "@/hooks/useTypewriter";
+import { WIDGET_FLASH_DURATION_MS } from "@/components/HomePageV2/widgetFlash";
 import { Scene, SceneChoice } from "@/models";
 
 type Props = {
   scene: Scene | null;
   leadResponseText: string | null;
+  // 直前の選択肢のバナナメーター増減量。0 以外なら lead を打ち終えた所で止めて明滅させる。
+  leadBananaMeterDelta: number;
   top: number;
   isLoading: boolean;
   isEndingScene: boolean;
   charDelayMs: number;
+  onBananaMeterFlash: () => void;
   onOpenEnding: () => void;
   onSelectChoice: (choice: SceneChoice) => void;
 };
@@ -20,7 +24,18 @@ const ENDING_SCENE_LABEL = "FIN";
 const ENDING_SCENE_HINT = "アチーブメントを確認";
 
 const SceneOverlay = forwardRef<HTMLDivElement, Props>(function SceneOverlay(
-  { scene, leadResponseText, top, isLoading, isEndingScene, charDelayMs, onOpenEnding, onSelectChoice }: Props,
+  {
+    scene,
+    leadResponseText,
+    leadBananaMeterDelta,
+    top,
+    isLoading,
+    isEndingScene,
+    charDelayMs,
+    onBananaMeterFlash,
+    onOpenEnding,
+    onSelectChoice,
+  }: Props,
   ref,
 ) {
   const sceneChoices = scene?.sceneChoices ?? [];
@@ -31,7 +46,13 @@ const SceneOverlay = forwardRef<HTMLDivElement, Props>(function SceneOverlay(
   // ローディング中（JingleBackdrop で隠れている間）は打たず、表示されてから打ち始める。
   const leadText = leadResponseText ?? "";
   const sceneText = scene?.text ?? "";
-  const { displayedText, isComplete, skip } = useTypewriter(leadText + sceneText, charDelayMs, !isLoading);
+  // バナナメーター増減があるときは、lead（レスポンス + 増減行）を打ち終えた位置で
+  // いったん止めてバナナメーターを明滅させ、明滅時間が終わってから本文の描画を再開する。
+  const { displayedText, isComplete, skip } = useTypewriter(leadText + sceneText, charDelayMs, !isLoading, {
+    pauseAtIndex: leadBananaMeterDelta !== 0 && leadText.length > 0 ? leadText.length : null,
+    pauseDurationMs: WIDGET_FLASH_DURATION_MS,
+    onReachPause: onBananaMeterFlash,
+  });
 
   // 結合テキストの表示位置を、lead 部分と本文部分に切り分ける。
   const visibleLeadText = displayedText.slice(0, leadText.length);

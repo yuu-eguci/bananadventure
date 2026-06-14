@@ -9,12 +9,18 @@ type Props = {
   isBgmPlaying: boolean;
   onToggleBgm: () => void;
   bananaMeterValue: number;
-  // ローディング中（JingleBackdrop で隠れている間）は明滅を再生しないために渡す。
-  isLoading: boolean;
+  // 親が増やすたびにバナナメーターを明滅させるシグナル。
+  bananaMeterFlashSignal: number;
   children?: ReactNode;
 };
 
-function HomePageV2RightPanel({ isBgmPlaying, onToggleBgm, bananaMeterValue, isLoading, children }: Props) {
+function HomePageV2RightPanel({
+  isBgmPlaying,
+  onToggleBgm,
+  bananaMeterValue,
+  bananaMeterFlashSignal,
+  children,
+}: Props) {
   return (
     <Box
       sx={{
@@ -29,7 +35,7 @@ function HomePageV2RightPanel({ isBgmPlaying, onToggleBgm, bananaMeterValue, isL
       }}
     >
       <BgmToggleButton isPlaying={isBgmPlaying} onToggle={onToggleBgm} />
-      <BananaMeterWidget value={bananaMeterValue} isLoading={isLoading} />
+      <BananaMeterWidget value={bananaMeterValue} flashSignal={bananaMeterFlashSignal} />
       {children}
     </Box>
   );

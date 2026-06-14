@@ -41,6 +41,8 @@ type UseHomePageV2GameResult = {
   player: Player | null;
   isLoading: boolean;
   leadResponseText: string | null;
+  // 直前に選んだ選択肢のバナナメーター増減量。メッセージを止めて明滅させるかの判定に使う。
+  leadBananaMeterDelta: number;
   selectChoice: (choice: SceneChoice) => Promise<void>;
   useItem: (item: Item) => Promise<void>;
   reset: () => Promise<void>;
@@ -50,6 +52,7 @@ function useHomePageV2Game(): UseHomePageV2GameResult {
   const [viewModel, setViewModel] = useState<SceneViewModel | null>(null);
   const [isLoading, setIsLoading] = useState(true);
   const [leadResponseText, setLeadResponseText] = useState<string | null>(null);
+  const [leadBananaMeterDelta, setLeadBananaMeterDelta] = useState(0);
   const isBusyRef = useRef(false);
   const isMountedRef = useRef(true);
 
@@ -68,6 +71,7 @@ function useHomePageV2Game(): UseHomePageV2GameResult {
 
         setViewModel(initialViewModel);
         setLeadResponseText(null);
+        setLeadBananaMeterDelta(0);
         await wait(TRANSITION_LOADING_DURATION_MS);
       } finally {
         if (isMountedRef.current) {
@@ -101,6 +105,7 @@ function useHomePageV2Game(): UseHomePageV2GameResult {
 
       setViewModel(updatedViewModel);
       setLeadResponseText(buildLeadResponseText(choice));
+      setLeadBananaMeterDelta(choice.bananaMeterDelta);
       await wait(TRANSITION_LOADING_DURATION_MS);
     } finally {
       isBusyRef.current = false;
@@ -150,6 +155,7 @@ function useHomePageV2Game(): UseHomePageV2GameResult {
 
       setViewModel(initialViewModel);
       setLeadResponseText(null);
+      setLeadBananaMeterDelta(0);
       await wait(TRANSITION_LOADING_DURATION_MS);
     } finally {
       isBusyRef.current = false;
@@ -166,6 +172,7 @@ function useHomePageV2Game(): UseHomePageV2GameResult {
     player: viewModel?.player ?? null,
     isLoading,
     leadResponseText,
+    leadBananaMeterDelta,
     selectChoice,
     useItem,
     reset,

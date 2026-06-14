@@ -17,5 +17,7 @@ export const widgetFlashKeyframes = keyframes`
   }
 `;
 
-// 明滅の長さ。目立たせたいので少し長めにする。
-export const WIDGET_FLASH_DURATION = "2.5s";
+// 明滅の長さ（ミリ秒）。目立たせたいので少し長めにする。
+// メッセージ描画を止めて明滅を見せる pause 時間にもこの値を使うため、ms を単一ソースにする。
+export const WIDGET_FLASH_DURATION_MS = 2500;
+export const WIDGET_FLASH_DURATION = `${WIDGET_FLASH_DURATION_MS / 1000}s`;

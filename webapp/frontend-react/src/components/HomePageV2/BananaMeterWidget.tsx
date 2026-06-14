@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from "react";
+import { useState } from "react";
 
 import {
   Box,
@@ -16,38 +16,18 @@ const bananaMeterImagePath = "/ui-image/banana-meter-icon.webp";
 
 type Props = {
   value: number;
-  isLoading: boolean;
+  // 親が増やすたびに明滅を 1 回再生する。明滅のタイミングは親（メッセージ描画）が制御する。
+  flashSignal: number;
 };
 
-function BananaMeterWidget({ value, isLoading }: Props) {
+function BananaMeterWidget({ value, flashSignal }: Props) {
   const [open, setOpen] = useState(false);
-
-  // 値が変わるたびにカウントを増やし、key を付け替えて明滅アニメーションを再生し直す。
-  const [flashCount, setFlashCount] = useState(0);
-  // null の間はベースライン未確定。最初に画面に見えた値を基準にする。
-  const previousValueRef = useRef<number | null>(null);
-
-  useEffect(() => {
-    // ローディング中は値が JingleBackdrop の裏で変わるため、明滅は再生しない。
-    if (isLoading) {
-      return;
-    }
-    // 初回（ゲーム開始時）はベースラインを取るだけで明滅させない。
-    if (previousValueRef.current === null) {
-      previousValueRef.current = value;
-      return;
-    }
-    // 画面に見えている状態で値が変わったときだけ明滅させる。
-    if (previousValueRef.current !== value) {
-      previousValueRef.current = value;
-      setFlashCount((count) => count + 1);
-    }
-  }, [value, isLoading]);
 
   return (
     <>
       <Paper
-        key={flashCount}
+        // flashSignal が変わるたびに key が変わって再マウントし、明滅アニメーションを頭から再生する。
+        key={flashSignal}
         onClick={() => setOpen(true)}
         elevation={2}
         sx={{
@@ -59,8 +39,8 @@ function BananaMeterWidget({ value, isLoading }: Props) {
           borderRadius: "12px",
           px: 1.2,
           py: 0.8,
-          // flashCount === 0（初回マウント）では明滅させない。
-          animation: flashCount > 0 ? `${widgetFlashKeyframes} ${WIDGET_FLASH_DURATION} ease` : "none",
+          // flashSignal === 0（初回）では明滅させない。
+          animation: flashSignal > 0 ? `${widgetFlashKeyframes} ${WIDGET_FLASH_DURATION} ease` : "none",
           "&:hover": { filter: "brightness(0.9)" },
         }}
       >
