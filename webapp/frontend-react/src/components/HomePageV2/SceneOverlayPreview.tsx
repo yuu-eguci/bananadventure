@@ -1,3 +1,5 @@
+import { forwardRef } from "react";
+
 import { Box, Card, CardActionArea, CardContent, Typography } from "@mui/material";
 
 const previewChoices = [
@@ -7,13 +9,22 @@ const previewChoices = [
   "先へ進む",
 ];
 
-function SceneOverlayPreview() {
+type Props = {
+  top: number;
+};
+
+const SceneOverlayPreview = forwardRef<HTMLDivElement, Props>(function SceneOverlayPreview(
+  { top }: Props,
+  ref,
+) {
   return (
     <Box
+      ref={ref}
       sx={{
         position: "absolute",
         left: 0,
         right: 0,
+        top,
         bottom: 0,
         zIndex: 2,
         bgcolor: "rgba(0, 0, 0, 0.62)",
@@ -21,8 +32,10 @@ function SceneOverlayPreview() {
         px: 2,
         py: 2,
         boxSizing: "border-box",
+        display: "flex",
+        flexDirection: "column",
       }}
-    >
+      >
       <Typography variant="subtitle1" sx={{ mb: 1.5 }}>
         ここにメッセージが入る想定
       </Typography>
@@ -37,6 +50,7 @@ function SceneOverlayPreview() {
           gridTemplateColumns: { xs: "1fr", sm: "repeat(2, minmax(0, 1fr))" },
           gap: 1,
           width: "100%",
+          pb: 2,
         }}
       >
         {previewChoices.map((choice) => (
@@ -58,6 +72,6 @@ function SceneOverlayPreview() {
       </Box>
     </Box>
   );
-}
+});
 
 export default SceneOverlayPreview;

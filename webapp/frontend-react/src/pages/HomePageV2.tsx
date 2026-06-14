@@ -1,9 +1,10 @@
-import { Alert, Box, Snackbar, Typography } from "@mui/material";
+import { Alert, Box, Snackbar, Typography, useMediaQuery, useTheme } from "@mui/material";
+import { useLayoutEffect, useRef, useState } from "react";
 
 import BananaMeterWidget from "@/components/HomePageV2/BananaMeterWidget";
 import BgmToggleButton from "@/components/HomePageV2/BgmToggleButton";
 import ItemWidget from "@/components/HomePageV2/ItemWidget";
-import MainSection from "@/components/HomePageV2/MainSection";
+import MainSection, { MAIN_SECTION_HEIGHT } from "@/components/HomePageV2/MainSection";
 import SceneOverlayPreview from "@/components/HomePageV2/SceneOverlayPreview";
 import { useBgmPlayer } from "@/hooks/useBgmPlayer";
 import { Item } from "@/models";
@@ -43,6 +44,12 @@ const stubItem3: Item = {
 };
 
 function HomePageV2() {
+  const rightPanelRef = useRef<HTMLDivElement | null>(null);
+  const sceneOverlayRef = useRef<HTMLDivElement | null>(null);
+  const theme = useTheme();
+  const isMdUp = useMediaQuery(theme.breakpoints.up("md"));
+  const [sceneOverlayTop, setSceneOverlayTop] = useState(0);
+  const [mainSectionBottomSpace, setMainSectionBottomSpace] = useState(0);
   const {
     isPlaying: isBgmPlaying,
     toggle: toggleBgm,
@@ -50,6 +57,55 @@ function HomePageV2() {
     clearError: clearBgmError,
     currentTrackLabel,
   } = useBgmPlayer("main");
+
+  useLayoutEffect(() => {
+    const element = rightPanelRef.current;
+    if (!element) {
+      return;
+    }
+
+    const updateSceneOverlayTop = () => {
+      setSceneOverlayTop(element.getBoundingClientRect().height + 24);
+    };
+
+    updateSceneOverlayTop();
+
+    const resizeObserver = new ResizeObserver(() => {
+      updateSceneOverlayTop();
+    });
+
+    resizeObserver.observe(element);
+
+    return () => {
+      resizeObserver.disconnect();
+    };
+  }, []);
+
+  useLayoutEffect(() => {
+    const overlayElement = sceneOverlayRef.current;
+    if (!overlayElement) {
+      return;
+    }
+
+    const baseHeight = isMdUp ? MAIN_SECTION_HEIGHT.md : MAIN_SECTION_HEIGHT.xs;
+
+    const updateMainSectionBottomSpace = () => {
+      const requiredHeight = sceneOverlayTop + overlayElement.scrollHeight;
+      setMainSectionBottomSpace(Math.max(0, requiredHeight - baseHeight));
+    };
+
+    updateMainSectionBottomSpace();
+
+    const resizeObserver = new ResizeObserver(() => {
+      updateMainSectionBottomSpace();
+    });
+
+    resizeObserver.observe(overlayElement);
+
+    return () => {
+      resizeObserver.disconnect();
+    };
+  }, [isMdUp, sceneOverlayTop]);
 
   return (
     <>
@@ -72,9 +128,10 @@ function HomePageV2() {
         >
           ♪ {currentTrackLabel}
         </Typography>
-        <MainSection imageSrc="/sample-image/sample.png">
+        <MainSection imageSrc="/sample-image/sample.png" bottomSpace={mainSectionBottomSpace}>
           {/* 右パネル: BGM・バナナメーター・アイテムを縦に並べる */}
           <Box
+            ref={rightPanelRef}
             sx={{
               position: "absolute",
               top: "12px",
@@ -92,7 +149,7 @@ function HomePageV2() {
             <ItemWidget item={stubItem2} onUse={() => {}} />
             <ItemWidget item={stubItem3} onUse={() => {}} />
           </Box>
-          <SceneOverlayPreview />
+          <SceneOverlayPreview ref={sceneOverlayRef} top={sceneOverlayTop} />
         </MainSection>
       </Box>
 
