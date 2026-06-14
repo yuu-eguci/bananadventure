@@ -19,6 +19,22 @@ async function wait(ms: number): Promise<void> {
   });
 }
 
+// 選択肢レスポンスの末尾に表示する文字列を組み立てる。
+// バナナメーターの増減があるときは、その増減量を符号付きで末尾の行に添える。
+function buildLeadResponseText(choice: SceneChoice): string | null {
+  const baseText = choice.responseText.trim().length > 0 ? choice.responseText : "";
+
+  if (choice.bananaMeterDelta === 0) {
+    return baseText.length > 0 ? baseText : null;
+  }
+
+  const signedDeltaText =
+    choice.bananaMeterDelta > 0 ? `+${choice.bananaMeterDelta}` : `${choice.bananaMeterDelta}`;
+  const deltaLine = `（バナナメーター ${signedDeltaText}）`;
+
+  return baseText.length > 0 ? `${baseText}\n${deltaLine}` : deltaLine;
+}
+
 type UseHomePageV2GameResult = {
   viewModel: SceneViewModel | null;
   scene: Scene | null;
@@ -84,7 +100,7 @@ function useHomePageV2Game(): UseHomePageV2GameResult {
       }
 
       setViewModel(updatedViewModel);
-      setLeadResponseText(choice.responseText.trim().length > 0 ? choice.responseText : null);
+      setLeadResponseText(buildLeadResponseText(choice));
       await wait(TRANSITION_LOADING_DURATION_MS);
     } finally {
       isBusyRef.current = false;

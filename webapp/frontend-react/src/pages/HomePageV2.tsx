@@ -108,6 +108,7 @@ function HomePageV2() {
             isBgmPlaying={isBgmPlaying}
             onToggleBgm={toggleBgm}
             bananaMeterValue={player?.bananaMeter ?? 0}
+            isLoading={isLoading}
           >
             {(player?.items ?? []).map((item) => (
               <ItemWidget
