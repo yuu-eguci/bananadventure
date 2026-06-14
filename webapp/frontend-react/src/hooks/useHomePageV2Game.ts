@@ -31,7 +31,7 @@ type UseHomePageV2GameResult = {
   // 直前の選択肢で入手したアイテム。メッセージを止めてウィジェットを追加するために使う。
   leadAddedItems: Item[];
   selectChoice: (choice: SceneChoice) => Promise<void>;
-  useItem: (item: Item) => Promise<void>;
+  applyItem: (item: Item) => Promise<SceneViewModel | null>;
   reset: () => Promise<void>;
 };
 
@@ -108,12 +108,13 @@ function useHomePageV2Game(): UseHomePageV2GameResult {
     }
   };
 
-  const useItem = async (item: Item) => {
+  const applyItem = async (item: Item): Promise<SceneViewModel | null> => {
     if (!viewModel || isBusyRef.current) {
-      return;
+      return null;
     }
 
     isBusyRef.current = true;
+    setIsLoading(true);
 
     try {
       const updatedViewModel = await service.useItem({
@@ -122,12 +123,21 @@ function useHomePageV2Game(): UseHomePageV2GameResult {
       });
 
       if (!isMountedRef.current) {
-        return;
+        return null;
       }
 
       setViewModel(updatedViewModel);
+      setLeadResponseText(null);
+      setLeadBananaMeterDelta(0);
+      setLeadAddedItems(EMPTY_ITEMS);
+      await wait(TRANSITION_LOADING_DURATION_MS);
+      return updatedViewModel;
     } finally {
       isBusyRef.current = false;
+
+      if (isMountedRef.current) {
+        setIsLoading(false);
+      }
     }
   };
 
@@ -168,7 +178,7 @@ function useHomePageV2Game(): UseHomePageV2GameResult {
     leadBananaMeterDelta,
     leadAddedItems,
     selectChoice,
-    useItem,
+    applyItem,
     reset,
   };
 }

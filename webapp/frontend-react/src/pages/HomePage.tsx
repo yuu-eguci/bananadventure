@@ -19,7 +19,7 @@ import {
 import { keyframes } from "@mui/system";
 import { useEffect, useState, useRef } from "react";
 
-import { SceneService } from "@/services/SceneService";
+import { SceneService, SPECIAL_SCENE_IDS } from "@/services/SceneService";
 import { SceneViewModel } from "@/viewModels";
 import dummyImage from "/sample-image/sample.png";
 import { Item, Scene, SceneChoice } from "@/models";
@@ -37,10 +37,6 @@ const dummyText =
 const bananaMeterImagePath = "/ui-image/banana-meter-icon.webp";
 const endingSceneLabel = "FIN";
 const endingSceneHint = "アチーブメントを確認してね";
-const ENDING_SCENE_IDS = {
-  TRUE: 14,
-  BAD: 15,
-} as const;
 const allCollectibleItemIds = Array.from(
   new Set(
     (sceneData as Scene[]).flatMap((scene) =>
@@ -70,7 +66,8 @@ function HomePage() {
   const isClosingRef = useRef<boolean>(false);
   const currentSceneId = viewModel?.scene.id ?? -1;
   const isEndingScene =
-    currentSceneId === ENDING_SCENE_IDS.TRUE || currentSceneId === ENDING_SCENE_IDS.BAD;
+    currentSceneId === SPECIAL_SCENE_IDS.TRUE_END ||
+    currentSceneId === SPECIAL_SCENE_IDS.GAMEOVER;
   const trackKey: BgmTrackKey = isEndingScene ? "ending" : "main";
   const {
     isPlaying: isBgmPlaying,
@@ -172,13 +169,13 @@ function HomePage() {
       id: "true-end",
       label: "トゥルーエンド",
       note: "scene 14 に到達",
-      achieved: currentSceneId === ENDING_SCENE_IDS.TRUE,
+      achieved: currentSceneId === SPECIAL_SCENE_IDS.TRUE_END,
     },
     {
       id: "bad-end",
       label: "バッドエンド",
       note: "scene 15 に到達",
-      achieved: currentSceneId === ENDING_SCENE_IDS.BAD,
+      achieved: currentSceneId === SPECIAL_SCENE_IDS.GAMEOVER,
     },
     {
       id: "all-items",

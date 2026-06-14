@@ -1,7 +1,7 @@
 import { describe, expect, it } from "vitest";
 
 import { SceneChoice } from "@/models";
-import { SceneService } from "@/services/SceneService";
+import { SceneService, SPECIAL_SCENE_IDS } from "@/services/SceneService";
 import { SceneViewModel } from "@/viewModels";
 
 async function advanceScene(
@@ -39,7 +39,7 @@ describe("SceneService", () => {
     viewModel = await advanceScene(service, viewModel, 0);
     viewModel = await advanceScene(service, viewModel, 1);
 
-    expect(viewModel.scene.id).toBe(15);
+    expect(viewModel.scene.id).toBe(SPECIAL_SCENE_IDS.GAMEOVER);
     expect(viewModel.player.bananaMeter).toBe(0);
   });
 
@@ -90,7 +90,7 @@ describe("SceneService", () => {
       itemId: 1,
     });
 
-    expect(viewModel.scene.id).toBe(15);
+    expect(viewModel.scene.id).toBe(SPECIAL_SCENE_IDS.GAMEOVER);
     expect(viewModel.player.bananaMeter).toBe(0);
     expect(viewModel.player.items.find((item) => item.id === 1)?.used).toBe(true);
   });

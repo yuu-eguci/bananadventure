@@ -18,11 +18,7 @@ import useHomePageV2Game from "@/hooks/useHomePageV2Game";
 import { BgmTrackKey, useBgmPlayer } from "@/hooks/useBgmPlayer";
 import { MESSAGE_SPEEDS, useMessageSpeed } from "@/hooks/useMessageSpeed";
 import { Scene } from "@/models";
-
-const ENDING_SCENE_IDS = {
-  TRUE: 14,
-  BAD: 15,
-} as const;
+import { SPECIAL_SCENE_IDS } from "@/services/SceneService";
 
 const allCollectibleItemIds = Array.from(
   new Set(
@@ -44,7 +40,7 @@ function HomePageV2() {
     leadBananaMeterDelta,
     leadAddedItems,
     selectChoice,
-    useItem,
+    applyItem,
     reset,
   } = useHomePageV2Game();
   const { messageSpeed, changeMessageSpeed } = useMessageSpeed();
@@ -68,9 +64,9 @@ function HomePageV2() {
     }
   }, [actualBananaMeter, leadBananaMeterDelta]);
 
-  const triggerBananaMeterFlash = useCallback(() => {
+  const triggerBananaMeterFlash = useCallback((nextBananaMeter?: number) => {
     // 明滅と同時に、表示値を実値へコミットする。
-    setDisplayedBananaMeter(actualBananaMeterRef.current);
+    setDisplayedBananaMeter(nextBananaMeter ?? actualBananaMeterRef.current);
     setBananaMeterFlashSignal((signal) => signal + 1);
   }, []);
 
@@ -90,7 +86,8 @@ function HomePageV2() {
 
   const currentSceneId = scene?.id ?? -1;
   const isEndingScene =
-    currentSceneId === ENDING_SCENE_IDS.TRUE || currentSceneId === ENDING_SCENE_IDS.BAD;
+    currentSceneId === SPECIAL_SCENE_IDS.TRUE_END ||
+    currentSceneId === SPECIAL_SCENE_IDS.GAMEOVER;
   const trackKey: BgmTrackKey = isEndingScene ? "ending" : "main";
   const {
     isPlaying: isBgmPlaying,
@@ -110,13 +107,13 @@ function HomePageV2() {
       id: "true-end",
       label: "トゥルーエンド",
       note: "scene 14 に到達",
-      achieved: currentSceneId === ENDING_SCENE_IDS.TRUE,
+      achieved: currentSceneId === SPECIAL_SCENE_IDS.TRUE_END,
     },
     {
       id: "bad-end",
       label: "バッドエンド",
       note: "scene 15 に到達",
-      achieved: currentSceneId === ENDING_SCENE_IDS.BAD,
+      achieved: currentSceneId === SPECIAL_SCENE_IDS.GAMEOVER,
     },
     {
       id: "all-items",
@@ -172,10 +169,10 @@ function HomePageV2() {
                 item={item}
                 isLoading={isLoading}
                 onUse={async (targetItem) => {
-                  await useItem(targetItem);
+                  const updatedViewModel = await applyItem(targetItem);
                   // アイテム使用でメーターが動いたら、その場で明滅させる（メッセージ描画とは競合しない）。
-                  if (targetItem.bananaMeterDelta !== 0) {
-                    triggerBananaMeterFlash();
+                  if (updatedViewModel && targetItem.bananaMeterDelta !== 0) {
+                    triggerBananaMeterFlash(updatedViewModel.player.bananaMeter);
                   }
                 }}
               />
