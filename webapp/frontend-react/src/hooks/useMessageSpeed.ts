@@ -3,11 +3,13 @@ import { useCallback, useState } from "react";
 // メッセージスピード設定。
 // label はモーダルの選択肢に表示する文言。
 // charDelayMs は 1 文字あたりの送り間隔（ミリ秒）。SceneOverlay の typewriter に渡す。
+// ghostTrail は「打鍵済みの文字を全角スペースに変えて最新 1 文字だけ残す」ギャグ表示の有無。
 export const MESSAGE_SPEEDS = {
-  verySlow: { label: "激遅", charDelayMs: 1000 },
-  slow: { label: "ゆっくり", charDelayMs: 70 },
-  fast: { label: "はやめ", charDelayMs: 40 },
-  lightSpeed: { label: "光速", charDelayMs: 0 },
+  verySlow: { label: "激遅", charDelayMs: 1000, ghostTrail: false },
+  slow: { label: "ゆっくり", charDelayMs: 70, ghostTrail: false },
+  fast: { label: "はやめ", charDelayMs: 40, ghostTrail: false },
+  // 光速はギャグ枠。20ms で打ちつつ ghostTrail で消していき「速すぎて消えてるじゃねーかｗ」を狙う。
+  lightSpeed: { label: "光速", charDelayMs: 20, ghostTrail: true },
 } as const;
 
 export type MessageSpeedKey = keyof typeof MESSAGE_SPEEDS;

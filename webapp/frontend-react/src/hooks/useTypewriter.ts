@@ -12,7 +12,7 @@ type PauseOptions = {
 /**
  * `useTypewriter` は、与えられたテキストを 1 文字ずつ表示するための custom hook です。
  * - `fullText` が変わると最初から打ち直す。
- * - `charDelayMs === 0`（光速）は一括表示する。
+ * - `charDelayMs === 0` は一括表示する（送り間隔ゼロ）。
  * - `enabled === false`（例: ローディング中で画面に見えていない間）は進めず、
  *   表示できるタイミングになってから打ち始める。
  * - 打鍵途中で `skip()` を呼ぶと残りを即座に全部表示する（未消費の pause は副作用だけ発火）。
@@ -58,7 +58,7 @@ export function useTypewriter(
   useEffect(() => {
     const points = pausePointsKey === "" ? [] : pausePointsKey.split(",").map(Number);
 
-    // 光速は一括表示（テキストだけ先に全部出す）。
+    // 送り間隔ゼロは一括表示（テキストだけ先に全部出す）。
     if (charDelayMs === 0) {
       setRevealedCount(fullText.length);
     }

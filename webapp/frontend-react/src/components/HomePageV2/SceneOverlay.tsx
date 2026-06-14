@@ -3,6 +3,7 @@ import { forwardRef, useCallback, useMemo } from "react";
 import { Box, Card, CardActionArea, CardContent, Fade, Typography } from "@mui/material";
 
 import useTypewriter from "@/hooks/useTypewriter";
+import { applyGhostTrail } from "@/hooks/ghostTrail";
 import { WIDGET_FLASH_DURATION_MS } from "@/components/HomePageV2/widgetFlash";
 import { buildLeadMessageSegments } from "@/components/HomePageV2/leadMessage";
 import { Item, Scene, SceneChoice } from "@/models";
@@ -18,6 +19,8 @@ type Props = {
   isLoading: boolean;
   isEndingScene: boolean;
   charDelayMs: number;
+  // 光速ギャグ表示（打鍵済みを全角スペースに変えて最新 1 文字だけ残す）。
+  ghostTrail: boolean;
   onBananaMeterFlash: () => void;
   onRevealItems: () => void;
   onOpenEnding: () => void;
@@ -37,6 +40,7 @@ const SceneOverlay = forwardRef<HTMLDivElement, Props>(function SceneOverlay(
     isLoading,
     isEndingScene,
     charDelayMs,
+    ghostTrail,
     onBananaMeterFlash,
     onRevealItems,
     onOpenEnding,
@@ -88,10 +92,18 @@ const SceneOverlay = forwardRef<HTMLDivElement, Props>(function SceneOverlay(
   });
 
   // 結合テキストの表示位置を、lead 部分と本文部分に切り分ける。
-  const visibleLeadText = displayedText.slice(0, leadText.length);
-  const visibleSceneText = displayedText.slice(leadText.length);
+  const rawLeadText = displayedText.slice(0, leadText.length);
+  const rawSceneText = displayedText.slice(leadText.length);
   // lead を打ち終わってから区切りの *** を出す。
-  const shouldShowSeparator = leadText.length > 0 && displayedText.length >= leadText.length;
+  const isLeadComplete = leadText.length > 0 && displayedText.length >= leadText.length;
+  const shouldShowSeparator = isLeadComplete;
+
+  // 光速ギャグ表示は lead 部分・本文部分を *別々の領域* として消していく。
+  // - lead は打ち終わった（=*** が出る）時点で最後の文字も消す（ghostLast）。
+  //   → 本文の 1 文字目を待たず、*** が出たところでレスポンス末尾が消える。
+  // - 本文は全部打ち終わった時点で最後の文字も消す。
+  const visibleLeadText = ghostTrail ? applyGhostTrail(rawLeadText, isLeadComplete) : rawLeadText;
+  const visibleSceneText = ghostTrail ? applyGhostTrail(rawSceneText, isComplete) : rawSceneText;
   // 描画が終わってから選択肢／FIN を出す。
   const shouldRenderActionArea = isComplete && shouldShowActionArea;
 

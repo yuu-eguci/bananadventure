@@ -169,6 +169,7 @@ function HomePageV2() {
             isLoading={isLoading}
             isEndingScene={isEndingScene}
             charDelayMs={MESSAGE_SPEEDS[messageSpeed].charDelayMs}
+            ghostTrail={MESSAGE_SPEEDS[messageSpeed].ghostTrail}
             onBananaMeterFlash={triggerBananaMeterFlash}
             onRevealItems={revealAddedItems}
             onOpenEnding={() => setIsEndingDialogOpen(true)}
