@@ -6,9 +6,9 @@ import { useCallback, useState } from "react";
 // 組み込みは次のタスクで行う。ここでは定義だけ用意しておく。
 export const MESSAGE_SPEEDS = {
   verySlow: { label: "激遅", charDelayMs: 1000 },
-  slow: { label: "ゆっくり", charDelayMs: 100 },
-  fast: { label: "はやめ", charDelayMs: 70 },
-  lightSpeed: { label: "光速", charDelayMs: 0 },
+  slow: { label: "ゆっくり", charDelayMs: 70 },
+  fast: { label: "はやめ", charDelayMs: 40 },
+  lightSpeed: { label: "光速", charDelayMs: 3 },
 } as const;
 
 export type MessageSpeedKey = keyof typeof MESSAGE_SPEEDS;
