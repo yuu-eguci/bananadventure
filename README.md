@@ -3,11 +3,21 @@ bananadventure
 
 🐍 ⚛️ 🐳 🇳 Python 3.13 + Django v4 + Yarn + React + Nginx + Docker + GitHub Actions + Ruff + CI/CD | Banana + Adventure!
 
-![](./docs/(2025-04-06)bananadventure.webp)
-
 ## Generated from django-react-gemini
 
 - [https://github.com/yuu-eguci/django-react-gemini](https://github.com/yuu-eguci/django-react-gemini)
+
+### V2
+
+https://github.com/user-attachments/assets/23fa03ab-c852-4133-a322-1244e99c1080
+
+### V1
+
+![](./docs/(2026-06-13)bananadventure.webp)
+
+### V0
+
+![](./docs/(2025-04-06)bananadventure.webp)
 
 ## Compose ファイル名移行メモ
 
