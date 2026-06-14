@@ -8,7 +8,7 @@ export const MESSAGE_SPEEDS = {
   verySlow: { label: "激遅", charDelayMs: 1000 },
   slow: { label: "ゆっくり", charDelayMs: 70 },
   fast: { label: "はやめ", charDelayMs: 40 },
-  lightSpeed: { label: "光速", charDelayMs: 3 },
+  lightSpeed: { label: "光速", charDelayMs: 0 },
 } as const;
 
 export type MessageSpeedKey = keyof typeof MESSAGE_SPEEDS;
