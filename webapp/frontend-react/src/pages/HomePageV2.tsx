@@ -15,7 +15,7 @@ import sceneData from "@/data/bananadventure-scenes.json";
 import useHomePageV2SceneOverlayLayout from "@/hooks/useHomePageV2SceneOverlayLayout";
 import useHomePageV2Game from "@/hooks/useHomePageV2Game";
 import { BgmTrackKey, useBgmPlayer } from "@/hooks/useBgmPlayer";
-import { useMessageSpeed } from "@/hooks/useMessageSpeed";
+import { MESSAGE_SPEEDS, useMessageSpeed } from "@/hooks/useMessageSpeed";
 import { Scene } from "@/models";
 
 const ENDING_SCENE_IDS = {
@@ -126,6 +126,7 @@ function HomePageV2() {
             top={sceneOverlayTop}
             isLoading={isLoading}
             isEndingScene={isEndingScene}
+            charDelayMs={MESSAGE_SPEEDS[messageSpeed].charDelayMs}
             onOpenEnding={() => setIsEndingDialogOpen(true)}
             onSelectChoice={(choice) => {
               void selectChoice(choice);
