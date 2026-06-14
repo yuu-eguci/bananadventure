@@ -2,11 +2,11 @@ import { useLayoutEffect, useRef, useState } from "react";
 
 import { MAIN_SECTION_HEIGHT } from "@/components/HomePageV2/MainSection";
 
-const SCENE_OVERLAY_HEIGHT_RATIO = 0.45;
+const SCENE_OVERLAY_HEIGHT_RATIO = 0.6;
 
 function useHomePageV2SceneOverlayLayout() {
   const mainImageRef = useRef<HTMLDivElement | null>(null);
-  const sceneOverlayRef = useRef<HTMLDivElement | null>(null);
+  const sceneOverlayContentRef = useRef<HTMLDivElement | null>(null);
   const [mainImageHeight, setMainImageHeight] = useState<number>(MAIN_SECTION_HEIGHT.xs);
   const [overlayExtensionHeight, setOverlayExtensionHeight] = useState(0);
   const sceneOverlayTop = Math.round(mainImageHeight * (1 - SCENE_OVERLAY_HEIGHT_RATIO));
@@ -35,13 +35,13 @@ function useHomePageV2SceneOverlayLayout() {
   }, []);
 
   useLayoutEffect(() => {
-    const sceneOverlayElement = sceneOverlayRef.current;
-    if (!sceneOverlayElement) {
+    const sceneOverlayContentElement = sceneOverlayContentRef.current;
+    if (!sceneOverlayContentElement) {
       return;
     }
 
     const updateOverlayExtensionHeight = () => {
-      const requiredHeight = sceneOverlayTop + sceneOverlayElement.scrollHeight;
+      const requiredHeight = sceneOverlayTop + sceneOverlayContentElement.getBoundingClientRect().height;
       setOverlayExtensionHeight(Math.max(0, Math.ceil(requiredHeight - mainImageHeight)));
     };
 
@@ -51,7 +51,7 @@ function useHomePageV2SceneOverlayLayout() {
       updateOverlayExtensionHeight();
     });
 
-    resizeObserver.observe(sceneOverlayElement);
+    resizeObserver.observe(sceneOverlayContentElement);
 
     return () => {
       resizeObserver.disconnect();
@@ -60,7 +60,7 @@ function useHomePageV2SceneOverlayLayout() {
 
   return {
     mainImageRef,
-    sceneOverlayRef,
+    sceneOverlayContentRef,
     sceneOverlayTop,
     overlayExtensionHeight,
   };

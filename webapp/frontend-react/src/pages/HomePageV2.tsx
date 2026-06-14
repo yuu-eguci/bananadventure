@@ -6,7 +6,7 @@ import ResetButton from "@/components/ResetButton";
 import EndingAchievementsDialog from "@/components/HomePageV2/EndingAchievementsDialog";
 import HomePageV2RightPanel from "@/components/HomePageV2/HomePageV2RightPanel";
 import JingleBackdrop from "@/components/HomePageV2/JingleBackdrop";
-import MainSection from "@/components/HomePageV2/MainSection";
+import MainSection, { MAIN_SECTION_MAX_WIDTH } from "@/components/HomePageV2/MainSection";
 import ItemWidget from "@/components/HomePageV2/ItemWidget";
 import SceneOverlay from "@/components/HomePageV2/SceneOverlay";
 import sceneData from "@/data/bananadventure-scenes.json";
@@ -29,7 +29,7 @@ const allCollectibleItemIds = Array.from(
 );
 
 function HomePageV2() {
-  const { mainImageRef, sceneOverlayRef, sceneOverlayTop, overlayExtensionHeight } =
+  const { mainImageRef, sceneOverlayContentRef, sceneOverlayTop, overlayExtensionHeight } =
     useHomePageV2SceneOverlayLayout();
   const { scene, player, isLoading, leadResponseText, selectChoice, useItem, reset } =
     useHomePageV2Game();
@@ -77,7 +77,7 @@ function HomePageV2() {
       <Box
         sx={{
           width: "100%",
-          maxWidth: 960,
+          maxWidth: MAIN_SECTION_MAX_WIDTH,
           mx: "auto",
           px: { xs: 0, sm: 1 },
         }}
@@ -114,7 +114,7 @@ function HomePageV2() {
             ))}
           </HomePageV2RightPanel>
           <SceneOverlay
-            ref={sceneOverlayRef}
+            ref={sceneOverlayContentRef}
             scene={scene}
             leadResponseText={leadResponseText}
             top={sceneOverlayTop}

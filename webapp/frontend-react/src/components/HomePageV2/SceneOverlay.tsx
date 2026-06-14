@@ -37,78 +37,43 @@ const SceneOverlay = forwardRef<HTMLDivElement, Props>(function SceneOverlay(
         zIndex: 2,
         bgcolor: "rgba(0, 0, 0, 0.62)",
         color: "white",
-        px: 2,
-        py: 2,
         boxSizing: "border-box",
-        display: "flex",
-        flexDirection: "column",
       }}
     >
-      {leadResponseText ? (
-        <>
-          <Typography variant="subtitle1" sx={{ mb: 1 }}>
-            {leadResponseText}
-          </Typography>
-          <Typography variant="subtitle1" sx={{ mb: 1, textAlign: "center", opacity: 0.7 }}>
-            ***
-          </Typography>
-        </>
-      ) : null}
+      <Box
+        ref={ref}
+        sx={{
+          px: 2,
+          py: 2,
+          display: "flex",
+          flexDirection: "column",
+        }}
+      >
+        {leadResponseText ? (
+          <>
+            <Typography variant="subtitle1" sx={{ mb: 1 }}>
+              {leadResponseText}
+            </Typography>
+            <Typography variant="subtitle1" sx={{ mb: 1, textAlign: "center", opacity: 0.7 }}>
+              ***
+            </Typography>
+          </>
+        ) : null}
 
-      <Typography variant="subtitle1" sx={{ mb: shouldShowActionArea ? 1.5 : 0 }}>
-        {scene?.text ?? ""}
-      </Typography>
+        <Typography variant="subtitle1" sx={{ mb: shouldShowActionArea ? 1.5 : 0 }}>
+          {scene?.text ?? ""}
+        </Typography>
 
-      {isEndingScene ? (
-        <>
-          <Box
-            sx={{
-              display: "grid",
-              width: "100%",
-              pb: 2,
-            }}
-          >
-            <Card
+        {isEndingScene ? (
+          <>
+            <Box
               sx={{
-                height: "100%",
-                bgcolor: "primary.main",
-                borderRadius: "14px",
-                opacity: isLoading ? 0.7 : 1,
+                display: "grid",
+                width: "100%",
+                pb: 2,
               }}
             >
-              <CardActionArea
-                sx={{ height: "100%" }}
-                disabled={isLoading}
-                onClick={onOpenEnding}
-              >
-                <CardContent sx={{ p: 2, textAlign: "center" }}>
-                  <Typography variant="subtitle2" sx={{ fontWeight: 800, letterSpacing: "0.12em" }}>
-                    {ENDING_SCENE_LABEL}
-                  </Typography>
-                  <Typography variant="body2">{ENDING_SCENE_HINT}</Typography>
-                </CardContent>
-              </CardActionArea>
-            </Card>
-          </Box>
-        </>
-      ) : hasSceneChoices ? (
-        <>
-          <Typography variant="subtitle2" sx={{ mb: 1 }}>
-            選択肢
-          </Typography>
-
-          <Box
-            sx={{
-              display: "grid",
-              gridTemplateColumns: { xs: "1fr", sm: "repeat(2, minmax(0, 1fr))" },
-              gap: 1,
-              width: "100%",
-              pb: 2,
-            }}
-          >
-            {sceneChoices.map((choice) => (
               <Card
-                key={choice.id}
                 sx={{
                   height: "100%",
                   bgcolor: "primary.main",
@@ -119,19 +84,60 @@ const SceneOverlay = forwardRef<HTMLDivElement, Props>(function SceneOverlay(
                 <CardActionArea
                   sx={{ height: "100%" }}
                   disabled={isLoading}
-                  onClick={() => {
-                    onSelectChoice(choice);
-                  }}
+                  onClick={onOpenEnding}
                 >
-                  <CardContent sx={{ p: 2 }}>
-                    <Typography variant="body2">{choice.text}</Typography>
+                  <CardContent sx={{ p: 2, textAlign: "center" }}>
+                    <Typography variant="subtitle2" sx={{ fontWeight: 800, letterSpacing: "0.12em" }}>
+                      {ENDING_SCENE_LABEL}
+                    </Typography>
+                    <Typography variant="body2">{ENDING_SCENE_HINT}</Typography>
                   </CardContent>
                 </CardActionArea>
               </Card>
-            ))}
-          </Box>
-        </>
-      ) : null}
+            </Box>
+          </>
+        ) : hasSceneChoices ? (
+          <>
+            <Typography variant="subtitle2" sx={{ mb: 1 }}>
+              選択肢
+            </Typography>
+
+            <Box
+              sx={{
+                display: "grid",
+                gridTemplateColumns: { xs: "1fr", sm: "repeat(2, minmax(0, 1fr))" },
+                gap: 1,
+                width: "100%",
+                pb: 2,
+              }}
+            >
+              {sceneChoices.map((choice) => (
+                <Card
+                  key={choice.id}
+                  sx={{
+                    height: "100%",
+                    bgcolor: "primary.main",
+                    borderRadius: "14px",
+                    opacity: isLoading ? 0.7 : 1,
+                  }}
+                >
+                  <CardActionArea
+                    sx={{ height: "100%" }}
+                    disabled={isLoading}
+                    onClick={() => {
+                      onSelectChoice(choice);
+                    }}
+                  >
+                    <CardContent sx={{ p: 2 }}>
+                      <Typography variant="body2">{choice.text}</Typography>
+                    </CardContent>
+                  </CardActionArea>
+                </Card>
+              ))}
+            </Box>
+          </>
+        ) : null}
+      </Box>
     </Box>
   );
 });
