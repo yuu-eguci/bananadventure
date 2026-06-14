@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useRef, useState } from "react";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 
 import { Alert, Box, Button, Snackbar, Typography } from "@mui/material";
 import { Link } from "react-router-dom";
@@ -36,8 +36,17 @@ function HomePageV2() {
   const { t } = useTranslation();
   const { mainImageRef, sceneOverlayContentRef, sceneOverlayTop, overlayExtensionHeight } =
     useHomePageV2SceneOverlayLayout();
-  const { scene, player, isLoading, leadResponseText, leadBananaMeterDelta, selectChoice, useItem, reset } =
-    useHomePageV2Game();
+  const {
+    scene,
+    player,
+    isLoading,
+    leadResponseText,
+    leadBananaMeterDelta,
+    leadAddedItems,
+    selectChoice,
+    useItem,
+    reset,
+  } = useHomePageV2Game();
   const { messageSpeed, changeMessageSpeed } = useMessageSpeed();
   const [isEndingDialogOpen, setIsEndingDialogOpen] = useState(false);
   const [isSystemDialogOpen, setIsSystemDialogOpen] = useState(false);
@@ -64,6 +73,21 @@ function HomePageV2() {
     setDisplayedBananaMeter(actualBananaMeterRef.current);
     setBananaMeterFlashSignal((signal) => signal + 1);
   }, []);
+
+  // 入手したアイテムは、メッセージが入手行に達する pause まで隠しておく。
+  // pause で reveal すると ItemWidget がマウントされ、登場の明滅（タスク 30）が走る。
+  const [hiddenItemIds, setHiddenItemIds] = useState<Set<number>>(new Set());
+  useEffect(() => {
+    setHiddenItemIds(new Set(leadAddedItems.map((item) => item.id)));
+  }, [leadAddedItems]);
+  const revealAddedItems = useCallback(() => {
+    setHiddenItemIds(new Set());
+  }, []);
+  const visibleItems = useMemo(
+    () => (player?.items ?? []).filter((item) => !hiddenItemIds.has(item.id)),
+    [player?.items, hiddenItemIds],
+  );
+
   const currentSceneId = scene?.id ?? -1;
   const isEndingScene =
     currentSceneId === ENDING_SCENE_IDS.TRUE || currentSceneId === ENDING_SCENE_IDS.BAD;
@@ -142,7 +166,7 @@ function HomePageV2() {
             <BananaMeterWidget value={displayedBananaMeter} flashSignal={bananaMeterFlashSignal} />
           </Box>
           <HomePageV2RightPanel isBgmPlaying={isBgmPlaying} onToggleBgm={toggleBgm}>
-            {(player?.items ?? []).map((item) => (
+            {visibleItems.map((item) => (
               <ItemWidget
                 key={item.id}
                 item={item}
@@ -162,11 +186,13 @@ function HomePageV2() {
             scene={scene}
             leadResponseText={leadResponseText}
             leadBananaMeterDelta={leadBananaMeterDelta}
+            leadAddedItems={leadAddedItems}
             top={sceneOverlayTop}
             isLoading={isLoading}
             isEndingScene={isEndingScene}
             charDelayMs={MESSAGE_SPEEDS[messageSpeed].charDelayMs}
             onBananaMeterFlash={triggerBananaMeterFlash}
+            onRevealItems={revealAddedItems}
             onOpenEnding={() => setIsEndingDialogOpen(true)}
             onSelectChoice={(choice) => {
               void selectChoice(choice);

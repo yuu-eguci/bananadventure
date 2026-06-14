@@ -1,21 +1,24 @@
-import { forwardRef } from "react";
+import { forwardRef, useCallback, useMemo } from "react";
 
 import { Box, Card, CardActionArea, CardContent, Fade, Typography } from "@mui/material";
 
 import useTypewriter from "@/hooks/useTypewriter";
 import { WIDGET_FLASH_DURATION_MS } from "@/components/HomePageV2/widgetFlash";
-import { Scene, SceneChoice } from "@/models";
+import { Item, Scene, SceneChoice } from "@/models";
 
 type Props = {
   scene: Scene | null;
   leadResponseText: string | null;
-  // 直前の選択肢のバナナメーター増減量。0 以外なら lead を打ち終えた所で止めて明滅させる。
+  // 直前の選択肢のバナナメーター増減量。0 以外なら増減行を出した所で止めて明滅させる。
   leadBananaMeterDelta: number;
+  // 直前の選択肢で入手したアイテム。あれば入手行を出した所で止めてウィジェットを追加する。
+  leadAddedItems: Item[];
   top: number;
   isLoading: boolean;
   isEndingScene: boolean;
   charDelayMs: number;
   onBananaMeterFlash: () => void;
+  onRevealItems: () => void;
   onOpenEnding: () => void;
   onSelectChoice: (choice: SceneChoice) => void;
 };
@@ -23,16 +26,24 @@ type Props = {
 const ENDING_SCENE_LABEL = "FIN";
 const ENDING_SCENE_HINT = "アチーブメントを確認";
 
+const buildMeterLine = (delta: number) =>
+  `（バナナメーター ${delta > 0 ? `+${delta}` : `${delta}`}）`;
+
+const buildItemLine = (items: Item[]) =>
+  `（${items.map((item) => item.text).join("、")} を手に入れた）`;
+
 const SceneOverlay = forwardRef<HTMLDivElement, Props>(function SceneOverlay(
   {
     scene,
     leadResponseText,
     leadBananaMeterDelta,
+    leadAddedItems,
     top,
     isLoading,
     isEndingScene,
     charDelayMs,
     onBananaMeterFlash,
+    onRevealItems,
     onOpenEnding,
     onSelectChoice,
   }: Props,
@@ -42,16 +53,64 @@ const SceneOverlay = forwardRef<HTMLDivElement, Props>(function SceneOverlay(
   const hasSceneChoices = sceneChoices.length > 0;
   const shouldShowActionArea = isEndingScene || hasSceneChoices;
 
-  // lead レスポンスと本文を 1 本のテキストとして 1 文字ずつ描画する。
-  // ローディング中（JingleBackdrop で隠れている間）は打たず、表示されてから打ち始める。
-  const leadText = leadResponseText ?? "";
+  // lead を「レスポンス本文／バナナメーター増減行／アイテム入手行」のセグメントに分けて組み立て、
+  // それぞれの末尾の文字位置を pause 地点にする。
+  // - 増減行の末尾で止めてバナナメーターを明滅
+  // - 入手行の末尾で止めてアイテムウィジェットを追加
   const sceneText = scene?.text ?? "";
-  // バナナメーター増減があるときは、lead（レスポンス + 増減行）を打ち終えた位置で
-  // いったん止めてバナナメーターを明滅させ、明滅時間が終わってから本文の描画を再開する。
+  const { leadText, meterPauseIndex, itemPauseIndex } = useMemo(() => {
+    const segments: string[] = [];
+    const response = leadResponseText ?? "";
+    if (response.length > 0) {
+      segments.push(response);
+    }
+
+    let meterEnd: number | null = null;
+    let itemEnd: number | null = null;
+
+    const appendSegment = (text: string): number => {
+      // セグメント間は改行で区切る。区切りの分だけ開始位置をずらす。
+      const start = segments.length === 0 ? 0 : segments.join("\n").length + 1;
+      segments.push(text);
+      return start + text.length;
+    };
+
+    if (leadBananaMeterDelta !== 0) {
+      meterEnd = appendSegment(buildMeterLine(leadBananaMeterDelta));
+    }
+    if (leadAddedItems.length > 0) {
+      itemEnd = appendSegment(buildItemLine(leadAddedItems));
+    }
+
+    return {
+      leadText: segments.join("\n"),
+      meterPauseIndex: meterEnd,
+      itemPauseIndex: itemEnd,
+    };
+  }, [leadResponseText, leadBananaMeterDelta, leadAddedItems]);
+
+  const pausePoints = useMemo(
+    () => [meterPauseIndex, itemPauseIndex].filter((index): index is number => index !== null),
+    [meterPauseIndex, itemPauseIndex],
+  );
+
+  const handleReachPause = useCallback(
+    (index: number) => {
+      if (index === meterPauseIndex) {
+        onBananaMeterFlash();
+      }
+      if (index === itemPauseIndex) {
+        onRevealItems();
+      }
+    },
+    [meterPauseIndex, itemPauseIndex, onBananaMeterFlash, onRevealItems],
+  );
+
+  // ローディング中（JingleBackdrop で隠れている間）は打たず、表示されてから打ち始める。
   const { displayedText, isComplete, skip } = useTypewriter(leadText + sceneText, charDelayMs, !isLoading, {
-    pauseAtIndex: leadBananaMeterDelta !== 0 && leadText.length > 0 ? leadText.length : null,
+    pausePoints,
     pauseDurationMs: WIDGET_FLASH_DURATION_MS,
-    onReachPause: onBananaMeterFlash,
+    onReachPause: handleReachPause,
   });
 
   // 結合テキストの表示位置を、lead 部分と本文部分に切り分ける。

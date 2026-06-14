@@ -19,40 +19,30 @@ async function wait(ms: number): Promise<void> {
   });
 }
 
-// 選択肢レスポンスの末尾に表示する文字列を組み立てる。
-// バナナメーターの増減があるときは、その増減量を符号付きで末尾の行に添える。
-function buildLeadResponseText(choice: SceneChoice): string | null {
-  const baseText = choice.responseText.trim().length > 0 ? choice.responseText : "";
-
-  if (choice.bananaMeterDelta === 0) {
-    return baseText.length > 0 ? baseText : null;
-  }
-
-  const signedDeltaText =
-    choice.bananaMeterDelta > 0 ? `+${choice.bananaMeterDelta}` : `${choice.bananaMeterDelta}`;
-  const deltaLine = `（バナナメーター ${signedDeltaText}）`;
-
-  return baseText.length > 0 ? `${baseText}\n${deltaLine}` : deltaLine;
-}
-
 type UseHomePageV2GameResult = {
   viewModel: SceneViewModel | null;
   scene: Scene | null;
   player: Player | null;
   isLoading: boolean;
+  // 選択肢レスポンス本文（注釈行は付けない。注釈の組み立ては表示側の責務）。
   leadResponseText: string | null;
   // 直前に選んだ選択肢のバナナメーター増減量。メッセージを止めて明滅させるかの判定に使う。
   leadBananaMeterDelta: number;
+  // 直前の選択肢で入手したアイテム。メッセージを止めてウィジェットを追加するために使う。
+  leadAddedItems: Item[];
   selectChoice: (choice: SceneChoice) => Promise<void>;
   useItem: (item: Item) => Promise<void>;
   reset: () => Promise<void>;
 };
+
+const EMPTY_ITEMS: Item[] = [];
 
 function useHomePageV2Game(): UseHomePageV2GameResult {
   const [viewModel, setViewModel] = useState<SceneViewModel | null>(null);
   const [isLoading, setIsLoading] = useState(true);
   const [leadResponseText, setLeadResponseText] = useState<string | null>(null);
   const [leadBananaMeterDelta, setLeadBananaMeterDelta] = useState(0);
+  const [leadAddedItems, setLeadAddedItems] = useState<Item[]>(EMPTY_ITEMS);
   const isBusyRef = useRef(false);
   const isMountedRef = useRef(true);
 
@@ -72,6 +62,7 @@ function useHomePageV2Game(): UseHomePageV2GameResult {
         setViewModel(initialViewModel);
         setLeadResponseText(null);
         setLeadBananaMeterDelta(0);
+        setLeadAddedItems(EMPTY_ITEMS);
         await wait(TRANSITION_LOADING_DURATION_MS);
       } finally {
         if (isMountedRef.current) {
@@ -104,8 +95,9 @@ function useHomePageV2Game(): UseHomePageV2GameResult {
       }
 
       setViewModel(updatedViewModel);
-      setLeadResponseText(buildLeadResponseText(choice));
+      setLeadResponseText(choice.responseText.trim().length > 0 ? choice.responseText : null);
       setLeadBananaMeterDelta(choice.bananaMeterDelta);
+      setLeadAddedItems(choice.itemsOnSelect.length > 0 ? choice.itemsOnSelect : EMPTY_ITEMS);
       await wait(TRANSITION_LOADING_DURATION_MS);
     } finally {
       isBusyRef.current = false;
@@ -156,6 +148,7 @@ function useHomePageV2Game(): UseHomePageV2GameResult {
       setViewModel(initialViewModel);
       setLeadResponseText(null);
       setLeadBananaMeterDelta(0);
+      setLeadAddedItems(EMPTY_ITEMS);
       await wait(TRANSITION_LOADING_DURATION_MS);
     } finally {
       isBusyRef.current = false;
@@ -173,6 +166,7 @@ function useHomePageV2Game(): UseHomePageV2GameResult {
     isLoading,
     leadResponseText,
     leadBananaMeterDelta,
+    leadAddedItems,
     selectChoice,
     useItem,
     reset,
