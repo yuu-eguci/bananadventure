@@ -2,7 +2,7 @@ import { useLayoutEffect, useRef, useState } from "react";
 
 import { MAIN_SECTION_HEIGHT } from "@/components/HomePageV2/MainSection";
 
-const SCENE_OVERLAY_HEIGHT_RATIO = 0.6;
+const SCENE_OVERLAY_HEIGHT_RATIO = 0.3;
 
 function useHomePageV2SceneOverlayLayout() {
   const mainImageRef = useRef<HTMLDivElement | null>(null);

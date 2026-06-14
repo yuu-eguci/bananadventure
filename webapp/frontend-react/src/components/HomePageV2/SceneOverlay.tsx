@@ -26,8 +26,9 @@ const SceneOverlay = forwardRef<HTMLDivElement, Props>(function SceneOverlay(
   const shouldShowActionArea = isEndingScene || hasSceneChoices;
 
   return (
+    // 外側 Box: 帯の暗い背景を担当。top → 画像下端（bottom:0）まで引き伸ばす。
+    // ★ここには ref を付けない（引き伸ばされた高さを測ると延長計算がループするため）。
     <Box
-      ref={ref}
       sx={{
         position: "absolute",
         left: 0,
@@ -40,6 +41,8 @@ const SceneOverlay = forwardRef<HTMLDivElement, Props>(function SceneOverlay(
         boxSizing: "border-box",
       }}
     >
+      {/* 内側 Box: 中身（メッセージ＋選択肢）。通常フローなので高さ＝中身の自然な高さ。 */}
+      {/* ★延長量の計算はこの要素の高さで行うので、ref はここだけに付ける。 */}
       <Box
         ref={ref}
         sx={{
