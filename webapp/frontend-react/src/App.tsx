@@ -8,8 +8,8 @@ import { Route, Routes } from "react-router-dom"
 function App() {
   return (
     <Routes>
-      <Route path="/" element={<HomePage />} />
-      <Route path="/v2" element={<HomePageV2 />} />
+      <Route path="/" element={<HomePageV2 />} />
+      <Route path="/v1" element={<HomePage />} />
       <Route path="/lore" element={<LorePage />} />
       {/* その他のパスは 404 */}
       <Route path="*" element={<NotFoundPage />} />
