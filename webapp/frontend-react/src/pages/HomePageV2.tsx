@@ -8,46 +8,11 @@ import SceneOverlay from "@/components/HomePageV2/SceneOverlay";
 import useHomePageV2SceneOverlayLayout from "@/hooks/useHomePageV2SceneOverlayLayout";
 import useHomePageV2Game from "@/hooks/useHomePageV2Game";
 import { useBgmPlayer } from "@/hooks/useBgmPlayer";
-import { Item } from "@/models";
-import { resolveImageUrl } from "@/services/assetImageResolver";
-
-const stubItem1: Item = {
-  id: 0,
-  text: "豆乳バナナ",
-  description: "",
-  responseText: "",
-  bananaMeterDelta: 20,
-  bananaMeterDeltaPercent: 0,
-  image: resolveImageUrl("/item-image/item-soy-banana-drink.webp"),
-  used: false,
-};
-
-const stubItem2: Item = {
-  id: 1,
-  text: "ストロングゼロ",
-  description: "",
-  responseText: "",
-  bananaMeterDelta: -9,
-  bananaMeterDeltaPercent: 0,
-  image: resolveImageUrl("/item-image/item-strong-zero.webp"),
-  used: true,
-};
-
-const stubItem3: Item = {
-  id: 2,
-  text: "六角レンチ・エンブレム・ハーブ",
-  description: "",
-  responseText: "",
-  bananaMeterDelta: 10,
-  bananaMeterDeltaPercent: 0,
-  image: resolveImageUrl("/item-image/item-survival-kit.webp"),
-  used: false,
-};
 
 function HomePageV2() {
   const { rightPanelRef, sceneOverlayRef, sceneOverlayTop, overlayExtensionHeight } =
     useHomePageV2SceneOverlayLayout();
-  const { scene, player, isLoading, leadResponseText, selectChoice } = useHomePageV2Game();
+  const { scene, player, isLoading, leadResponseText, selectChoice, useItem } = useHomePageV2Game();
   const {
     isPlaying: isBgmPlaying,
     toggle: toggleBgm,
@@ -87,9 +52,15 @@ function HomePageV2() {
             onToggleBgm={toggleBgm}
             bananaMeterValue={player?.bananaMeter ?? 0}
           >
-            <ItemWidget item={stubItem1} onUse={() => {}} />
-            <ItemWidget item={stubItem2} onUse={() => {}} />
-            <ItemWidget item={stubItem3} onUse={() => {}} />
+            {(player?.items ?? []).map((item) => (
+              <ItemWidget
+                key={item.id}
+                item={item}
+                onUse={async (targetItem) => {
+                  await useItem(targetItem);
+                }}
+              />
+            ))}
           </HomePageV2RightPanel>
           <SceneOverlay
             ref={sceneOverlayRef}

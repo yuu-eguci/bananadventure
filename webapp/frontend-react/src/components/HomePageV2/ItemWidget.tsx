@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 
 import {
   Box,
@@ -14,11 +14,23 @@ import { Item } from "@/models";
 
 type Props = {
   item: Item;
-  onUse: (item: Item) => void;
+  onUse: (item: Item) => Promise<void>;
 };
 
 function ItemWidget({ item, onUse }: Props) {
   const [open, setOpen] = useState(false);
+  const [isUsing, setIsUsing] = useState(false);
+  const [isResultVisible, setIsResultVisible] = useState(false);
+
+  useEffect(() => {
+    if (!open) {
+      setIsUsing(false);
+      setIsResultVisible(false);
+    }
+  }, [open]);
+
+  const signedDeltaText =
+    item.bananaMeterDelta > 0 ? `+${item.bananaMeterDelta}` : `${item.bananaMeterDelta}`;
 
   return (
     <>
@@ -52,9 +64,19 @@ function ItemWidget({ item, onUse }: Props) {
         />
       </Paper>
 
-      <Dialog open={open} onClose={() => setOpen(false)} maxWidth="xs" fullWidth PaperProps={{ sx: { borderRadius: "18px" } }}>
+      <Dialog
+        open={open}
+        onClose={() => {
+          if (!isUsing) {
+            setOpen(false);
+          }
+        }}
+        maxWidth="xs"
+        fullWidth
+        PaperProps={{ sx: { borderRadius: "18px" } }}
+      >
         <DialogTitle sx={{ bgcolor: "primary.main", color: "common.black", fontWeight: "bold" }}>
-          {item.text}
+          {isResultVisible ? "アイテム使用結果" : item.text}
         </DialogTitle>
         <DialogContent
           sx={{
@@ -76,23 +98,56 @@ function ItemWidget({ item, onUse }: Props) {
             }}
             sx={{ width: 80, height: 80, objectFit: "contain" }}
           />
-          {item.description}
+          {isResultVisible ? (
+            <Box sx={{ textAlign: "center", color: "common.black" }}>
+              <Box>{item.text} を使用した！</Box>
+              <Box sx={{ mt: 1 }}>ばななメーター {signedDeltaText}</Box>
+            </Box>
+          ) : (
+            <Box sx={{ color: "common.black", textAlign: "center" }}>
+              {item.description || "このアイテムを使う？"}
+            </Box>
+          )}
         </DialogContent>
         <DialogActions sx={{ bgcolor: "primary.main" }}>
-          <Button
-            onClick={() => {
-              onUse(item);
-              setOpen(false);
-            }}
-            variant="contained"
-            color="inherit"
-            sx={{ bgcolor: "grey.800", color: "common.white", "&:hover": { bgcolor: "grey.900" } }}
-          >
-            使う
-          </Button>
-          <Button onClick={() => setOpen(false)} variant="text" sx={{ color: "common.black" }}>
-            キャンセル
-          </Button>
+          {isResultVisible ? (
+            <Button
+              onClick={() => setOpen(false)}
+              variant="contained"
+              color="inherit"
+              sx={{ bgcolor: "grey.800", color: "common.white", "&:hover": { bgcolor: "grey.900" } }}
+            >
+              閉じる
+            </Button>
+          ) : (
+            <>
+              <Button
+                onClick={async () => {
+                  setIsUsing(true);
+                  try {
+                    await onUse(item);
+                    setIsResultVisible(true);
+                  } finally {
+                    setIsUsing(false);
+                  }
+                }}
+                disabled={isUsing}
+                variant="contained"
+                color="inherit"
+                sx={{ bgcolor: "grey.800", color: "common.white", "&:hover": { bgcolor: "grey.900" } }}
+              >
+                使う
+              </Button>
+              <Button
+                onClick={() => setOpen(false)}
+                disabled={isUsing}
+                variant="text"
+                sx={{ color: "common.black" }}
+              >
+                キャンセル
+              </Button>
+            </>
+          )}
         </DialogActions>
       </Dialog>
     </>
