@@ -1,4 +1,4 @@
-import { forwardRef, useCallback, useMemo } from "react";
+import { forwardRef, useCallback, useMemo, useRef, useState } from "react";
 
 import { Box, Card, CardActionArea, CardContent, Fade, Typography } from "@mui/material";
 
@@ -29,6 +29,9 @@ type Props = {
 
 const ENDING_SCENE_LABEL = "FIN";
 const ENDING_SCENE_HINT = "アチーブメントを確認";
+const TAP_HINT = "▼ タップして続ける";
+
+type Phase = "lead" | "message";
 
 const SceneOverlay = forwardRef<HTMLDivElement, Props>(function SceneOverlay(
   {
@@ -52,11 +55,8 @@ const SceneOverlay = forwardRef<HTMLDivElement, Props>(function SceneOverlay(
   const hasSceneChoices = sceneChoices.length > 0;
   const shouldShowActionArea = isEndingScene || hasSceneChoices;
 
-  // lead を「レスポンス本文／バナナメーター増減行／アイテム入手行」のセグメントに分けて組み立て、
-  // それぞれの末尾の文字位置を pause 地点にする。
-  // - 増減行の末尾で止めてバナナメーターを明滅
-  // - 入手行の末尾で止めてアイテムウィジェットを追加
   const sceneText = scene?.text ?? "";
+  // 選択肢レスポンス（本文＋増減行＋入手行）。Phase A で打つテキスト。
   const { leadText, meterPauseIndex, itemPauseIndex } = useMemo(
     () =>
       buildLeadMessageSegments({
@@ -66,10 +66,28 @@ const SceneOverlay = forwardRef<HTMLDivElement, Props>(function SceneOverlay(
       }),
     [leadResponseText, leadBananaMeterDelta, leadAddedItems],
   );
+  const hasLead = leadText.length > 0;
 
+  // フェーズ管理。lead があれば lead から、無ければ message から始める。
+  // 新しい遷移（lead / scene の組が変わる）ごとに先頭フェーズへ戻す。
+  const [phase, setPhase] = useState<Phase>(hasLead ? "lead" : "message");
+  const transitionKey = `${leadText}\u0000${sceneText}`;
+  const prevKeyRef = useRef(transitionKey);
+  if (prevKeyRef.current !== transitionKey) {
+    prevKeyRef.current = transitionKey;
+    setPhase(hasLead ? "lead" : "message");
+  }
+
+  const isLeadPhase = phase === "lead";
+  const phaseText = isLeadPhase ? leadText : sceneText;
+
+  // pause（メーター明滅・アイテム reveal）は lead フェーズ内だけ。
   const pausePoints = useMemo(
-    () => [meterPauseIndex, itemPauseIndex].filter((index): index is number => index !== null),
-    [meterPauseIndex, itemPauseIndex],
+    () =>
+      isLeadPhase
+        ? [meterPauseIndex, itemPauseIndex].filter((index): index is number => index !== null)
+        : [],
+    [isLeadPhase, meterPauseIndex, itemPauseIndex],
   );
 
   const handleReachPause = useCallback(
@@ -85,31 +103,34 @@ const SceneOverlay = forwardRef<HTMLDivElement, Props>(function SceneOverlay(
   );
 
   // ローディング中（JingleBackdrop で隠れている間）は打たず、表示されてから打ち始める。
-  const { displayedText, isComplete, skip } = useTypewriter(leadText + sceneText, charDelayMs, !isLoading, {
+  const { displayedText, isComplete, skip } = useTypewriter(phaseText, charDelayMs, !isLoading, {
     pausePoints,
     pauseDurationMs: WIDGET_FLASH_DURATION_MS,
     onReachPause: handleReachPause,
   });
 
-  // 結合テキストの表示位置を、lead 部分と本文部分に切り分ける。
-  const rawLeadText = displayedText.slice(0, leadText.length);
-  const rawSceneText = displayedText.slice(leadText.length);
-  // lead を打ち終わってから区切りの *** を出す。
-  const isLeadComplete = leadText.length > 0 && displayedText.length >= leadText.length;
-  const shouldShowSeparator = isLeadComplete;
+  const visibleText = ghostTrail ? applyGhostTrail(displayedText, isComplete) : displayedText;
 
-  // 光速ギャグ表示は lead 部分・本文部分を *別々の領域* として消していく。
-  // - lead は打ち終わった（=*** が出る）時点で最後の文字も消す（ghostLast）。
-  //   → 本文の 1 文字目を待たず、*** が出たところでレスポンス末尾が消える。
-  // - 本文は全部打ち終わった時点で最後の文字も消す。
-  const visibleLeadText = ghostTrail ? applyGhostTrail(rawLeadText, isLeadComplete) : rawLeadText;
-  const visibleSceneText = ghostTrail ? applyGhostTrail(rawSceneText, isComplete) : rawSceneText;
-  // 描画が終わってから選択肢／FIN を出す。
-  const shouldRenderActionArea = isComplete && shouldShowActionArea;
+  // lead 完了 → タップ促し。message 完了 → 選択肢 / FIN。
+  const shouldShowTapHint = isLeadPhase && isComplete;
+  const shouldRenderActionArea = !isLeadPhase && isComplete && shouldShowActionArea;
+
+  const handleClick = () => {
+    // 打鍵途中はタップで残りを一気に表示する。
+    if (!isComplete) {
+      skip();
+      return;
+    }
+
+    // lead 完了後は、タップで message に進める。
+    if (isLeadPhase) {
+      setPhase("message");
+    }
+  };
 
   return (
     // 外側 Box: 帯の暗い背景を担当。top → 画像下端（bottom:0）まで引き伸ばす。
-    // ★ここには ref を付けない（引き伸ばされた高さを測ると延長計算がループするため）。
+    // ここには ref を付けない。
     <Box
       sx={{
         position: "absolute",
@@ -124,43 +145,33 @@ const SceneOverlay = forwardRef<HTMLDivElement, Props>(function SceneOverlay(
       }}
     >
       {/* 内側 Box: 中身（メッセージ＋選択肢）。通常フローなので高さ＝中身の自然な高さ。 */}
-      {/* ★延長量の計算はこの要素の高さで行うので、ref はここだけに付ける。 */}
-      {/* 打鍵途中はタップで残りを一気に表示する（VN 定番のスキップ）。 */}
+      {/* 延長量の計算はこの要素の高さで行うので、ref はここだけに付ける。 */}
       <Box
         ref={ref}
-        onClick={() => {
-          if (!isComplete) {
-            skip();
-          }
-        }}
+        onClick={handleClick}
         sx={{
           px: 2,
           py: 2,
           display: "flex",
           flexDirection: "column",
-          cursor: isComplete ? "default" : "pointer",
+          cursor: !isComplete || isLeadPhase ? "pointer" : "default",
         }}
       >
-        {leadText.length > 0 ? (
-          <>
-            <Typography variant="subtitle1" sx={{ mb: 1, whiteSpace: "pre-line", textAlign: "left" }}>
-              {visibleLeadText}
-            </Typography>
-            {shouldShowSeparator ? (
-              <Typography variant="subtitle1" sx={{ mb: 1, textAlign: "center", opacity: 0.7 }}>
-                ***
-              </Typography>
-            ) : null}
-          </>
-        ) : null}
-
-        <Typography variant="subtitle1" sx={{ mb: shouldRenderActionArea ? 1.5 : 0, textAlign: "left" }}>
-          {visibleSceneText}
+        <Typography variant="subtitle1" sx={{ whiteSpace: "pre-line", textAlign: "left" }}>
+          {visibleText}
         </Typography>
+
+        {shouldShowTapHint ? (
+          <Fade in timeout={300}>
+            <Box sx={{ mt: 1, textAlign: "center", opacity: 0.8 }}>
+              <Typography variant="subtitle2">{TAP_HINT}</Typography>
+            </Box>
+          </Fade>
+        ) : null}
 
         {shouldRenderActionArea ? (
           <Fade in timeout={400}>
-            <Box>
+            <Box sx={{ mt: 1.5 }}>
               {isEndingScene ? (
                 <Box
                   sx={{
